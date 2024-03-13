@@ -1,3 +1,6 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import os
 from langchain.agents import initialize_agent, AgentType
@@ -8,6 +11,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.utilities import DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper
+
 
 
 chroma_client = Chroma(embedding_function=OpenAIEmbeddings(),
