@@ -1,7 +1,10 @@
 streamlit
+streamlit-chroamdb-connection
 openai
 langchain
+langchain-openai
 anthropic
 duckduckgo-search
-chromadb
+chromadb==0.4.13
 pysqlite3-binary
+openpyxl
