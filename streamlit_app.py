@@ -15,6 +15,9 @@ from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, GoogleSear
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
+if "shared" not in st.session_state:
+   st.session_state["shared"] = True
+
 try:
     embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
 except Exception as e:
@@ -29,14 +32,18 @@ vector_db = Chroma.from_documents(
     embedding=embedding_function,)
 
 st.title('🦜🔗 Quickstart App')
-try:
-    openai_api_key = st.secrets["OPENAI_API_KEY"]
-except Exception as e:
-    with st.sidebar:
-        openai_api_key = st.text_input("OpenAI API Key", key="langchain_search_api_key_openai", type="password")
-        "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-        "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/2_Chat_with_search.py)"
-        "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
+with st.sidebar:
+    st.page_link("cardio/engine.py", label="Demo1")
+    st.page_link("depression", label="Demo2")
+    st.page_link("image_processing/", label="Demo3")
+
+    try:
+        openai_api_key = st.secrets["OPENAI_API_KEY"]
+    except Exception as e:
+            openai_api_key = st.text_input("OpenAI API Key", key="langchain_search_api_key_openai", type="password")
+            "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
+            "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/2_Chat_with_search.py)"
+            "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 col1, col2 = st.columns(2)
 
 with col1:

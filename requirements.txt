@@ -7,3 +7,8 @@ duckduckgo-search
 chromadb==0.4.13
 pysqlite3-binary
 openpyxl
+opencv-python
+tensorflow
+torch
+sentence-transformers
+
