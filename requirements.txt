@@ -3,3 +3,4 @@ openai
 langchain
 anthropic
 duckduckgo-search
+chromadb

@@ -1,5 +1,5 @@
 import streamlit as st
-
+import os
 from langchain.agents import initialize_agent, AgentType
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.chat_models import ChatOpenAI
@@ -12,7 +12,6 @@ from langchain.utilities import DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapp
 
 chroma_client = Chroma(embedding_function=OpenAIEmbeddings(),
                        persist_directory="./chromadb_oai")
-
 
 st.title('🦜🔗 Quickstart App')
 try:
