@@ -4,3 +4,4 @@ langchain
 anthropic
 duckduckgo-search
 chromadb
+pysqlite3-binary
