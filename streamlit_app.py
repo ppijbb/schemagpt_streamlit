@@ -15,6 +15,9 @@ from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, GoogleSear
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
+
+os.environ["TOKENIZERS_PARALLELISM"]="0"
+
 if "shared" not in st.session_state:
    st.session_state["shared"] = True
 
@@ -33,9 +36,9 @@ vector_db = Chroma.from_documents(
 
 st.title('🦜🔗 Quickstart App')
 with st.sidebar:
-    st.page_link("cardio/engine.py", label="Demo1")
-    st.page_link("depression", label="Demo2")
-    st.page_link("image_processing/", label="Demo3")
+    st.page_link("pages/cardio.py", label="Demo1")
+    st.page_link("pages/dep_peptide.py", label="Demo2")
+    st.page_link("pages/facial.py", label="Demo3")
 
     try:
         openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -78,15 +81,16 @@ with col1:
             st.stop()
 
         llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key, streaming=True)
-        search = DuckDuckGoSearchRun(name="Search")
-        search_agent = initialize_agent([search], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
+        # search = DuckDuckGoSearchRun(name="Search")
+        # search_agent = initialize_agent([search], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
         with st.chat_message("assistant"):
             st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            response = search_agent.run(st.session_state.messages, callbacks=[st_cb])
+            # response = search_agent.invoke(st.session_state.messages, callbacks=[st_cb])
+
             st.session_state.messages.append(
                 {
                     "role": "assistant",
-                    "content": response + f'{searched_result}'
+                    "content": f'{searched_result}'
                 })
             st.write(response)
 
@@ -98,4 +102,3 @@ with col2:
     In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
     Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent).
     """
-
