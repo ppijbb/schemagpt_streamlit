@@ -5,6 +5,8 @@ import numpy as np
 import av
 import json
 from typing import List
+import os
+import inspect
 
 from datetime import datetime as dt
 import streamlit as st
@@ -12,11 +14,12 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 from streamlit_webrtc.models import VideoProcessorBase
 from PIL import ImageFont, ImageDraw, Image
 import tensorflow as tf
+import keras
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image as _IMG
 
-from public_stun import public_stun_server_list
+from pages.rtc.public_stun import public_stun_server_list
 # from streamlit.components.v1 import html
 # import mediapipe as mp
 
@@ -34,9 +37,9 @@ if gpus:
     # 프로그램 시작시에 가상 장치가 설정되어야만 합니다
     print(e)
 # load model
-model = model_from_json(open("caer_face.json", "r").read())
+model = model_from_json(open(f"{os.getcwd()}/pages/caer_face.json", "r").read())
 # load weights
-model.load_weights('caer_face.h5')
+model.load_weights(f"{os.getcwd()}/pages/caer_face.h5")
 
 # mp_drawing = mp.solutions.drawing_utils
 # mp_drawing_styles = mp.solutions.drawing_styles
@@ -48,7 +51,8 @@ model.load_weights('caer_face.h5')
 # )
 
 # face detection
-face_haar_cascade = cv2.CascadeClassifier("/opt/conda/lib/python3.9/site-packages/cv2/data/haarcascade_frontalface_default.xml")
+cv_path = inspect.getfile(cv2)
+face_haar_cascade = cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
 # face_haar_cascade = cv2.CascadeClassifier("C:\\Users\\Lenovo\\.conda\\envs\\python_3_9_env\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_default.xml")
 
 
@@ -248,7 +252,8 @@ class VideoProcessor(VideoProcessorBase):
 
     def on_ended(self):
         print("############### Connection Ended #################")
-        data = f"{self.result_dict}".replace("\'", "\"")
+        # data = f"{self.result_dict}".replace("\'", "\"")
+        data = None
 
         if data:
             requests.post(f"http://localhost:5000/caer/face?state=start&name={self.code}",
@@ -261,8 +266,8 @@ class VideoProcessor(VideoProcessorBase):
 
 # @st.cache(suppress_st_warning=True)
 def show():
-    queries = st.experimental_get_query_params()
-    code = queries.get("code", None)[0]
+    # queries = st.experimental_get_query_params()
+    # code = queries.get("code", None)[0]
     webrtc_ctx = webrtc_streamer(
         key=string.punctuation,
         mode=WebRtcMode.SENDRECV,
@@ -277,15 +282,15 @@ def show():
         },
         video_processor_factory=VideoProcessor,
         async_processing=True,
-        desired_playing_state=True,
+        desired_playing_state=False,
         video_html_attrs={
             "style": {"width": "100%", "max-width": "768px", "margin": "0 auto", "justify-content": "center"},
             "controls": True,
-            "autoPlay": True
+            "autoPlay": False
         },
     )
-    if webrtc_ctx.state.signalling:
-        webrtc_ctx.video_processor.code = code
+    # if webrtc_ctx.state.signalling:
+    #     webrtc_ctx.video_processor.code = code
 
 
 if __name__ == "__main__":
@@ -294,6 +299,11 @@ if __name__ == "__main__":
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    st.title('🦜🔗 Quickstart App')
+    with st.sidebar:
+        st.page_link("pages/cardio.py",)
+        st.page_link("pages/dep_peptide.py",)
+        st.page_link("pages/facial.py",)
     hide_menu_style = """
             <style>
             .css-1avcm0n {visibility: hidden;}

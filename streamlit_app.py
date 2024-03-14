@@ -29,16 +29,16 @@ except Exception as e:
 data = DataFrameLoader(pd.read_excel("schema_utterance.xlsx"), page_content_column="domain").load()
 
 vector_db = Chroma.from_documents(
-    collection_name="schema_collection",
+  #  collection_name="schema_collection",
     persist_directory="./chromadb_oai",
     documents=data,
     embedding=embedding_function,)
 
 st.title('🦜🔗 Quickstart App')
 with st.sidebar:
-    st.page_link("pages/cardio.py", label="Demo1")
-    st.page_link("pages/dep_peptide.py", label="Demo2")
-    st.page_link("pages/facial.py", label="Demo3")
+    st.page_link("pages/cardio.py",)
+    st.page_link("pages/dep_peptide.py",)
+    st.page_link("pages/facial.py",)
 
     try:
         openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -50,7 +50,7 @@ with st.sidebar:
 col1, col2 = st.columns(2)
 
 with col1:
-    st.title("🔎 LangChain - Chat with search")
+    st.title("🔎 Chat with DuckDuckgo")
 
     """
     In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
@@ -81,11 +81,11 @@ with col1:
             st.stop()
 
         llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key, streaming=True)
-        # search = DuckDuckGoSearchRun(name="Search")
-        # search_agent = initialize_agent([search], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
+        search = DuckDuckGoSearchRun(name="Search")
+        search_agent = initialize_agent([search], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
         with st.chat_message("assistant"):
             st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            # response = search_agent.invoke(st.session_state.messages, callbacks=[st_cb])
+            response = search_agent.invoke(st.session_state.messages, callbacks=[st_cb])
 
             st.session_state.messages.append(
                 {
@@ -96,7 +96,7 @@ with col1:
 
 
 with col2:
-    st.title("🔎 LangChain - Chat with search")
+    st.title("🔎 Something else...")
 
     """
     In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
