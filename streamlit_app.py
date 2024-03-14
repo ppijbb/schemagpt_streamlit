@@ -60,6 +60,10 @@ with col1:
     if "messages" not in st.session_state:
         st.session_state["messages"] = [
             {
+                "role": "system",
+                "content": "당신은 한국어 전문가 GPT입니다."
+            },
+            {
                 "role": "assistant",
                 "content": "Hi, I'm a chatbot who can search the web. How can I help you?"
             }]
@@ -90,9 +94,9 @@ with col1:
             st.session_state.messages.append(
                 {
                     "role": "assistant",
-                    "content": f'{searched_result}'
+                    "content": response["output"]
                 })
-            st.write(response)
+            st.write(f'{response["output"]}\n{searched_result}')
 
 
 with col2:
