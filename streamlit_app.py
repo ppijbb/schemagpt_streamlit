@@ -88,15 +88,17 @@ with col1:
         search = DuckDuckGoSearchRun(name="Search")
         search_agent = initialize_agent([search], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_errors=True)
         with st.chat_message("assistant"):
-            st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            response = search_agent.invoke(st.session_state.messages, callbacks=[st_cb])
+            st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
+
+            response = search_agent.invoke(st.session_state.messages,# callbacks=[st_cb]
+                                           )
 
             st.session_state.messages.append(
-                {
-                    "role": "assistant",
-                    "content": response["output"]
-                })
-            st.write(f'{response["output"]}\n{searched_result}')
+                    {
+                        "role": "assistant",
+                        "content": response
+                    })
+            st.write(f'{response}')
 
 
 with col2:
