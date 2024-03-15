@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="CardioHeq Service">
+    <meta name="author" content="Turingbio">
+
+    <title>CardioHeq</title>
+    <link rel="shortcut icon" href="#" /> 
+    <!-- Custom fonts for this template-->
+    <link href="css/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&amp;subset=korean" 
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="css/vendor/jquery/jquery.min.js"></script>
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <script src="css/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="css/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script type='text/javascript' src="css/js/sb-admin-2.min.js"></script>
+    <script type='text/javascript' src="js/includeHTML.js"></script>
+    <script type='text/javascript' src="js/includeRouter.js"></script>
+    <script type='text/javascript' src="js/chart/googlechart.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="css/img/logo.png">
+   
+</head>
+
+<div class="pre-loader D-NONE">
+    <div class="pre-loader-box">
+        <div class="loader-logo"><img src="css/vendor/fontawesome-free/svgs/regular/hourglass.svg" alt=""></div>
+        <div class='loader-progress' id="progress_div">
+            <div class='bar' id='bar1'></div>
+        </div>
+        <div class='percent' id='percent1'>0%</div>
+        <div class="loading-text">
+            Loading...
+        </div>
+    </div>
+</div>
+<body id="page-top" class='sidebar-toggled'>
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <!-- <ul class="navbar-nav sidebar sidebar-dark accordion" 
+            id="accordionSidebar" include-html="views/sidebar.html"></ul> -->
+        
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column ">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" 
+                id ="menu-section"
+                include-html= "views/topbar.html"></nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+
+            <!-- Content Row -->
+                <div class="container-fluid animated--fade-in">
+                    <div class="cardio-wrapper">
+
+                        <div class='d-flex' id="main-section">
+                            <div id='page-16' >
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h3 class="m-0 font-weight-bold text-primary">기본 평가 기록</h3>  
+                                    
+                                    <div class="sidediv">
+                                        <!-- <div class='btn btn-light row' onclick={to16Page(this)}>
+                                            <i class="fas fa-list"></i>
+                                            기본 평가 기록 보기</div> -->
+                                        <div class='btn btn-light row' onclick={to33Page(this)}>
+                                            <i class="fas fa-list-alt"></i>
+                                            세부 평가 기록 보기</div>
+                                    </div>    
+                                </div>
+
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                        <form class="self-form" name="16Form" > 
+                                            <div class="card shadow  justify-content-between">
+                                                <p class="name">사용자 닉네임  
+                                                    <input type="text" class="bg-light border-0 small" name="username-0" placeholder="닉네임" ></p>
+                                            </div>
+                                        
+                                            <div class="card shadow">
+                                                <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                                id='gen'>평가 기록 </p>
+                                                <div class="card-body">
+                                                    <div class='row log_result'>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- <p class="submit_btn"> <input class="btn-sm shadow botc" type="button" value="결과 확인" id='end1'  onClick={CheckValue(this)}></p> -->
+                                        </form>
+                                </div>
+                            </div>
+                            
+                            <div class='D-NONE' id='page-33'>
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h3 class="m-0 font-weight-bold text-primary">세부 평가 기록</h3>
+                  
+                                    <div class="sidediv">
+                                        <div class='btn btn-light row' onclick={to16Page(this)}>
+                                            <i class="fas fa-list"></i>
+                                            기본 평가 기록 보기</div>
+                                        <!-- <div class='btn btn-light row' onclick={to33Page(this)}>
+                                            <i class="fas fa-list-alt"></i>
+                                            세부 평가 기록 보기</div> -->
+                                    </div>
+                                </div>
+
+                                    <div class="card-body" >
+                                        <form class="self-form" name="33Form"> 
+                                            <div class="card shadow justify-content-between">
+                                                    <p class="name">사용자 닉네임 
+                                                        <input type="text" class="bg-light border-0 small" name="username-0" placeholder="닉네임"></p>
+                                            </div>
+                                            <div class="card shadow ">
+                                            <div class="survey card-header py-3 d-flex flex-row align-items-center justify-content-between" id='gen'>평가 기록
+                                                <div class="sidediv">
+                                                    <div class='btn btn-light row focus' onclick={toscorebtn(this)} id='toscorebtn'>
+                                                        <i class="fas fa-poll"></i>
+                                                        건강 지수</div>
+                                                    <div class='btn btn-light row' onclick={torawbtn(this)} id='torawbtn'>
+                                                        <i class="fas fa-poll-h"></i>
+                                                        Raw데이터</div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class='row log_result'>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        </form>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+        <!-- End of Page Wrapper -->
+           <!-- Footer -->
+    
+            <footer class="sticky-footer bg-white" include-html="/views/footer.html"></footer>
+            <!-- End of Footer -->
+        </div>
+ 
+    </div>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script type='text/javascript' src="js/animation.js"></script>
+    <script type='text/javascript' src="css/js/sb-admin-2.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="js/process.js"></script>
+    <script defer type='text/javascript' src="js/userlogscript.js"></script>
+    </body>
+
+</html>
+<script type='text/javascript' src="js/signin.js"></script>
+
+
+<!-- https://s3-us-west-2.amazonaws.com/s.cdpn.io/210284/check_radio_sheet.png -->

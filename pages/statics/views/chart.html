@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="CardioHeq Service">
+        <meta name="author" content="Turingbio">
+    
+        <title>CardioHeq-Report</title>
+        <link rel="icon" type="image/png" sizes="16x16" href="css/img/logo.png">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+        <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>   
+<!--    <script type="module">
+            import chartjsChartLinearGauge from 'https://cdn.skypack.dev/chartjs-chart-linear-gauge';
+        </script> -->
+        <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
+   
+        <script src="css/vendor/jquery/jquery.min.js"></script>
+        <script src="css/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="css/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="js/includeHTML.js"></script>
+        <script src="/js/includeRouter.js"></script>
+        <script src="/js/Chart.LinearGauge.umd.min.js"></script>
+        <script src="css/js/process.js"></script>
+        <link href="css/sb-admin-2.css" rel="stylesheet">
+        <script type='text/javascript' src="css/js/sb-admin-2.min.js"></script>
+        <link href="css/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+        <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&amp;subset=korean" 
+            rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+        
+        <!-- Custom styles for this template-->
+    	<script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+    
+            gtag('config', 'UA-119386393-1');
+        </script>
+    </head>
+    
+    <body id="page-top">
+    <!-- Loading -->    
+        <div class="pre-loader">
+            <div class="pre-loader-box">
+                <div class="loader-logo"><img src="css/vendor/fontawesome-free/svgs/regular/hourglass.svg" alt=""></div>
+                <div class='loader-progress' id="progress_div">
+                    <div class='bar' id='bar1'></div>
+                </div>
+                <div class='percent' id='percent1'>0%</div>
+                <div class="loading-text">
+                    Loading...
+                </div>
+            </div>
+        </div>
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <!-- <ul class="navbar-nav sidebar sidebar-dark accordion" 
+            id="accordionSidebar" include-html="views/sidebar.html"></ul> -->
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content ">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" 
+                id ="menu-section"
+                include-html="views/topbar.html"></nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+
+                <div class="container-fluid max-rem">
+                    <!-- Content Row -->
+                    <div class="smt">    
+                        <div class="card">                
+                            <div >
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"> 
+                                    <h3 class="m-0 font-weight-bold text-primary"> AI 분석 결과</h3> 
+                                    <div class="dropdown no-arrow">
+                                        <div class=> <!-- "card border-left-success shadow  py-2" -->
+                                            <div class="card-header">
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col mr-2">
+                                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" >
+                                                            사용자</div>
+                                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id='cont_data1'></div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <i class="fas fa-walking fa-2x text-gray-300"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body spe">
+                                    <div class ="d-flex m-0 col-xl-auto inner_card">      
+                                        <div class="col-1 col-md-6">
+                                            <div class="card border-left-success shadow  py-2 spe" id='result_section'>
+                                                <div class="card-body spe">
+                                                    <div class="d-flex no-gutters align-items-center ress">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1" id='result_text'> 
+                                                                AI 분석 결과</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id='cont_data'></div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                             <!-- Page Heading -->
+                                                             <i class="fas fa-2x text-gray-300" id='result_icon'></i>                             
+                                                        </div>
+                                                    </div>
+                                                    <canvas class="chart result" id="ResultChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                      
+                                   <!--         <a class="btn btn-success py-3" data-toggle="collapse" href="#collapseCatboost"
+                                            role="button" aria-expanded="true" aria-controls="collapseCatboost">
+                                            <i class="fas fa-2x fa-stroopwafel text-gray-300" id='result_icon'></i>   catboost                          
+                                            </a>  -->
+                                   
+                                        <div class="col-6 col-md-6 D-NONE">             
+                                            <div class="card border-left-success shadow  py-2 spe" id='result_section2' >
+                                                <div class="card-body spe"  id="collapseCatboost">
+                                                    <div class="d-flex no-gutters align-items-center ress">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1" id='result_text2'> 
+                                                                분석 결과2</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id='cont_data2'></div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-2x text-gray-300" id='result_icon2'></i>
+                                                        </div>
+                                                    </div>
+                                                    <canvas class="chart result" id="ResultChart2"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                             
+                                        <div class="card shadow mw-10 alt-col-md-6" ><!-- style="display:none;" > -->
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"> 
+                                                <h6 class="m-0 font-weight-bold text-primary">관심이 필요한 성분</h6> 
+                                                </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body inner_card_body">
+                                                <div id="coution">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                            <div class="d-flex m-0 col-xl-auto inner_card">                                                             
+                                <div class="card shadow mw-10 alt-col-md-6">
+                                            <!-- Card Header - Dropdown -->
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"> 
+                                        <h6 class="m-0 font-weight-bold text-primary">개선사항</h6> 
+                                            <!--
+                                                <div class="dropdown no-arrow">
+                                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                        aria-labelledby="dropdownMenuLink">
+                                                        <div class="dropdown-header">Dropdown Header:</div>
+                                                        <a class="dropdown-item" href="#">Action</a>
+                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="#">Something else here</a>
+                                                    </div>
+                                                </div> 
+                                            -->
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <div class = "" id="about_result"></div>                               
+                                                <ul class="userdata D-NONE">
+                                                    <li>개선해야하는 사항과 피해야하는 음식, 활동 등 다양한 건강 정보를 추가로 안내할 예정</li>
+                                                </ul>                                        
+                                            </div> <!-- Card end -->
+                                                <!-- 개선사항 밑에 입력 -->
+                                        </div> <!-- All chart End -->
+                                        
+                                        <div class="card shadow mb-4 mw-10 alt-col-md-6" ><!-- style="display:none;" > -->
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between ress"> 
+                                                <h6 class="m-0 font-weight-bold text-primary">성분별 위험도</h6> 
+                                                    <div >
+                                                        <select id="select_cont_value" onchange="onChange(this)"></select>
+                                                    </div> 
+                                                </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body cen">
+                                                <div class="chart-area">
+                                                    <canvas class="indiv" id="StandardizedIndexChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>        
+                                    </div> <!-- content end -->
+                                </div>
+                            </div>
+                        </div> <!-- Card end -->
+                    </div>
+
+                        <div class="card shadow">
+                            <a class="d-block card-header py-3" data-toggle="collapse" href="#collapseCardExample"
+                                role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                                <!-- Page Heading -->                               
+                                <h2 class="m-0 font-weight-bold text-primary">Result Charts</h2>
+                                <h3 class="h3 mb-2 text-gray-800">사용자와 비질환자 수치 비교</h3>
+                            </a>
+                            <div class="card-body collapse show" id="collapseCardExample">
+                            <!-- Content Row -->
+                                <div class="row">                        
+                                    <!-- Blood Chart -->
+                                    <div class="card  mb-4">
+                                        <!-- Card Header - Dropdown -->
+                                        <div class="card-header py-3 chart-header">
+                                            <h6 class="m-0 font-weight-bold text-dark">Blood Data Chart</h6>
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body">
+                                            <div class="chart-area">
+                                                <canvas class="chart-radar" id="bloodChart" ></canvas>
+                                            </div>
+                                        </div>
+                                    </div>       
+                                <!-- Nutrition Chart -->
+                                <div class="card  mb-4">
+                                    <!-- Card Header - Dropdown -->
+                                    <div class="card-header py-3 chart-header">
+                                        <h6 class="m-0 font-weight-bold text-dark">Nutirtion Data Chart</h6>
+                                    </div>
+                                    <!-- Card Body -->
+                                    <div class="card-body">
+                                        <div class="chart-area">
+                                            <canvas class="chart-radar" id="nutritionChart" ></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                </div> <!-- Row end -->
+        
+                                <div class="row">
+
+                                    <!-- Generarl Chart -->
+                                    <div class="card mb-4">
+                                        <!-- Card Header - Dropdown -->
+                                        <div class="card-header py-3 chart-header">
+                                            <h6 class="m-0 font-weight-bold text-dark">General Data Chart</h6>
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body">
+                                            <div class="chart-area">
+                                                <canvas class="chart-bar" id="generalChart" ></canvas>
+                                            </div>
+                                        </div>
+                                    </div>                                   
+
+
+                                    <!-- Pattern Chart -->
+                                        <div class="card mb-4">
+                                            <!-- Card Header - Dropdown -->
+                                            <div class="card-header py-3 chart-header">
+                                                <h6 class="m-0 font-weight-bold text-dark">Pattern Data Chart</h6>
+                                            </div>
+                                            <!-- Card Body -->
+                                            <div class="card-body">
+                                                <div class="chart-area">
+                                                    <canvas class="chart-bar" id="patternChart" ></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                
+                                </div> <!--Row end -->
+                            </div>
+                        </div> <!-- All chart End -->
+                    </div> <!-- Content Row end-->   
+                                    
+            </div>
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white" include-html="/views/footer.html"></footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    
+</html>
+
+
+    </body>
+</html>
+<script type='text/javascript' src="js/signin.js"></script>

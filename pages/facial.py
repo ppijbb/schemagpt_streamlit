@@ -36,10 +36,12 @@ if gpus:
   except RuntimeError as e:
     # 프로그램 시작시에 가상 장치가 설정되어야만 합니다
     print(e)
+
+dir_path = os.getcwd()
 # load model
-model = model_from_json(open(f"{os.getcwd()}/pages/caer_face.json", "r").read())
+model = model_from_json(open(f"{dir_path}/pages/rtc/caer_face.json", "r").read())
 # load weights
-model.load_weights(f"{os.getcwd()}/pages/caer_face.h5")
+model.load_weights(f"{dir_path}/pages/rtc/caer_face.h5")
 
 # mp_drawing = mp.solutions.drawing_utils
 # mp_drawing_styles = mp.solutions.drawing_styles
@@ -57,7 +59,7 @@ face_haar_cascade = cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalfa
 
 
 def process_face(image):
-    font_path = "font/jalnan/yg-jalnan.ttf"
+    font_path = f"{dir_path}/font/jalnan/yg-jalnan.ttf"
     font_regular = ImageFont.truetype(font=font_path, size=35)
     font_regular_small = ImageFont.truetype(font=font_path, size=18)
     font_small = ImageFont.truetype(font=font_path, size=16)
@@ -100,8 +102,7 @@ def process_face(image):
 
                 predicted_emotion = emotions[max_index]
                 result = {
-                    dt.now().strftime("%Y-%m-%dT%H:%M:%S"):
-                       {
+                    dt.now().strftime("%Y-%m-%dT%H:%M:%S"): {
                           "result": predicted_emotion,
                           "happy": predictions[0][0],
                           "sad": predictions[0][1],
@@ -198,40 +199,43 @@ def process_face(image):
 
 RTC_CONFIGURATION = RTCConfiguration(
     {
-        "iceServers": [{
-            "urls": public_stun_server_list
-        },
-        # {
-        #     "urls": "turn:openrelay.metered.ca:80",
-        #     "username": "openrelayproject",
-        #     "credential": "openrelayproject",
-        # },
-        # {
-        #     "urls": "turn:openrelay.metered.ca:443",
-        #     "username": "openrelayproject",
-        #     "credential": "openrelayproject",
-        # },
-        # {
-        #     "urls": "turn:openrelay.metered.ca:443?transport=tcp",
-        #     "username": "openrelayproject",
-        #     "credential": "openrelayproject",
-        # },
-        # {
-        #     "urls": "turn:numb.viagenie.ca",
-        #     "username": 'webrtc@live.com',
-        #     "credential": 'muazkh'
-        # },
-        # {
-        #     "urls": "turn:192.158.29.39:3478?transport=udp",
-        #     "username": '28224511:1379330808',
-        #     "credential": 'JZEOEt2V3Qb0y27GRntt2u2PAYA='
-        # },
-        # {
-        #     "urls": "turn:192.158.29.39:3478?transport=tcp",
-        #     "username": '28224511:1379330808',
-        #     "credential": 'JZEOEt2V3Qb0y27GRntt2u2PAYA='
-        # }
-    ]})
+        "iceServers": [
+            {
+                "urls": public_stun_server_list
+            },
+            # {
+            #     "urls": "turn:openrelay.metered.ca:80",
+            #     "username": "openrelayproject",
+            #     "credential": "openrelayproject",
+            # },
+            # {
+            #     "urls": "turn:openrelay.metered.ca:443",
+            #     "username": "openrelayproject",
+            #     "credential": "openrelayproject",
+            # },
+            # {
+            #     "urls": "turn:openrelay.metered.ca:443?transport=tcp",
+            #     "username": "openrelayproject",
+            #     "credential": "openrelayproject",
+            # },
+            # {
+            #     "urls": "turn:numb.viagenie.ca",
+            #     "username": 'webrtc@live.com',
+            #     "credential": 'muazkh'
+            # },
+            # {
+            #     "urls": "turn:192.158.29.39:3478?transport=udp",
+            #     "username": '28224511:1379330808',
+            #     "credential": 'JZEOEt2V3Qb0y27GRntt2u2PAYA='
+            # },
+            # {
+            #     "urls": "turn:192.158.29.39:3478?transport=tcp",
+            #     "username": '28224511:1379330808',
+            #     "credential": 'JZEOEt2V3Qb0y27GRntt2u2PAYA='
+            # }
+        ]
+    }
+)
 
 
 class VideoProcessor(VideoProcessorBase):
@@ -243,8 +247,8 @@ class VideoProcessor(VideoProcessorBase):
 
         img, _result = process_face(img)
         # img = process(img)
-        if _result:
-            self.result_dict.update(_result)
+        # if _result:
+        #     self.result_dict.update(_result)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
     async def recv_queued(self, frames: List[av.VideoFrame]) -> List[av.VideoFrame]:
@@ -256,13 +260,16 @@ class VideoProcessor(VideoProcessorBase):
         data = None
 
         if data:
-            requests.post(f"http://localhost:5000/caer/face?state=start&name={self.code}",
-                          headers={'Accept': 'application/json',
-                                   'Content-Type': 'application/json; charset=utf-8'},
-                          json=json.loads(data))
+            requests.post(
+                f"http://localhost:5000/caer/face?state=start&name={self.code}",
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                json=json.loads(data)
+            )
         else:
             print("error")
-
 
 # @st.cache(suppress_st_warning=True)
 def show():
@@ -274,23 +281,37 @@ def show():
         rtc_configuration=RTC_CONFIGURATION,
         media_stream_constraints={
             "video": {
-                "frameRate": {"max": 3, "ideal": 1},
-                "width": {"min": 640, "max": 1024},
-                "height": {"min": 480, "max": 768},
+                "frameRate": {
+                    "max": 3,
+                    "ideal": 1
+                },
+                "width": {
+                    "min": 640,
+                    "max": 1024
+                },
+                "height": {
+                    "min": 480,
+                    "max": 768
+                },
             },
-            "audio": False
+            "audio": True
         },
         video_processor_factory=VideoProcessor,
         async_processing=True,
-        desired_playing_state=False,
+        desired_playing_state=True,
         video_html_attrs={
-            "style": {"width": "100%", "max-width": "768px", "margin": "0 auto", "justify-content": "center"},
+            "style": {
+                "width": "100%",
+                "max-width": "768px",
+                "margin": "0 auto",
+                "justify-content": "center"
+            },
             "controls": True,
             "autoPlay": False
         },
     )
-    # if webrtc_ctx.state.signalling:
-    #     webrtc_ctx.video_processor.code = code
+    if webrtc_ctx.state.signalling:
+        webrtc_ctx.video_processor.code = None
 
 
 if __name__ == "__main__":
@@ -304,14 +325,14 @@ if __name__ == "__main__":
         st.page_link("pages/cardio.py",)
         st.page_link("pages/dep_peptide.py",)
         st.page_link("pages/facial.py",)
-    hide_menu_style = """
-            <style>
-            .css-1avcm0n {visibility: hidden;}
-            .css-18ni7ap {visibility: hidden;}
-            .block-container {padding: 0rem 1rem 10rem;}
-            .block-container div {justify-content: center;gap: 0rem;}
-            video {} 
-            </style>
-            """
-    st.markdown(hide_menu_style, unsafe_allow_html=True)
+    # hide_menu_style = """
+    #         <style>
+    #         .css-1avcm0n {visibility: hidden;}
+    #         .css-18ni7ap {visibility: hidden;}
+    #         .block-container {padding: 0rem 1rem 10rem;}
+    #         .block-container div {justify-content: center;gap: 0rem;}
+    #         video {}
+    #         </style>
+    #         """
+    # st.markdown(hide_menu_style, unsafe_allow_html=True)
     show()

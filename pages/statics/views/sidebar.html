@@ -1,0 +1,176 @@
+<div class='sidebar-inner bg-gradient-primary'>
+<!-- Sidebar - Brand -->
+    <div>
+        <div class="sidebar-brand-icon "> <!-- rotate-n-15 -->    
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+
+         <embed class="shadow sidebar-card-illustration mb-2 logo" src="/css/img/CardioHeq_Model.svg" alt="...">
+    <!--    <i class="fas fa-hand-holding-medical"></i>   -->
+         </a>   </div>
+<!--        <div class="sidebar-brand-text mx-3">CardioHeq</div>    <sup></sup>-->
+
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link tocen" href="/">
+            <span>
+			<i class="fas fa-hand-holding-medical"></i>
+			<!--    <i class="fas fa-fw fa-th"></i> -->
+            CardioHeq
+			<sup><i>beta</i></sup>
+			</span>
+            
+            <p class="subtitle">Cardiovascular Health Equalizer</p></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading information-->
+    <div class="sidebar-heading">
+        <i class="fas fa-fw fa-info-circle"></i>
+        심혈관 건강 기본 평가
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed D-NONE" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            aria-expanded="true" aria-controls="collapseTwo">
+            <span></span>
+        </a>
+        <!--
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Components:</h6>
+                <a class="collapse-item" href="/">Turingbio</a>
+                <a class="collapse-item" href="/">Turingbio</a>
+            </div>
+        </div> -->
+        <div class='sidebar-card d-lg-flex d-none bginvin py-2 collapse-inner rounded' onclick={to16Page(this)}>
+                CardioHeq는 심혈관질환자와 정상인 사이의 혈액, 영양 및 생활 패턴 빅데이터를 이용하여 질환 및 질환
+                수준을 예측하고 사용자의 건강 상태를 조정 및 개선 방안을 제공하는 서비스입니다.<br /> <br />
+            
+                심장질환에는 허혈성 심장질환(심근경색, 협심증 등)과 
+                심부전증 등이 있고, 뇌혈관질환으로는 뇌졸중(허혈성, 출혈성 등)이 
+                있으며 고혈압, 당뇨병, 고지혈증, 동맥경화증 등의 
+                선행질환을 총칭합니다.<br /><br />
+                
+                기본 평가는 심혈관 건강 지수를 측정하기 위한 
+                식생활 패턴에 대한 질문입니다. 로그인 없이 간편하게 건강지수 측정이 가능합니다.<br /><br />
+
+                세부 평가는 세부적인 일반 정보, 혈액 정보, 영양 정보, 생활 정보 항목 33개를 이용하여
+                계산하는 평가방법입니다. 사용자의 지속적인 관리 및 건강상태 모니터링을 위해 로그인이 필요한 서비스입니다.
+        </div>
+        <div class="sidediv" hidden id='sideNav'>
+            <div class='btn btn-light row' 
+              id='16BTN'
+              onclick={to16Page(this)}>
+                <i class="fas fa-tasks"></i>
+                기본평가</div>
+            <div class='btn btn-light row' 
+              id="33BTN"
+              onclick={to33Page(this)}>
+                <i class="fas fa-sliders-h"></i>
+                세부평가</div>
+            <div class='btn btn-light row' 
+                id="Userlog"
+                onclick={usertoPage(this)}>
+                  <i class="fas fa-sliders-h"></i>
+                  검사이력</div>              
+        </div>
+    </li>
+
+    <!-- Nav Item - Utilities Collapse Menu -->
+    <!--
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Turingbio</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+            data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Utilities:</h6>
+                <a class="collapse-item" href="utilities-color.html">Colors</a>
+                <a class="collapse-item" href="utilities-border.html">Borders</a>
+                <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                <a class="collapse-item" href="utilities-other.html">Other</a>
+            </div>
+        </div>
+    </li>
+-->
+    
+    <!-- Divider  -->
+    <!--
+    <hr class="sidebar-divider">
+    -->
+    <!-- Heading -->
+    <!--
+    <div class="sidebar-heading">
+        Other Products
+    </div>
+    -->
+    <!-- Nav Item - Pages Collapse Menu -->
+    <!--
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+            aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>ProTuner</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Login Screens:</h6>
+                <a class="collapse-item" href="/">Login</a>
+                <a class="collapse-item" href="/">Register</a>
+                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">Other Pages:</h6>
+                <a class="collapse-item" href="404.html">404 Page</a>
+                <a class="collapse-item" href="/">Blank Page</a>
+            </div>
+        </div>
+    </li>
+    -->
+
+    <!-- Nav Item - Charts -->
+    <!--
+    <li class="nav-item">
+        <a class="nav-link" href="/">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>NeuroDoc</span></a>
+    </li>
+    -->
+    <!-- Nav Item - Tables -->
+    <!--
+    <li class="nav-item">
+        <a class="nav-link" href="/">
+            <i class="fas fa-fw fa-table"></i>
+            <span>MediBlock</span></a>
+    </li>
+    -->
+    <!-- Divider -->
+
+<!--    <hr class="sidebar-divider d-none d-md-block"> -->
+</div>
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div style="text-align: center !important; margin-top: auto;">
+    <div class="text-center d-none d-md-inline D-NONE">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+    <!-- Sidebar Message -->
+    <div class="sidebar-card d-none d-lg-flex">
+        <a class="btn btn-logo btn-sm" href="https://www.eulji.ac.kr/index.html#">
+            <img class="sidebar-card-illustration elji" src="/css/img/elji-logo-small-white.svg" alt="...">
+        </a>
+        <a class="btn btn-logo btn-sm" href="http://www.turingbio.com/">
+            <img class="sidebar-card-illustration  tbw" src="/css/img/TB-white.png" alt="...">
+        </a>
+    </div>
+    </div>
+</div>

@@ -1,0 +1,796 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="CardioHeq Service">
+    <meta name="author" content="Turingbio">
+
+    <title>CardioHeq</title>
+    <link rel="shortcut icon" href="#" /> 
+    <!-- Custom fonts for this template-->
+    <link href="css/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&amp;subset=korean" 
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<!-- <script src="css/vendor/jquery/jquery.min.js"></script> -->
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <script src="css/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+<!-- <script src="css/vendor/jquery-easing/jquery.easing.min.js"></script> -->
+    <!-- Custom scripts for all pages-->
+    <script type='text/javascript' src="js/includeHTML.js"></script>
+    <script type='text/javascript' src="js/includeRouter.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="css/img/logo.png">
+   
+</head>
+
+<div class="pre-loader D-NONE">
+    <div class="pre-loader-box">
+        <div class="loader-logo"><img src="css/vendor/fontawesome-free/svgs/regular/hourglass.svg" alt=""></div>
+        <div class='loader-progress' id="progress_div">
+            <div class='bar' id='bar1'></div>
+        </div>
+        <div class='percent' id='percent1'>0%</div>
+        <div class="loading-text">
+            Loading...
+        </div>
+    </div>
+</div>
+<body id="page-top" class='sidebar-toggled'>
+
+    <div class='sideBanner shadow D-NONE' id='nav-33'>
+        <p class="card-header">빠른 이동</p>
+        <hr class="sidebar-divider">
+        <a class="dropdown-item "  id='nav1'><i class="fas fa-angle-left"></i>일반</a>
+        <hr class="sidebar-divider">
+        <a class="dropdown-item "  id='nav2'><i class="fas fa-angle-left"></i>혈액</a>
+        <hr class="sidebar-divider">
+        <a class="dropdown-item "  id='nav3'><i class="fas fa-angle-left"></i>영양</a>
+        <hr class="sidebar-divider">
+        <a class="dropdown-item "  id='nav4'><i class="fas fa-angle-left"></i>패턴</a>
+    </div>
+
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <!-- <ul class="navbar-nav sidebar sidebar-dark accordion" 
+            id="accordionSidebar" include-html="views/sidebar.html"></ul> -->
+        
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column ">
+            <div class="pre-loader D-NONE">
+                <div class="pre-loader-box">
+                    <div class="loader-logo"><img src="css/img/com_logo.png" alt=""></div>
+                    <div class='loader-progress' id="progress_div">
+                        <div class='bar' id='bar1'></div>
+                    </div>
+                    <div class='percent' id='percent1'>0%</div>
+                    <div class="loading-text">
+                        설명
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" 
+                id ="menu-section"
+                include-html= "views/topbar.html"></nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+            <!-- Content Row -->
+                <div class="container-fluid animated--fade-in">
+                    <div class="cardio-wrapper">
+                        <div class='D-NONE' id="onlyforuser"></div>
+                        <div class='d-flex' id="main-section">
+                            <div id='page-16' class='' >
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h3 class="m-0 font-weight-bold text-primary">기본 평가 질문</h3>  
+                                    
+                                    <div class="sidediv">
+                                        <!-- <div class='btn btn-light row' onclick={to16Page(this)}>
+                                            <i class="fas fa-tasks"></i>
+                                            기본평가로 전환</div> -->
+                                        <div class='btn btn-light row' onclick={to33Page(this)}>
+                                            <i class="fas fa-sliders-h"></i>
+                                            세부평가로 전환</div>
+                                    </div>
+
+                                    <select class='D-NONE' name="username-0" onchange={onSelect(this)}>
+                                        <option value=0>테스트 데이터1</option>
+                                        <option value=1>테스트 데이터2</option>
+                                        <option value=2>테스트 데이터3</option>
+                                        <option value=3>테스트 데이터4</option>
+                                    <!--<option value=4>테스트 데이터5</option>-->
+                                    </select>
+                                </div>
+
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    
+                                        <form class="self-form" name="16Form" action="/sendargs" method="post"> 
+                                            <div class="card shadow  justify-content-between">
+                                                <p class="name">사용자 닉네임  
+                                                    <input type="text" class="bg-light border-0 small" name="username-0" placeholder="닉네임" ></p>
+                                            </div>
+                                        
+                                            <div class="card shadow">
+                                                <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                                id='gen'>기본 평가 문항 </p>
+                                                <div class="card-body">
+                                                <table class='survey'>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">자신의 건강은 어떻다고 생각하십니까?
+                                                            <input type="text" name="general_number-6" placeholder="1~5" style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='gn3' type='radio' disabled value=0> 
+                                                                    <label for="r1"><span></span>아주 건강하다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='gn3' type='radio' disabled value=1>
+                                                                    <label for="r1"><span></span>건강한 편이다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='gn3' type='radio' disabled value=2>
+                                                                    <label for="r1"><span></span>조금 나쁜 편이다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='gn3' type='radio' disabled value=3>
+                                                                    <label for="r1"><span></span>무척 나쁘다</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">최근 1개월 동안, 아침까지 피로가 남고, 일에 기력이 솟지 않으셨습니까?
+                                                            <input type="text" name="pattern_number-7" placeholder="0~3"style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn4' type='radio' disabled value=0>
+                                                                    <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn4' type='radio' disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn4' type='radio'  disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn4' type='radio'  disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div>  
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">최근 1개월 동안, 무기력감(모든 일이 귀찮고 하기 싫음)을 느끼셨습니까?
+                                                            <input type="text" name="pattern_number-3" placeholder="0~3" style='display: none;'> </div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn1' type='radio' disabled value=0>
+                                                                <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn1' type='radio' disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn1' type='radio' disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn1' type='radio' disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div> 
+                                                            </div></td> 
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">평소에 술을 얼마나 자주 마십니까? 
+                                                            <input type="text" name="pattern_number-8" placeholder="1~5"  style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn5' type='radio'  disabled value=0> 
+                                                                    <label for="r1"><span></span>전혀 마시지 않음</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn5' type='radio'  disabled value=1> 
+                                                                    <label for="r1"><span></span>한 달에 1~4번</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn5' type='radio'  disabled value=2> 
+                                                                    <label for="r1"><span></span>일주일에 2~3번</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn5' type='radio'  disabled value=3> 
+                                                                    <label for="r1"><span></span>일주일에 4번 이상</label></div>  
+                                                            </div></td> 
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">한 번에 술을 얼마나 마십니까?
+                                                            <input type="text" name="pattern_number-81" placeholder="1~5"  style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn5-1' type='radio'  disabled value=0> 
+                                                                    <label for="r1"><span></span>0~2잔</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn5-1' type='radio'  disabled value=1> 
+                                                                    <label for="r1"><span></span>3~6잔</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn5-1' type='radio'  disabled value=2> 
+                                                                    <label for="r1"><span></span>7~9잔</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn5-1' type='radio'  disabled value=3> 
+                                                                    <label for="r1"><span></span>10잔이상</label></div>  
+                                                            </div></td> 
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">최근 1개월 동안, 사소한 일에 매우 신경질적이었습니까?
+                                                            <input type="text" name="pattern_number-4" placeholder="0~3"  style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn2' type='radio' disabled value=0>
+                                                                    <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn2' type='radio' disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn2' type='radio' disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn2' type='radio' disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div>  
+                                                            </div></td>
+                                                    </tr>                                                
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">지난 1주일~1개월 동안 최소 10분 이상 계속 숨이 차거나 심장이
+                                                            <input type="text" name="pattern_number-5" placeholder="1/2" style='display: none;'>
+                                                            <br> 약간 빠르게 뛰는 중간 정도의 강도의 스포츠, 운동, 여가 활동을 하셨습니까?
+                                                            </div>
+                                                            <p class="descrip">예) 빠르게 걷기, 조깅, 골프, 필라테스, 등산-낮은 산, 자전거 타기 등</p>
+                                                        </td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn3' type='radio' disabled value=0> 
+                                                                    <label for="r1"><span></span>충분히 하고 있다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn3' type='radio' disabled value=1> 
+                                                                    <label for="r1"><span></span>어느 정도 하고 있다</label></div>  
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn3' type='radio' disabled value=2> 
+                                                                    <label for="r1"><span></span>가끔 한다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn3' type='radio' disabled value=3> 
+                                                                    <label for="r1"><span></span>전혀 하지 않는다</label></div>                                                                  
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td> <div class="btnSection">최근 1개월 동안, 매우 긴장하거나 불안한 상태셨습니까?
+                                                            <input type="text" name="pattern_number-9" placeholder="0~3"  style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn6' type='radio'  disabled value=0>
+                                                                    <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn6' type='radio'  disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn6' type='radio'  disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn6' type='radio'  disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div>   
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td> <div class="btnSection">최근 1개월 동안, 남의 시선을 똑바로 볼수 없으셨습니까?
+                                                            <input type="text" name="pattern_number-10" placeholder="0~3" style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn7' type='radio'  disabled value=0>
+                                                                    <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn7' type='radio'  disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn7' type='radio'  disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn7' type='radio'  disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div> 
+                                                            </div></td> 
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td> <div class="btnSection">매일 규칙적으로 운동을 하십니까?
+                                                            <input type="text" name="general_number-1" placeholder="1/2" style="display:none;"></div></td>
+                                                        <td> <div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='gn1' type='radio' disabled value=0>
+                                                                <label for="r1"><span></span>충분히 하고 있다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='gn1' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>어느정도 하고 있다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='gn1' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>가끔 한다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='gn1' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>전혀 하지 않는다</label></div> 
+                                                            </div>
+                                                            </td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><div class="btnSection">매일 보조제를 복용하십니까?
+                                                            <input type="text" name="general_number-2" placeholder="1/2" style='display: none;'></div> </td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='gn2' type='radio' disabled value=0>
+                                                                <label for="r1"><span></span>먹지 않는다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='gn2' type='radio'disabled value=1>
+                                                                <label for="r1"><span></span>가끔 먹는다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='gn2' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>규칙적이지 않지만 자주 먹는다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='gn2' type='radio'disabled value=3>
+                                                                <label for="r1"><span></span>매일 먹는다</label></div> 
+                                                            </div></td>
+                                                    </tr> 
+                                                <tr class='q16'>
+                                                        <td>  <div class="btnSection">최근 1개월 동안, 남 앞에 얼굴을 내미는 것이 두려우셨습니까?
+                                                            <input type="text" name="pattern_number-11" placeholder="0~3" style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn8' type='radio'  disabled value=0>
+                                                                    <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn8' type='radio'  disabled value=1>
+                                                                    <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn8' type='radio'  disabled value=2>
+                                                                    <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn8' type='radio'  disabled value=3>
+                                                                    <label for="r1"><span></span>항상 느꼈다</label></div> </td> 
+                                                            
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><p> 견과류는 얼마나 자주 드십니까? 
+                                                            <input type="text" name="nutrition_number-15"  style='display: none;'></p>
+                                                            <p class="descrip">예)호두 1.5개, 땅콩 8개, 아몬드 7개 등</p>
+                                                            <p class="descrip">Vit E(mg) : 13.531(mg) < 정상  (추정)</p></td>
+                                                        <td class="input_section D-NONE">
+                                                            <div class='range'><input type="range" min="0" max="40" onChange={ValueChange(this)} value=24.76 step=0.0000001>
+                                                                <p><span>0</span> <span>40</span> </p> </div>
+                                                            <p class='gocen'>mg</p></td> 
+                                                        
+                                                        <td><div class='row'>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='nn1' type='radio' disabled value=0> 
+                                                                <label for="r1"><span></span>하루 5회 이상</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='nn1' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>하루 3~4회 </label></div>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='nn1' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>하루 1~2회</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='nn1' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>일주일 3회 이하</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><p> 과일은 얼마나 자주 드십니까? 
+                                                            <input type="text" name="nutrition_number-22"  style='display: none;'></p>
+                                                            <p class="descrip">예)사과 1/3개, 귤 1개, 바나나 1/2개, 딸기 7개 등</p>
+                                                            <p class="descrip">VitB2(mg) : 1.293(mg) < 정상  (추정)</p></td>
+                                                        <td class="input_section D-NONE">
+                                                            <div class='range'><input type="range" min="0" max="40" onChange={ValueChange(this)} value=20.854 step=0.0000001> 
+                                                                <p><span>0</span> <span>40</span> </p> </div>
+                                                            <p class='gocen'>mg</p></td> 
+                                                            
+                                                        <td><div class='row'>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='nn3' type='radio' disabled value=0> 
+                                                                <label for="r1"><span></span>하루 2회 보다 많이</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='nn3' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>하루 1~2회</label></div>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='nn3' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>일주일에 4~6회</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='nn3' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>일주일에 3회 이하</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><p> 우유 및 유제품은 얼마나 자주 드십니까? 
+                                                            <input type="text" name="nutrition_number-29"  style='display: none;'></p>
+                                                            <p class="descrip">예) 우유, 두유 1컵(200mL), 슬라이스 치즈 1.5장 등</p>
+                                                            <p class="descrip">동물성 단백질(g) :24.602(g) < 정상  (추정)</p></td>
+                                                        <td class="input_section D-NONE">
+                                                            <div class='range'><input type="range" min="0" max="110" onChange={ValueChange(this)} value=17.13 step=0.0000001>
+                                                                <p><span>0</span> <span>110</span> </p> </div>
+                                                            <p class='gocen'>g</p></td> 
+
+                                                        <td><div class='row'>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='nn6' type='radio' disabled value=0> 
+                                                                <label for="r1"><span></span>하루 2회보다 많이</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='nn6' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>하루 1~2회</label></div>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='nn6' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>일주일에 4~6회</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='nn6' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>일주일에 3회 이하</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr class='q16'>
+                                                        <td><p> 육류나 생선류는 일주일에 어느 정도 드십니까? 
+                                                            <input type="text" name="nutrition_number-32" style='display: none;'></p>
+                                                            <p class="descrip">예) 소, 돼지 ,닭고기 등 순살코기 40g(탁구공 크기), 등푸른 생선(소) 1토막 등</p>
+                                                            <p class="descrip">Protein(g) : 67.220(g) < 정상  (추정)</p></td>
+                                                        <td class="input_section D-NONE">
+                                                            <div class='range'><input type="range" min="0" max="150" onChange={ValueChange(this)} value=87.0575 step=0.0000001> 
+                                                                <p><span>0</span> <span>150</span> </p> </div>
+                                                            <p class='gocen'>g</p></td> 
+
+                                                        <td><div class='row'>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='nn9' type='radio' disabled value=0> 
+                                                                <label for="r1"><span></span>7회 이상</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='nn9' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>4~6회</label></div>
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='nn9' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>2~3회</label></div> 
+                                                            <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='nn9' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>1회 이하</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    </table></div>
+                                                </div>
+                                            <p class="submit_btn"> <input class="btn-sm shadow botc" type="button" value="결과 확인" id='end1'  onClick={CheckValue(this)}></p>
+                                        </form>
+                                </div>
+                            </div>
+                            
+                            <div class='D-NONE' id='page-33'>
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h3 class="m-0 font-weight-bold text-primary">세부 평가 질문</h3>
+                                    <select name="username-0" onchange={onSelect(this)}>
+                                        <option value=0>테스트 데이터1</option>
+                                        <option value=1>테스트 데이터2</option>
+                                        <option value=2>테스트 데이터3</option>
+                                        <option value=3>테스트 데이터4</option>
+                                    <!--<option value=4>테스트 데이터5</option>-->
+                                    </select>
+                                    <div class="sidediv">
+                                        <div class='btn btn-light row' onclick={to16Page(this)}>
+                                            <i class="fas fa-tasks"></i>
+                                            기본 평가로 전환</div>
+                                        <!-- <div class='btn btn-light row' onclick={to33Page(this)}>
+                                            <i class="fas fa-sliders-h"></i>
+                                            세부 평가로 전환</div> -->
+                                    </div>
+                                </div>
+
+                                <div class="card-body" >
+                                    <form class="self-form" name="33Form" action="/sendargs" method="post"> 
+                                        <div class="card shadow justify-content-between">
+                                                    <p class="name">사용자 닉네임 
+                                                        <input type="text" class="bg-light border-0 small" name="username-0" placeholder="닉네임">
+                                                    </p>
+                                        </div>
+
+                                        <div class="card shadow ">
+                                            <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                            id='gen'>General</p>
+                                            <div class="card-body">
+                                                <table class='survey'>
+                                                    <tr>
+                                                        <td> <div class="btnSection">★ 규칙적 운동 여부  <input type="text" name="general_number-1" placeholder="1/2" style="display:none;"></div></td>
+                                                        <td> <div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='gn1' type='radio' disabled value=0>
+                                                                <label for="r1"><span></span>충분히 하고 있다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1><input name='gn1' type='radio' disabled value=1>
+                                                                <label for="r1"><span></span>어느정도 하고 있다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2><input name='gn1' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>가끔 한다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3><input name='gn1' type='radio' disabled value=3>
+                                                                <label for="r1"><span></span>전혀하지다</label></div> 
+                                                            </div>
+                                                            </td>
+                                                        </tr>
+                                                    <tr>
+                                                        <td><div class="btnSection">★ 보조제 복용 유무 <input type="text" name="general_number-2" placeholder="1/2"  style='display: none;'></div> </td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0><input name='gn2' type='radio' disabled value=0>
+                                                                <label for="r1"><span></span>먹지 않는다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1><input name='gn2' type='radio'disabled value=1>
+                                                                <label for="r1"><span></span>가끔 먹는다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2><input name='gn2' type='radio' disabled value=2>
+                                                                <label for="r1"><span></span>규칙적이지 않지만 자주 먹는다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3><input name='gn2' type='radio'disabled value=3>
+                                                                <label for="r1"><span></span>매일 먹는다</label></div> 
+                                                            </div></td>
+                                                    </tr> 
+                                                    <tr>
+                                                        <td><div class="btnSection">★ 자신의 건강 <input type="text" name="general_number-6" placeholder="1~5"  style='display: none;'></div></td>
+                                                        <td><div class='row'>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='gn3' type='radio' disabled value=1> 
+                                                                <label for="r1"><span></span>무척 나쁘다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2><input name='gn3' type='radio' disabled value=2>
+                                                                    <label for="r1"><span></span>조금 나쁜 편이다</label></div>
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='gn3' type='radio' disabled value=3>
+                                                                    <label for="r1"><span></span>건강한 편이다</label></div> 
+                                                                <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=4><input name='gn3' type='radio' disabled value=4>
+                                                                    <label for="r1"><span></span>매우 건강하다</label></div> 
+                                                            </div></td>
+                                                    </tr>
+                                                    <tr >
+                                                        <td><p>SBP 2차  </p><p class="descrip">수축기 120, 140이하 고혈압 전단계</p></td>
+                                                        <td class="input_section">
+                                                            <div class='range'> <input type="range" min="70" max="190" onChange={ValueChange(this)} > <p><span>70</span> <span>190</span> </p> </div>
+                                                            <p class='gocen'><input type="text" name="general_number-12" onChange={ValueChange(this)}>mmHg</p> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><p>DBP 1차 </p><p class="descrip">이완기 80, 90이하 고혈압 전단계</p> </td>
+                                                        <td class="input_section">
+                                                            <div class='range'><input type="range" min="20" max="110" onChange={ValueChange(this)} ><p><span>20</span> <span>110</span> </p> </div>
+                                                            <p class='gocen'> <input type="text" name="general_number-13" onChange={ValueChange(this)} >mmHg </p></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><p>SBP 1차 </p><p class="descrip">수축기 120, 140이하 고혈압 전단계</p></td>
+                                                        <td class="input_section">
+                                                            <div class='range'><input type="range" min="70" max="190" onChange={ValueChange(this)}><p><span>70</span> <span>190</span> </p> </div>
+                                                            <p class='gocen'> <input type="text" name="general_number-14" onChange={ValueChange(this)} >mmHg</p></td> 
+                                                    </tr>
+                                                    <tr>
+                                                        <td><p>비만진단-복부지방률  </p><p class="descrip">표준범위 남자/여자: 0.75~0.85/0.7~0.8, 비만 0.9/0.85 이상</p></td>
+                                                        <td class="input_section">
+                                                            <div class='range'><input type="range" min="0.2" max="1" onChange={ValueChange(this)}  step=0.001><p><span>0.2</span> <span>1</span> </p> </div>
+                                                            <p class='gocen'><input type="text" name="general_number-24" onChange={ValueChange(this)}  >%</p></td> 
+                                                    </tr>
+                                                </table >
+                                            </div>
+                                        </div>
+
+                                        <div class="card shadow ">
+                                            <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                                id='blo'>Blood</p>
+                                            <div class="card-body">
+                                                <table class='survey'>
+                                                        <tr>
+                                                            <td><p>HDL</p><p class="descrip"> HDL 콜레스테롤 참고치 -정상 : >40 mg/dL</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="20" max="120" onChange={ValueChange(this)}  step=0.01> <p><span>20</span> <span>120</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-16" onChange={ValueChange(this)}  >mg/dL</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>LDL  </p><p class="descrip"> LDL 콜레스테롤 참고치  -정상 : < 130 mg/dL</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="20" max="250" onChange={ValueChange(this)}  step=0.01> <p><span>20</span> <span>250</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-17" onChange={ValueChange(this)} >mg/dL</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>LDL-c  </p><p class="descrip"> LDL 콜레스테롤 참고치  -정상 : < 130 mg/dL</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="20" max="250" onChange={ValueChange(this)}  step=0.01> <p><span>20</span> <span>250</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-18" onChange={ValueChange(this)}  >mg/dL</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>HCT  </p><p class="descrip"> 적혈구용적치(Hct) 참고치  -정상(남자) : 39-50 %    -정상(여자) : 36-47 %</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="20" max="70" onChange={ValueChange(this)}  step=0.01> <p><span>20</span> <span>70</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-19" onChange={ValueChange(this)} >%</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>CHOL </p><p class="descrip"> Cholesterol 참고치  -정상 : 200 mg/dL 미만</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="60" max="400" onChange={ValueChange(this)}  step=0.01> <p><span>60</span> <span>400</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-20" onChange={ValueChange(this)} >mg/dL</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>HGB  </p><p class="descrip">  헤모글로빈(HGB) 참고치   -정상(남자) : 13.0-17.1 g/dL   -정상(여자) : 11.2-15.0 g/dL</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="5" max="25" onChange={ValueChange(this)}  step=0.01> <p><span>5</span> <span>25</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-23" onChange={ValueChange(this)} >g/dL</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>RBC </p><p class="descrip">   적혈구수(RBC)   -정상(남자) : 440-560 만개/mm3   -정상(여자) : 400-520 만개/mm3</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="2" max="7" onChange={ValueChange(this)}  step=0.01>  <p><span>2</span> <span>7</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-26" onChange={ValueChange(this)}  >mm³</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>MONO </p><p class="descrip">   단핵구(MONO) 참고치  -정상 : 0-9 %</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0.2" max="12" onChange={ValueChange(this)}  step=0.01> <p><span>0.2</span> <span>12</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-27" onChange={ValueChange(this)} >%</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>WBC  </p><p class="descrip">   백혈구수(WBC) 참고치  -정상 : 4.5-9.1 천개/mm3</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="12" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>12</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="blood_number-33" onChange={ValueChange(this)}  >mm³</p></td> 
+                                                        </tr>
+                        
+                                                </table>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card shadow " >                                                 
+                                            <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                                id="nut">Nutrition</p>
+                                            <div class="card-body">
+                                                <table class='survey'>
+                                                        <tr>
+                                                            <td><p>★ Vit E(mg) </p><p class="descrip">13.531(mg) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="40" onChange={ValueChange(this)}  step=0.01> <p><span>0</span> <span>40</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-15" onChange={ValueChange(this)} >mg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>회분(g) </p><p class="descrip">17.334(g) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="40" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>40</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-21" onChange={ValueChange(this)} >g</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>식물성 Fe(mg)  </p><p class="descrip">14.310(mg) > 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="40" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>40</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-22" onChange={ValueChange(this)} >mg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>Mo(ug) </p><p class="descrip">2.572(ug) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="13" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>13</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-25" onChange={ValueChange(this)} >µg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>★ VitB2(mg) </p><p class="descrip">1.293(mg) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="5" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>5</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-28" onChange={ValueChange(this)} >mg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>★ 동물성 단백질(g) </p><p class="descrip">24.602(g) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="110" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>110</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-29" onChange={ValueChange(this)} >g</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>Cu(ug)  </p><p class="descrip"> 688.324(ug) > 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="50" max="2000" onChange={ValueChange(this)} step=0.01> <p><span>50</span> <span>2000</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-30" onChange={ValueChange(this)} >µg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>Vit C(mg)  </p><p class="descrip"> 74.102(mg) > 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="330" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>330</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-31" onChange={ValueChange(this)} >mg</p></td> 
+                                                        </tr>
+                                                        <tr>
+                                                            <td><p>★ Protein(g)  </p><p class="descrip"> 5.332(g) < 정상  (추정)</p></td>
+                                                            <td class="input_section">
+                                                                <div class='range'><input type="range" min="0" max="150" onChange={ValueChange(this)} step=0.01> <p><span>0</span> <span>150</span> </p> </div>
+                                                                <p class='gocen'><input type="text" name="nutrition_number-32" onChange={ValueChange(this)} >g</p></td> 
+                                                        </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="card shadow ">
+                                            <p class="survey card-header py-3 d-flex flex-row align-items-center " 
+                                                id="pat">Life Pattern</p>
+                                            <div class='card-body'>
+                                                <table class='survey'>
+                                                            <tr >
+                                                                <td><div class="btnSection">★ 스트레스 무기력감 
+                                                                    <input type="text" name="pattern_number-3" placeholder="0~3" style='display: none;'> </div>    </td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn1' type='radio' disabled value=0>
+                                                                        <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn1' type='radio' disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn1' type='radio' disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn1' type='radio' disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div> 
+                                                                    </div></td> 
+                                                            </tr>
+                                                            <tr >
+                                                                <td><div class="btnSection">★ 스트레스 신경질 
+                                                                    <input type="text" name="pattern_number-4" placeholder="0~3" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn2' type='radio' disabled value=0>
+                                                                            <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn2' type='radio' disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn2' type='radio' disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn2' type='radio' disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div> 
+                                                                    </div> </td>
+                                                            </tr>
+                                                            <tr >
+                                                                <td><div class="btnSection">★ 여가_중강도 신체활동 여부 
+                                                                    <input type="text" name="pattern_number-5" placeholder="1/2" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn3' type='radio' disabled value=1> 
+                                                                            <label for="r1"><span></span>한다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2><input name='pn3' type='radio' disabled value=2> 
+                                                                            <label for="r1"><span></span>안한다</label></div> 
+                                                                    </div> </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="btnSection">★ 스트레스 피로
+                                                                    <input type="text" name="pattern_number-7" placeholder="0~3" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn4' type='radio' disabled value=0>
+                                                                            <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn4' type='radio' disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn4' type='radio'  disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn4' type='radio'  disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div>  
+                                                                    </div></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><div class="btnSection">★ 음주 여부 및 음주량  
+                                                                    <input type="text" name="pattern_number-8" placeholder="1~5" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn5' type='radio'  disabled value=1> 
+                                                                            <label for="r1"><span></span>전혀 없음</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2><input name='pn5' type='radio'  disabled value=2> 
+                                                                            <label for="r1"><span></span>한 달 1번</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn5' type='radio'  disabled value=3> 
+                                                                            <label for="r1"><span></span>한 달 2~4번</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=4><input name='pn5' type='radio'  disabled value=4> 
+                                                                            <label for="r1"><span></span>일주일 2~3번</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=5><input name='pn5' type='radio'  disabled value=5> 
+                                                                            <label for="r1"><span></span>일주일 4번이상</label></div>
+                                                                    </div> </td> 
+                                                            </tr>
+                                                            <tr>
+                                                                <td> <div class="btnSection">★ 스트레스 긴장,불안
+                                                                    <input type="text" name="pattern_number-9" placeholder="0~3" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn6' type='radio'  disabled value=0>
+                                                                            <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn6' type='radio'  disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn6' type='radio'  disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn6' type='radio'  disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div>  
+                                                                    </div> </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> <div class="btnSection">★ 스트레스 대면어려움 
+                                                                    <input type="text" name="pattern_number-10" placeholder="0~3" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn7' type='radio'  disabled value=0>
+                                                                            <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn7' type='radio'  disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn7' type='radio'  disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn7' type='radio'  disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div> 
+                                                                    </div></td> 
+                                                            </tr>
+                                                            <tr>
+                                                                <td>  <div class="btnSection">★ 스트레스_시선어려움
+                                                                    <input type="text" name="pattern_number-11" placeholder="0~3" style='display: none;'></div></td>
+                                                                <td><div class='row'>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=0 ><input name='pn8' type='radio'  disabled value=0>
+                                                                            <label for="r1"><span></span>전혀 없었다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=1 ><input name='pn8' type='radio'  disabled value=1>
+                                                                            <label for="r1"><span></span>가끔 느꼈다</label></div>
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=2 ><input name='pn8' type='radio'  disabled value=2>
+                                                                            <label for="r1"><span></span>자주 느꼈다</label></div> 
+                                                                        <div class='btn btn-sm btn-light' onClick={ChangeBox(this)} id=3 ><input name='pn8' type='radio'  disabled value=3>
+                                                                            <label for="r1"><span></span>항상 느꼈다</label></div>  
+                                                                    </div></td>
+                                                            </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <p class="submit_btn"> <input class="btn-sm shadow botc" type="button" value="결과 확인" id='end2'  onClick={CheckValue(this)}></p>                        
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+        <!-- End of Page Wrapper -->
+    <!-- Footer -->
+    
+    <footer class="sticky-footer bg-white" include-html="/views/footer.html"></footer>
+    <!-- End of Footer -->
+        </div>
+ 
+    </div>
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+
+    
+
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="js/process.js"></script>
+    <script type='text/javascript' src="js/animation.js"></script>
+    <script defer type='text/javascript' src="js/indexscript.js"></script>
+    <script type='text/javascript' src="js/signin.js"></script> 
+    <script type='text/javascript' src="css/js/sb-admin-2.js"></script>
+</body>
+
+</html>
+
+
+<!-- https://s3-us-west-2.amazonaws.com/s.cdpn.io/210284/check_radio_sheet.png -->
