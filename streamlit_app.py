@@ -16,23 +16,28 @@ from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
 
-os.environ["TOKENIZERS_PARALLELISM"]="0"
+@st.cache_resource
+def get_utterance_data(url="/"):
+    try:
+        embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
+    except Exception as e:
+        print(e)
+        embedding_function = OpenAIEmbeddings()
+    data = DataFrameLoader(pd.read_excel("schema_utterance.xlsx"), page_content_column="domain").load()
+
+    return Chroma.from_documents(
+        #  collection_name="schema_collection",
+        persist_directory="./chromadb_oai",
+        documents=data,
+        embedding=embedding_function, )
+
+
+os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
 if "shared" not in st.session_state:
    st.session_state["shared"] = True
 
-try:
-    embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
-except Exception as e:
-    print(e)
-    embedding_function = OpenAIEmbeddings()
-data = DataFrameLoader(pd.read_excel("schema_utterance.xlsx"), page_content_column="domain").load()
-
-vector_db = Chroma.from_documents(
-  #  collection_name="schema_collection",
-    persist_directory="./chromadb_oai",
-    documents=data,
-    embedding=embedding_function,)
+vector_db = get_utterance_data()
 
 st.title('🦜🔗 Quickstart App')
 with st.sidebar:
@@ -90,7 +95,7 @@ with col1:
         with st.chat_message("assistant"):
             st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
 
-            response = search_agent.invoke(st.session_state.messages,# callbacks=[st_cb]
+            response = search_agent.invoke(st.session_state.messages, # callbacks=[st_cb]
                                            )
 
             st.session_state.messages.append(
