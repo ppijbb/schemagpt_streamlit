@@ -15,16 +15,16 @@ from langchain.memory import ConversationBufferMemory
 from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
 
 from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper
-from langchain_community.document_loaders import DataFrameLoader
-from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
 from srcs import schema_therapy
+from srcs.st_cache import get_utterance_data
+
+
+os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
 
 def get_or_create_eventloop():
@@ -43,25 +43,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-
-@st.cache_resource
-def get_utterance_data(url="/"):
-    try:
-        embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
-    except Exception as e:
-        print(e)
-        embedding_function = OpenAIEmbeddings()
-    data = DataFrameLoader(pd.read_excel("schema_utterance.xlsx"), page_content_column="domain").load()
-
-    return Chroma.from_documents(
-        #  collection_name="schema_collection",
-        persist_directory="./chromadb_oai",
-        documents=data,
-        embedding=embedding_function, )
-
-
-os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
 if "shared" not in st.session_state:
    st.session_state["shared"] = True
@@ -131,7 +112,7 @@ with col1:
                          openai_api_key=openai_api_key,
                          streaming=True,
                          callback_manager=CallbackManager([final_streaming_cb]))
-        search = DuckDuckGoSearchRun(region="kr-kr", time="n")
+        search = DuckDuckGoSearchRun(region="kr-kr", max_results=2)
         search_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=[search])
         executor = AgentExecutor.from_agent_and_tools(
             agent=search_agent,
@@ -216,14 +197,15 @@ you: 단계: 진행
                          openai_api_key=openai_api_key,
                          streaming=True)
         search = DuckDuckGoSearchRun(name="Search",
-                                     time="d",
-                                     max_results=3)
+                                     time="y",
+                                     region="kr-kr",
+                                     num_results=2)
         search_agent = initialize_agent(tools=[search],
                                         llm=llm,
                                         agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                         handle_parsing_errors=True)
         cfg = RunnableConfig()
-        cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
+        cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)]
         search_instruction = copy.deepcopy(st.session_state.messages2)
         search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 원인)"
         response = search_agent.invoke(search_instruction, cfg,)

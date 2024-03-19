@@ -6,7 +6,6 @@ import av
 import json
 from typing import List
 import os
-import inspect
 
 from datetime import datetime as dt
 import streamlit as st
@@ -20,8 +19,12 @@ from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image as _IMG
 
 from pages.rtc.public_stun import public_stun_server_list
+from srcs.st_cache import get_facial_processors
 # from streamlit.components.v1 import html
 # import mediapipe as mp
+
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 config = ConfigProto()
 config.gpu_options.allow_growth = True
@@ -32,34 +35,18 @@ if gpus:
   try:
     tf.config.experimental.set_virtual_device_configuration(
         gpus[0],
-        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4096)])
+        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=768)])
   except RuntimeError as e:
     # 프로그램 시작시에 가상 장치가 설정되어야만 합니다
     print(e)
 
+
 dir_path = os.getcwd()
-# load model
-model = model_from_json(open(f"{dir_path}/pages/rtc/caer_face.json", "r").read())
-# load weights
-model.load_weights(f"{dir_path}/pages/rtc/caer_face.h5")
-
-# mp_drawing = mp.solutions.drawing_utils
-# mp_drawing_styles = mp.solutions.drawing_styles
-# mp_hands = mp.solutions.hands
-# hands = mp_hands.Hands(
-#     model_complexity=0,
-#     min_detection_confidence=0.5,
-#     min_tracking_confidence=0.5
-# )
-
-# face detection
-cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
-face_haar_cascade = cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
-# face_haar_cascade = cv2.CascadeClassifier("C:\\Users\\Lenovo\\.conda\\envs\\python_3_9_env\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_default.xml")
+model, face_haar_cascade = get_facial_processors(path=dir_path)
 
 
 def process_face(image):
-    font_path = f"{dir_path}/font/jalnan/yg-jalnan.ttf"
+    font_path = f"{dir_path}/pages/font/jalnan/yg-jalnan.ttf"
     font_regular = ImageFont.truetype(font=font_path, size=35)
     font_regular_small = ImageFont.truetype(font=font_path, size=18)
     font_small = ImageFont.truetype(font=font_path, size=16)
@@ -72,17 +59,14 @@ def process_face(image):
     end_x = int(paint_width / 4)
 
     try:
-        image.flags.writeable = False
+        image.flags.writeable = True
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         faces_detected = face_haar_cascade.detectMultiScale(gray_img, 1.32, 5)
         result = None
-        cv2.rectangle(image, (0, 0), (paint_width, 350), (255, 255, 255), thickness=-1)
-        cv2.rectangle(image, (0, 0), (start_x + end_x + 60, 80), (196, 196, 196), thickness=-1)
+        cv2.rectangle(image, (0, 0), (paint_width, 80), (255, 255, 255), -1)
+        cv2.rectangle(image, (0, 0), (start_x + end_x + 60, 80), (196, 196, 196), -1)
         if 0 < len(faces_detected):
             for (x, y, w, h) in faces_detected:
-                # print('WORKING')
-                # print(gray_img.shape)
-
                 # cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), thickness=5) # 얼굴 박스
                 roi_gray = gray_img[y - 10:y + w + 10,
                                     x - 10:x + h + 10]  # cropping region of interest i.e. face area from  image
@@ -90,14 +74,10 @@ def process_face(image):
                 img_pixels = _IMG.img_to_array(roi_gray)
                 img_pixels = np.expand_dims(img_pixels, axis=0)
                 img_pixels *= 0.8
-
-                # print(img_pixels.shape)
-
                 predictions = model.predict(x=img_pixels, verbose=0)
                 # find max indexed array
 
                 max_index = np.argmax(predictions[0])
-
                 # emotions = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
                 predicted_emotion = emotions[max_index]
@@ -152,7 +132,6 @@ def process_face(image):
                       font=font_regular_small,
                       fill=(0, 0, 0, 0))
             processed = np.array(image_pil)
-        return processed, result
 
     except Exception as e:
         print("Exception", e)
@@ -174,7 +153,9 @@ def process_face(image):
                   font=font_regular_small,
                   fill=(0, 0, 0, 0))
         processed = np.array(image_pil)
-        return processed, None
+        result = None
+
+    return processed, result
 
 
 # def process(image):
@@ -269,9 +250,9 @@ class VideoProcessor(VideoProcessorBase):
                 json=json.loads(data)
             )
         else:
-            print("error")
+            print("Not send results")
 
-# @st.cache(suppress_st_warning=True)
+
 def show():
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]
@@ -282,7 +263,7 @@ def show():
         media_stream_constraints={
             "video": {
                 "frameRate": {
-                    "max": 30,
+                    "max": 60,
                     "ideal": 1
                 },
                 "width": {
@@ -307,32 +288,26 @@ def show():
                 "justify-content": "center"
             },
             "controls": True,
-            "autoPlay": False
+            "autoPlay": True
         },
     )
     if webrtc_ctx.state.signalling:
         webrtc_ctx.video_processor.code = None
 
 
-if __name__ == "__main__":
-    st.set_page_config(
-        page_title="CAERScope",
-        layout="wide",
-        initial_sidebar_state="expanded",
-    )
-    st.title('🦜🔗 Quickstart App')
-    with st.sidebar:
-        st.page_link("pages/cardio.py",)
-        st.page_link("pages/dep_peptide.py",)
-        st.page_link("pages/facial.py",)
-    # hide_menu_style = """
-    #         <style>
-    #         .css-1avcm0n {visibility: hidden;}
-    #         .css-18ni7ap {visibility: hidden;}
-    #         .block-container {padding: 0rem 1rem 10rem;}
-    #         .block-container div {justify-content: center;gap: 0rem;}
-    #         video {}
-    #         </style>
-    #         """
-    # st.markdown(hide_menu_style, unsafe_allow_html=True)
-    show()
+st.title('🦜🔗 Quickstart App')
+with st.sidebar:
+    st.page_link("pages/cardio.py",)
+    st.page_link("pages/dep_peptide.py",)
+    st.page_link("pages/facial.py",)
+# hide_menu_style = """
+#         <style>
+#         .css-1avcm0n {visibility: hidden;}
+#         .css-18ni7ap {visibility: hidden;}
+#         .block-container {padding: 0rem 1rem 10rem;}
+#         .block-container div {justify-content: center;gap: 0rem;}
+#         video {}
+#         </style>
+#         """
+# st.markdown(hide_menu_style, unsafe_allow_html=True)
+show()
