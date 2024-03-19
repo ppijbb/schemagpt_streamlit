@@ -297,7 +297,7 @@ def show():
 
 st.title('😄😑😭 Facial Emotion Recognition')
 with st.sidebar:
-    st.page_link("pages/staticscardio.py",)
+    st.page_link("pages/cardio.py",)
     st.page_link("pages/dep_peptide.py",)
     st.page_link("pages/facial.py",)
 # hide_menu_style = """
