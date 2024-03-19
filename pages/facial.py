@@ -53,7 +53,7 @@ model.load_weights(f"{dir_path}/pages/rtc/caer_face.h5")
 # )
 
 # face detection
-cv_path = inspect.getfile(cv2)
+cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
 face_haar_cascade = cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
 # face_haar_cascade = cv2.CascadeClassifier("C:\\Users\\Lenovo\\.conda\\envs\\python_3_9_env\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_default.xml")
 
@@ -282,7 +282,7 @@ def show():
         media_stream_constraints={
             "video": {
                 "frameRate": {
-                    "max": 3,
+                    "max": 30,
                     "ideal": 1
                 },
                 "width": {
