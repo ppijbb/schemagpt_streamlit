@@ -39,17 +39,15 @@ def get_or_create_eventloop():
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-st.set_page_config(
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(layout="wide",
+                   initial_sidebar_state="expanded",)
 
 if "shared" not in st.session_state:
    st.session_state["shared"] = True
 
 vector_db = get_utterance_data()
 
-st.title('🦜🔗 Quickstart App')
+st.title('🤖 LLM based Chatbot App')
 with st.sidebar:
     st.page_link("pages/cardio.py",)
     st.page_link("pages/dep_peptide.py",)
@@ -66,114 +64,72 @@ with st.sidebar:
 col1, col2 = st.columns(2)
 
 with col1:
-    st.title("🔎 Chat with DuckDuckgo")
+    st.title("🔎 Search with DuckDuckgo")
     """
-    In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
-    Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent).
+    DuckDuckGo 검색을 통한 응답 
     """
     col1_chat_container = st.container()
     msgs = StreamlitChatMessageHistory()
-    memory = ConversationBufferMemory(
-        chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
-    )
+    memory = ConversationBufferMemory(chat_memory=msgs,
+                                      return_messages=True,
+                                      memory_key="chat_history",
+                                      output_key="output")
+    if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
+        msgs.clear()
+        msgs.add_ai_message("무엇을 알려드릴까요?")
+        st.session_state.steps = {}
 
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = [
-            {
-                "role": "system",
-                "content": "당신은 한국어 전문가 GPT입니다."
-            },
-            {
-                "role": "assistant",
-                "content": "Hi, I'm a chatbot who can search the web. How can I help you?"
-            }]
+    avatars = {"human": "user", "ai": "assistant"}
+    for idx, msg in enumerate(msgs.messages):
+        with col1_chat_container.chat_message(avatars[msg.type]):
+            # Render intermediate steps if any were saved
+            for step in st.session_state.steps.get(str(idx), []):
+                if step[0].tool == "_Exception":
+                    continue
+                with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
+                    st.write(step[0].log)
+                    st.write(step[1])
+            st.write(msg.content)
 
-    for msg in st.session_state.messages:
-        if msg["role"] != "system":
-            col1_chat_container.chat_message(msg["role"]).write(msg["content"])
-
-    if col1_prompt := col1.chat_input(placeholder="Who won the Women's U.S. Open in 2018?", key=col1):
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": col1_prompt
-            })
-        col1_chat_container.chat_message("user").write(col1_prompt)
-        searched_result = vector_db.similarity_search(col1_prompt)[0]
+    if prompt := col1.chat_input(placeholder="경복궁의 위치는?", key=col1):
+        col1_chat_container.chat_message("user").write(prompt)
 
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
 
-        st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
-        final_streaming_cb = FinalStreamingStdOutCallbackHandler()
-
         llm = ChatOpenAI(model_name="gpt-3.5-turbo",
                          openai_api_key=openai_api_key,
-                         streaming=True,
-                         callback_manager=CallbackManager([final_streaming_cb]))
-        search = DuckDuckGoSearchRun(region="kr-kr", max_results=2)
-        search_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=[search])
-        executor = AgentExecutor.from_agent_and_tools(
-            agent=search_agent,
-            tools=[search],
-            memory=memory,
-            return_intermediate_steps=True,
-            handle_parsing_errors=True,
-        )
+                         streaming=True)
+        tools = [DuckDuckGoSearchRun(name="Search")]
+        chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
+                                                                tools=tools)
+        executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
+                                                      tools=tools,
+                                                      memory=memory,
+                                                      return_intermediate_steps=True,
+                                                      handle_parsing_errors=True,)
         cfg = RunnableConfig()
-        cfg["callbacks"] = [st_cb]
-        response = executor.invoke(st.session_state.messages, cfg,)
-        col1_chat_container.chat_message("assistant").write(f'{response["output"]}')
-        st.session_state.messages.append(
-                {
-                    "role": "assistant",
-                    "content": response["output"]
-                })
-
+        cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
+        response = executor.invoke(prompt, cfg)
+        st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
+        col1_chat_container.chat_message("assistant").write(response["output"])
 
 with col2:
-    st.title("🔎 Something else...")
-
+    st.title("🤸 Schema GPT")
     """
-    In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
-    Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent).
+    Schema Therapy 기반 정신 건강 챗봇 
     """
     col2_chat_container = st.container()
     if "messages2" not in st.session_state:
         st.session_state["messages2"] = [
             {
                 "role": "system",
-                "content": """
-SYSTEM:
-당신은 정신 건강 상담사입니다.
-먼저 당신은 대화 단계를 파악하고 그 단계에 맞는 대답을 제공해야합니다.
-다음, 당신은 괄호 안에 있는 사용자 지시사항을 명심해야합니다.
-그리고 친절한 말투로 사용자에게 응원, 공감, 안정, 조언을 해주세요.
-마지막으로 절대 괄호 안에 있는 사용자 지시사항을 직접적으로 말하지 마세요.
- 
-대화 단계는 종료와 진행이 있습니다.
-- 종료: 대화가 충분히 진행 된 이후 사용자가 대화를 마무리하고 싶어할 때 단계
-- 진행: 종료 이외의 모든 단계
- 
-[INST]
-위에 주어진 가이드라인을 따라서,
-먼저 사용자 메세지로부터 대화의 단계를 구분합니다.
-사용자 메세지에 어떻게 답변을 할지 생각합니다.
-그리고 괄호 안의 지시사항을 따라 사용자의 감정 표현을 이끌어낼 수 있는 답변을 생성해주세요.
-답변은 답변: 뒤에 작성합니다.
-한국어로만 답변합니다.
- 
-<example>
-user: 요즘에는 별다른 일이 없어서 그런지 뭔가 지루하다는 느낌이 들어요.(사용자가 적극적으로 표현할 수 있도록 대화를 진행해주세요)
-you: 단계: 진행
-답변: 지루하지만 한편으로는 평안하지 않으세요? 전 별다른 일이 없다는 게 한편으로는 좋아보여요!
-</example>
-"""
+                "content": schema_therapy.system_prompt
             },
             {
                 "role": "assistant",
-                "content": "안녕하세요? 무엇을 도와드릴까요?"
+                "content": "안녕하세요? 어떤 이야기를 해볼까요?"
             }]
 
     for msg in st.session_state.messages2:
@@ -204,14 +160,15 @@ you: 단계: 진행
                                         llm=llm,
                                         agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                         handle_parsing_errors=True)
-        cfg = RunnableConfig()
-        cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)]
-        search_instruction = copy.deepcopy(st.session_state.messages2)
-        search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 원인)"
-        response = search_agent.invoke(search_instruction, cfg,)
-        col2_chat_container.chat_message("assistant").write(f'{response["output"]}')
-        st.session_state.messages2.append(
-                {
-                    "role": "assistant",
-                    "content": response["output"]
-                })
+        with col2_chat_container.chat_message("assistant"):
+            cfg = RunnableConfig()
+            cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)]
+            search_instruction = copy.deepcopy(st.session_state.messages2)
+            search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 원인)"
+            response = search_agent.invoke(search_instruction, callbacks=cfg["callbacks"])
+            st.write(f'{response["output"]}')
+            st.session_state.messages2.append(
+                    {
+                        "role": "assistant",
+                        "content": response["output"]
+                    })

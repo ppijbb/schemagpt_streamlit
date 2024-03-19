@@ -295,7 +295,7 @@ def show():
         webrtc_ctx.video_processor.code = None
 
 
-st.title('🦜🔗 Quickstart App')
+st.title('😄😑😭 Facial Emotion Recognition')
 with st.sidebar:
     st.page_link("pages/cardio.py",)
     st.page_link("pages/dep_peptide.py",)
