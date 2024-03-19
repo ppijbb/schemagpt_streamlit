@@ -4,6 +4,9 @@ import asyncio
 import sys
 import copy
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "0"
+
 import pandas as pd
 import streamlit as st
 
@@ -22,9 +25,6 @@ from langchain_community.chat_message_histories import StreamlitChatMessageHisto
 from langchain_openai import ChatOpenAI
 from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data
-
-os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
-os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
 
 def get_or_create_eventloop():
