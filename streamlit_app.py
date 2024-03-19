@@ -23,7 +23,7 @@ from langchain_openai import ChatOpenAI
 from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data
 
-
+os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
 
