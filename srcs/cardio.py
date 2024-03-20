@@ -1,3 +1,4 @@
+import os
 import sys
 from urllib.parse import unquote, quote
 import pickle
@@ -46,10 +47,10 @@ def make_grade(indexer, x):
 def heq(args):
     args[-1] = args[-1][0]
     # KS 모델 동작에 필요한 데이터 파일에서 읽어옴
-    with open('python/KSModel', 'rb') as f:
+    with open(os.getcwd()+"/python/KSModel", 'rb') as f:
         knn_model, svm_model, coef, intercept, minmax_scaler, \
             standard_scaler, pca, value_bins, data_mean, branch, directions = pickle.load(f)
-    with open('python/VotingEnsembleModel', 'rb') as f:
+    with open(os.getcwd()+"/python/VotingEnsembleModel", 'rb') as f:
         Voting = pickle.load(f)
     # with open('python/TabnetClassifierModel','rb') as f:
     #     TNC = pickle.load(f)
@@ -123,7 +124,7 @@ def heq(args):
 
 
 def scale_severity(args):
-    with open('python/16Model', 'rb') as f:
+    with open(os.getcwd()+"/python/16Model", 'rb') as f:
         CatC, CatM, coef, intercept, pca, D_mean, SCALER = pickle.load(f)
         a = coef[0]
         b = coef[1]
