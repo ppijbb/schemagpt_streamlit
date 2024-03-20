@@ -1,3 +1,4 @@
+
 const about_Score = function(user_name,grade, result, columns, values, personal){
     let text_item =[[0],[1,2,5,7,8,11],[3,4],[6,9],[10],[12,13,14,15]];
     if (grade === "0") grade = '건강인';
