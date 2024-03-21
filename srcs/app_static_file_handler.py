@@ -77,7 +77,6 @@ class AppStaticFileHandler(tornado.web.StaticFileHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
 
     def set_extra_headers(self, path: str) -> None:
-        print(path)
         if Path(path).suffix == ".js":
             self.set_header("Content-Type", "text/javascript")
         elif Path(path).suffix == ".css":

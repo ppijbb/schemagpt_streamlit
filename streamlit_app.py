@@ -13,24 +13,28 @@ from srcs.app_static_file_handler import AppStaticFileHandler
 
 sys.modules["streamlit.web.server.app_static_file_handler"].AppStaticFileHandler = AppStaticFileHandler
 
-
 import pandas as pd
 import streamlit as st
-st.write(st.web.server.app_static_file_handler.AppStaticFileHandler.check())
 
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
+from langchain_core.messages import SystemMessage
 from langchain.retrievers.web_research import WebResearchRetriever
-from langchain.agents import initialize_agent, AgentType, ConversationalChatAgent, AgentExecutor
+from langchain.agents import initialize_agent, load_tools
+from langchain.agents import AgentType, ConversationalChatAgent, AgentExecutor, Tool
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
 
 from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain_community.tools import DuckDuckGoSearchRun
-from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper
+from langchain_community.tools import DuckDuckGoSearchRun, BingSearchRun, WikipediaQueryRun
+from langchain_community.tools.pubmed.tool import PubmedQueryRun
+from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper, BingSearchAPIWrapper,
+                                           SerpAPIWrapper, WikipediaAPIWrapper)
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
+from ionic_langchain.tool import IonicTool
+
 from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data
 
@@ -86,20 +90,21 @@ if __name__ == "__main__":
                                           output_key="output")
         if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
             msgs.clear()
+            msgs.add_message(SystemMessage(content="검색 결과를 보고 종합적 정보만 요약해 전달하세요."))
             msgs.add_ai_message("무엇을 알려드릴까요?")
             st.session_state.steps = {}
-
-        avatars = {"human": "user", "ai": "assistant"}
+        avatars = {"human": "user", "ai": "assistant", "system": "system"}
         for idx, msg in enumerate(msgs.messages):
-            with col1_chat_container.chat_message(avatars[msg.type]):
-                # Render intermediate steps if any were saved
-                for step in st.session_state.steps.get(str(idx), []):
-                    if step[0].tool == "_Exception":
-                        continue
-                    with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
-                        st.write(step[0].log)
-                        st.write(step[1])
-                st.write(msg.content)
+            if msg.type != "system":
+                with col1_chat_container.chat_message(avatars[msg.type]):
+                    # Render intermediate steps if any were saved
+                    for step in st.session_state.steps.get(str(idx), []):
+                        if step[0].tool == "_Exception":
+                            continue
+                        with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
+                            st.write(step[0].log)
+                            st.write(step[1])
+                    st.write(msg.content)
 
         if prompt := col1.chat_input(placeholder="경복궁의 위치는?", key=col1):
             col1_chat_container.chat_message("user").write(prompt)
@@ -111,7 +116,10 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model_name="gpt-3.5-turbo",
                              openai_api_key=openai_api_key,
                              streaming=True)
-            tools = [DuckDuckGoSearchRun(name="Search")]
+            tools = [DuckDuckGoSearchRun(name="DDG"),
+                     WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
+                     PubmedQueryRun(),
+                     IonicTool().tool()] + load_tools(["arxiv"],)
             chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
                                                                     tools=tools)
             executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
@@ -162,11 +170,14 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model_name="ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
                              openai_api_key=openai_api_key,
                              streaming=True)
-            search = DuckDuckGoSearchRun(name="Search",
+            tools = [DuckDuckGoSearchRun(name="Search",
                                          time="y",
                                          region="kr-kr",
-                                         num_results=2)
-            search_agent = initialize_agent(tools=[search],
+                                         num_results=2),
+                     WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
+                     PubmedQueryRun(),
+                     IonicTool().tool()] + load_tools(["arxiv"],)
+            search_agent = initialize_agent(tools=tools,
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True)

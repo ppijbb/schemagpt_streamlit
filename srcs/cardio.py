@@ -4,6 +4,16 @@ from urllib.parse import unquote, quote
 import pickle
 import math
 import numpy as np
+import joblib
+
+
+def get_heq_data():
+    return (pickle.load(open(f"{os.getcwd()}/pages/models/KSModel", 'rb')),
+            pickle.load(open(f"{os.getcwd()}/pages/models/VotingEnsembleModel", 'rb')))
+
+
+def get_scale_data():
+    return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
 
 
 def distance(a, x, b, y, c, z, d):
@@ -44,14 +54,29 @@ def make_grade(indexer, x):
             return " 관심필요"
 
 
+heq_data = get_heq_data()
+scale_data = get_scale_data()
+
+# from joblib import dump
+#
+# # 모델 저장
+# dump(heq_data[0], 'heq1.joblib')
+# dump(heq_data[1], 'heq2.joblib')
+# dump(scale_data[1], 'scale2.joblib')
+# heq_data[1].estimators_[1].save_model("clf.json")  # XGBoost
+# heq_data[1].estimators_[1] = None
+# print(heq_data[1])
+# import pickle
+#
+# with open("file", "wb") as f:
+#     pickle.dump(heq_data[1], f)
+
 def heq(args):
-    args[-1] = args[-1][0]
+    # args[-1] = args[-1][0]
     # KS 모델 동작에 필요한 데이터 파일에서 읽어옴
-    with open(os.getcwd()+"/python/KSModel", 'rb') as f:
-        knn_model, svm_model, coef, intercept, minmax_scaler, \
-            standard_scaler, pca, value_bins, data_mean, branch, directions = pickle.load(f)
-    with open(os.getcwd()+"/python/VotingEnsembleModel", 'rb') as f:
-        Voting = pickle.load(f)
+    value_data, Voting = heq_data
+    knn_model, svm_model, coef, intercept, minmax_scaler, \
+        standard_scaler, pca, value_bins, data_mean, branch, directions = value_data
     # with open('python/TabnetClassifierModel','rb') as f:
     #     TNC = pickle.load(f)
     a = coef[0]
@@ -63,8 +88,9 @@ def heq(args):
     cont_branch = list(branch)
     # Web 입력 처리
 
+    processed_values = []
     for index, arg in enumerate(args):
-        decoded = unquote(arg)
+        decoded = arg
         if index > 11:
             value_index = cont_branch[index - 12]
             if float(arg) > value_bins[index - 12][11]:
@@ -79,11 +105,11 @@ def heq(args):
                 mg_text, mg_value, mg_indexer = make_grade(value_index, -1 * value_grade)
                 to_web += mg_text
                 cont_branch[index - 12] = mg_indexer
-            encoded = quote(to_web)
-            print(encoded)
+            encoded = to_web
         else:
-            encoded = quote(decoded)
-            print(encoded)
+            encoded = decoded
+
+        processed_values += [encoded]
     # 입력 데이터 처리
     inarg = np.array(args[1:]).astype('int64')
     x = minmax_scaler.transform([inarg])
@@ -95,11 +121,11 @@ def heq(args):
         num2 = num
     except:
         num2 = num
-    print(num, num2, Voting.predict(vx),  # voting
-          Voting.estimators_[0].predict(vx),  # LightGBM
-          Voting.estimators_[1].predict(vx),  # XGBoost
-          Voting.estimators_[2].predict(vx),  # GradientBoost
-          Voting.estimators_[3].predict(vx))  # CatBoost
+    # print(num, num2, Voting.predict(vx),  # voting
+    #       Voting.estimators_[0].predict(vx),  # LightGBM
+    #       Voting.estimators_[1].predict(vx),  # XGBoost
+    #       Voting.estimators_[2].predict(vx),  # GradientBoost
+    #       Voting.estimators_[3].predict(vx))  # CatBoost
 
     x = [np.append(x, num2)]
     feature = pca.transform(x)
@@ -108,36 +134,34 @@ def heq(args):
     cluster_result = level(standard_scaler.transform([[input_dist]]))
 
     if (num2 * check) == 1 and cluster_result == 1:
-        print(quote('고위험군'))
+        risk_lv = '고위험군'
     elif (num2 * check) == 1 and cluster_result == 0:
-        print(quote('위험군'))
+        risk_lv = '위험군'
     elif (num2 * check) == 0 and cluster_result == 0:
-        print(quote('일반인'))
+        risk_lv = '일반인'
     elif (num2 * check) == 0 and cluster_result == 1:
-        print(quote('건강인'))
+        risk_lv = '건강인'
     else:
-        print(quote('오류'))
-    print(str(data_mean))
-    print(cont_branch)
-    print(directions)
-    sys.stdout.flush()
+        risk_lv = '오류'
+
+    return {
+        "val_check1": int(num[0]),
+        "val_check2": int(num2[0]),
+        "risk_lv": risk_lv,
+        "other_mean": data_mean,
+        "processed_values": processed_values,
+        "cont_value_branch": cont_branch,
+        "directions": directions
+    }
 
 
 def scale_severity(args):
-    with open(os.getcwd()+"/python/16Model", 'rb') as f:
-        CatC, CatM, coef, intercept, pca, D_mean, SCALER = pickle.load(f)
-        a = coef[0]
-        b = coef[1]
-        c = coef[2]
-        d = intercept
-        data_mean = D_mean.tolist()
-
-    for index, arg in enumerate(args):
-        decoded = unquote(arg)
-        encoded = quote(decoded)
-        print(encoded)
-
     # 입력 데이터 처리
+    CatC, CatM, coef, intercept, pca, D_mean, SCALER = scale_data
+    a = coef[0]
+    b = coef[1]
+    c = coef[2]
+    d = intercept
     inarg = np.array(args[1:]).astype('int64')
     x = [inarg]
     num = CatC.predict(x)
@@ -154,22 +178,26 @@ def scale_severity(args):
         num2[0] = 2
     elif score > 24:
         num2[0] = 3
-    print(num[0], int(num2[0]), score)  # CatBoost
-
     x = [np.append(x, num)]
     feature = pca.transform(x)
     input_dist = distance(a, feature[0, 0], b, feature[0, 1], c, feature[0, 2], d)
     cluster_result = level(SCALER[num[0]].transform([[input_dist]]))
 
     if num == 1 and cluster_result == 1:
-        print(quote('고위험군'))
+        risk_lv = '고위험군'
     elif num == 1 and cluster_result == 0:
-        print(quote('위험군'))
+        risk_lv = '위험군'
     elif num == 0 and cluster_result == 0:
-        print(quote('일반인'))
+        risk_lv = '일반인'
     elif num == 0 and cluster_result == 1:
-        print(quote('건강인'))
+        risk_lv = '건강인'
     else:
-        print(quote('오류'))
-    print(str(data_mean))
-    sys.stdout.flush()
+        risk_lv = '오류'
+
+    return {
+        "val_check1": int(num[0]),
+        "val_check2": int(num2[0]),
+        "risk_score": score,
+        "risk_lv": risk_lv,
+        "other_mean": D_mean.tolist()
+    }
