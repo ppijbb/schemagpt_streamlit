@@ -4,16 +4,7 @@ from urllib.parse import unquote, quote
 import pickle
 import math
 import numpy as np
-import joblib
-
-
-def get_heq_data():
-    return (pickle.load(open(f"{os.getcwd()}/pages/models/KSModel", 'rb')),
-            pickle.load(open(f"{os.getcwd()}/pages/models/VotingEnsembleModel", 'rb')))
-
-
-def get_scale_data():
-    return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
+from streamlit_app import heq_data, scale_data
 
 
 def distance(a, x, b, y, c, z, d):
@@ -54,8 +45,7 @@ def make_grade(indexer, x):
             return " 관심필요"
 
 
-heq_data = get_heq_data()
-scale_data = get_scale_data()
+
 
 # from joblib import dump
 #
@@ -70,6 +60,7 @@ scale_data = get_scale_data()
 #
 # with open("file", "wb") as f:
 #     pickle.dump(heq_data[1], f)
+
 
 def heq(args):
     # args[-1] = args[-1][0]

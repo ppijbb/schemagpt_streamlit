@@ -3,6 +3,7 @@ from tensorflow.keras.models import model_from_json
 import inspect
 import cv2
 import os
+import pickle
 import pandas as pd
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.embeddings import OpenAIEmbeddings
@@ -45,3 +46,14 @@ def get_utterance_data(url="/"):
         persist_directory="./chromadb_oai",
         documents=data,
         embedding=embedding_function, )
+
+
+@st.cache_resource
+def get_heq_data():
+    return (pickle.load(open(f"{os.getcwd()}/pages/models/KSModel", 'rb')),
+            pickle.load(open(f"{os.getcwd()}/pages/models/VotingEnsembleModel", 'rb')))
+
+
+@st.cache_resource
+def get_scale_data():
+    return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))

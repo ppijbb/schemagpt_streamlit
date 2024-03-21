@@ -36,7 +36,10 @@ from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
 
 from srcs import schema_therapy
-from srcs.st_cache import get_utterance_data
+from srcs.st_cache import get_utterance_data, get_heq_data, get_scale_data
+
+heq_data = get_heq_data()
+scale_data = get_scale_data()
 
 
 def get_or_create_eventloop():
@@ -57,7 +60,7 @@ asyncio.set_event_loop(loop)
 
 if __name__ == "__main__":
     if "shared" not in st.session_state:
-       st.session_state["shared"] = True
+        st.session_state["shared"] = True
 
     vector_db = get_utterance_data()
 
