@@ -1,10 +1,16 @@
 import os
 import sys
-from urllib.parse import unquote, quote
-import pickle
 import math
 import numpy as np
-from streamlit_app import heq_data, scale_data
+import pandas as pd
+import streamlit as st
+from srcs.st_cache import get_heq_data, get_scale_data
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+
+heq_data = get_heq_data()
+scale_data = get_scale_data()
 
 
 def distance(a, x, b, y, c, z, d):
@@ -44,9 +50,6 @@ def make_grade(indexer, x):
         elif indexer[2] <= x:
             return " 관심필요"
 
-
-
-
 # from joblib import dump
 #
 # # 모델 저장
@@ -68,8 +71,7 @@ def heq(args):
     value_data, Voting = heq_data
     knn_model, svm_model, coef, intercept, minmax_scaler, \
         standard_scaler, pca, value_bins, data_mean, branch, directions = value_data
-    # with open('python/TabnetClassifierModel','rb') as f:
-    #     TNC = pickle.load(f)
+
     a = coef[0]
     b = coef[1]
     c = coef[2]
@@ -80,15 +82,15 @@ def heq(args):
     # Web 입력 처리
 
     processed_values = []
-    for index, arg in enumerate(args):
-        decoded = arg
+    for index, (key, value) in enumerate(args.items()):
+        decoded = value
         if index > 11:
             value_index = cont_branch[index - 12]
-            if float(arg) > value_bins[index - 12][11]:
+            if float(value) > value_bins[index - 12][11]:
                 value_grade = 12
             else:
-                value_grade = np.histogram(float(arg), bins=value_bins[index - 12])[0].argmax() + 1
-            args[index] = value_grade
+                value_grade = np.histogram(float(value), bins=value_bins[index - 12])[0].argmax() + 1
+            args[key] = int(value_grade)
             to_web = '%d 단계' % value_grade
             if directions[index - 1] > 0:
                 to_web += make_grade(value_index, value_grade)
@@ -102,7 +104,7 @@ def heq(args):
 
         processed_values += [encoded]
     # 입력 데이터 처리
-    inarg = np.array(args[1:]).astype('int64')
+    inarg = np.array(list(args.values())[1:]).astype('int64')
     x = minmax_scaler.transform([inarg])
     num = knn_model.predict(x)
     result = round(knn_model.predict_proba(x)[0][1], 2)
@@ -112,38 +114,113 @@ def heq(args):
         num2 = num
     except:
         num2 = num
-    # print(num, num2, Voting.predict(vx),  # voting
-    #       Voting.estimators_[0].predict(vx),  # LightGBM
-    #       Voting.estimators_[1].predict(vx),  # XGBoost
-    #       Voting.estimators_[2].predict(vx),  # GradientBoost
-    #       Voting.estimators_[3].predict(vx))  # CatBoost
+    print(num, num2, Voting.predict(vx),  # voting
+          Voting.estimators_[0].predict(vx),  # LightGBM
+          Voting.estimators_[1].predict(vx),  # XGBoost
+          Voting.estimators_[2].predict(vx),  # GradientBoost
+          Voting.estimators_[3].predict(vx))  # CatBoost
 
     x = [np.append(x, num2)]
     feature = pca.transform(x)
     check = svm_model.predict(feature)
     input_dist = distance(a, feature[0, 0], b, feature[0, 1], c, feature[0, 2], d)
     cluster_result = level(standard_scaler.transform([[input_dist]]))
-
+    user_level = [0, 0, 0, 0]
     if (num2 * check) == 1 and cluster_result == 1:
+        user_level[0] = 0.1
         risk_lv = '고위험군'
     elif (num2 * check) == 1 and cluster_result == 0:
+        user_level[1] = 0.1
         risk_lv = '위험군'
     elif (num2 * check) == 0 and cluster_result == 0:
+        user_level[2] = 0.1
         risk_lv = '일반인'
     elif (num2 * check) == 0 and cluster_result == 1:
+        user_level[3] = 0.1
         risk_lv = '건강인'
     else:
         risk_lv = '오류'
-
-    return {
+    result = {
         "val_check1": int(num[0]),
         "val_check2": int(num2[0]),
         "risk_lv": risk_lv,
-        "other_mean": data_mean,
+        "other_mean": dict(zip(list(args.keys())[1:], data_mean)),
         "processed_values": processed_values,
         "cont_value_branch": cont_branch,
         "directions": directions
     }
+
+    gen_data = {k.split("_")[1]: float(v) for k, v in args.items() if k.startswith("g")}
+    gen_mean_data = {k.split("_")[1]: float(v) for k, v in result["other_mean"].items() if k.startswith("g")}
+    nut_data = {k.split("_")[1]: float(v) for k, v in args.items() if k.startswith("n")}
+    nut_mean_data = {k.split("_")[1]: float(v) for k, v in result["other_mean"].items() if k.startswith("n")}
+    blo_data = {k.split("_")[1]: float(v) for k, v in args.items() if k.startswith("b")}
+    blo_mean_data = {k.split("_")[1]: float(v) for k, v in result["other_mean"].items() if k.startswith("b")}
+    pat_data = {k.split("_")[1]: float(v) for k, v in args.items() if k.startswith("p")}
+    pat_mean_data = {k.split("_")[1]: float(v) for k, v in result["other_mean"].items() if k.startswith("p")}
+
+    fig = make_subplots(
+        rows=2, cols=2,
+        column_widths=[0.1, 0.1],
+        row_heights=[0.1, 0.1],
+        subplot_titles=("영양 분석", "혈액 분석", "기본 분석", "패턴 분석"),
+        # shared_yaxes=True
+        specs=[[{"type": "scatterpolargl"}, {"type": "scatterpolargl"}],
+               [            None                    , None]]
+        )
+    for draw_data, title in zip([nut_data, nut_mean_data],
+                                ["사용자 데이터", "정상군 평균"],):
+        fig.add_traces(data=[
+            go.Scatterpolargl(
+                r=list(draw_data.values()),
+                showlegend=False,
+                theta=list(draw_data.keys()),
+                fill="toself",
+                name=title
+            )],
+            rows=1, cols=1
+        )
+    for draw_data, title in zip([blo_data, blo_mean_data],
+                                ["사용자 데이터", "정상군 평균"]):
+        fig.add_traces(
+            data=[go.Scatterpolargl(
+                r=list(draw_data.values()),
+                showlegend=False,
+                theta=list(draw_data.keys()),
+                fill="toself",
+                name=title
+            )],
+            rows=1, cols=2
+        )
+    pie = go.Figure(go.Indicator(
+            mode="gauge+number+delta",
+            value=2.5,
+            domain={'x': [0, 1], 'y': [0, 1]},
+            title={'text': "건강 평가", 'font': {'size': 24}},
+            delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
+            gauge={
+                'axis': {'range': [None, 4], 'tickwidth': 1, 'tickcolor': "darkblue"},
+                'bar': {'color': "darkblue"},
+                # 'bgcolor': "white",
+                'borderwidth': 2,
+                'bordercolor': "gray",
+                'steps': [
+                    {'range': [0, 1], 'color': 'royalblue'},
+                    {'range': [1, 2], 'color': 'lightcyan'},
+                    {'range': [2, 3], 'color': 'lightsalmon'},
+                    {'range': [3, 4], 'color': 'tomato'}],
+                'threshold': {
+                    'line': {'color': "black", 'width': 4},
+                    'thickness': 0.75,
+                    'value': 2+0.5}}))
+    pie.update_layout(font={'color': "darkblue", 'family': "Arial"})
+    # st.write(risk_lv)
+    fig.update_layout(margin_l=0, margin_r=0, margin_b=0, margin_t=0)
+    st.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
+    st.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
+    # st.write(args)
+    # st.write(result)
+    return result
 
 
 def scale_severity(args):
@@ -153,7 +230,10 @@ def scale_severity(args):
     b = coef[1]
     c = coef[2]
     d = intercept
-    inarg = np.array(args[1:]).astype('int64')
+
+    values = list(args.values())
+
+    inarg = np.array(values[1:]).astype('int64')
     x = [inarg]
     num = CatC.predict(x)
     result = round(CatC.predict_proba(x)[0][1], 2)
@@ -185,10 +265,13 @@ def scale_severity(args):
     else:
         risk_lv = '오류'
 
-    return {
+    result = {
         "val_check1": int(num[0]),
         "val_check2": int(num2[0]),
         "risk_score": score,
         "risk_lv": risk_lv,
-        "other_mean": D_mean.tolist()
+        "other_mean": dict(zip(list(args.keys())[1:], D_mean))
     }
+    st.write(args)
+    st.write(result)
+    return result

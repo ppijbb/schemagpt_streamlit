@@ -36,10 +36,7 @@ from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
 
 from srcs import schema_therapy
-from srcs.st_cache import get_utterance_data, get_heq_data, get_scale_data
-
-heq_data = get_heq_data()
-scale_data = get_scale_data()
+from srcs.st_cache import get_utterance_data
 
 
 def get_or_create_eventloop():
@@ -52,19 +49,20 @@ def get_or_create_eventloop():
             return asyncio.get_event_loop()
 
 
+st.set_page_config(layout="wide",
+                   initial_sidebar_state="expanded",)
+
+vector_db = get_utterance_data()
+
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-# st.set_page_config(layout="wide",
-#                    initial_sidebar_state="expanded",)
 
 
 if __name__ == "__main__":
+    st.title('🤖 LLM based Chatbot App')
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
 
-    vector_db = get_utterance_data()
-
-    st.title('🤖 LLM based Chatbot App')
     with st.sidebar:
         st.page_link("pages/cardio.py",)
         st.page_link("pages/dep_peptide.py",)

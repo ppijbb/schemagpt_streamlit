@@ -295,19 +295,20 @@ def show():
         webrtc_ctx.video_processor.code = None
 
 
-st.title('😄😑😭 Facial Emotion Recognition')
-with st.sidebar:
-    st.page_link("pages/cardio.py",)
-    st.page_link("pages/dep_peptide.py",)
-    st.page_link("pages/facial.py",)
-# hide_menu_style = """
-#         <style>
-#         .css-1avcm0n {visibility: hidden;}
-#         .css-18ni7ap {visibility: hidden;}
-#         .block-container {padding: 0rem 1rem 10rem;}
-#         .block-container div {justify-content: center;gap: 0rem;}
-#         video {}
-#         </style>
-#         """
-# st.markdown(hide_menu_style, unsafe_allow_html=True)
-show()
+if __name__ == "__main__":
+    st.title('😄😑😭 Facial Emotion Recognition')
+    with st.sidebar:
+        st.page_link("pages/cardio.py",)
+        st.page_link("pages/dep_peptide.py",)
+        st.page_link("pages/facial.py",)
+    # hide_menu_style = """
+    #         <style>
+    #         .css-1avcm0n {visibility: hidden;}
+    #         .css-18ni7ap {visibility: hidden;}
+    #         .block-container {padding: 0rem 1rem 10rem;}
+    #         .block-container div {justify-content: center;gap: 0rem;}
+    #         video {}
+    #         </style>
+    #         """
+    # st.markdown(hide_menu_style, unsafe_allow_html=True)
+    show()
