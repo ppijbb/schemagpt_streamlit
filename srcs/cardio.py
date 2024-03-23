@@ -215,7 +215,7 @@ def heq(args):
                     'value': 2+0.5}}))
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"})
     # st.write(risk_lv)
-    fig.update_layout(margin_l=0, margin_r=0, margin_b=0, margin_t=0)
+    fig.update_layout(margin_l=0, margin_r=0, margin_b=0, margin_t=20)
     st.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
     st.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
     # st.write(args)

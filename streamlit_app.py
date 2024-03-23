@@ -117,10 +117,15 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model_name="gpt-3.5-turbo",
                              openai_api_key=openai_api_key,
                              streaming=True)
-            tools = [DuckDuckGoSearchRun(name="DDG"),
-                     WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
-                     PubmedQueryRun(),
-                     IonicTool().tool()] + load_tools(["arxiv"],)
+            tools = [
+                DuckDuckGoSearchRun(
+                    api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=2, 
+                                                           region="kr-kr")),
+                WikipediaQueryRun(
+                    api_wrapper=WikipediaAPIWrapper()),
+                PubmedQueryRun(),
+                IonicTool().tool()] + load_tools(["arxiv"],)
+            st.write(tools[0].api_wrapper)
             chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
                                                                     tools=tools)
             executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
@@ -171,11 +176,12 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model_name="ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
                              openai_api_key=openai_api_key,
                              streaming=True)
-            tools = [DuckDuckGoSearchRun(name="Search",
-                                         time="y",
-                                         region="kr-kr",
-                                         num_results=2),
-                     WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
+            tools = [DuckDuckGoSearchRun(
+                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
+                                                               region="kr-kr",
+                                                               num_results=2)),
+                     WikipediaQueryRun(
+                         api_wrapper=WikipediaAPIWrapper()),
                      PubmedQueryRun(),
                      IonicTool().tool()] + load_tools(["arxiv"],)
             search_agent = initialize_agent(tools=tools,
