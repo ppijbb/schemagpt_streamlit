@@ -5,6 +5,7 @@ import sys
 import copy
 import signal
 import time
+import json
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "0"
@@ -29,7 +30,9 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 from langchain_community.tools import DuckDuckGoSearchRun, BingSearchRun, WikipediaQueryRun
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
 from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper, BingSearchAPIWrapper,
-                                           SerpAPIWrapper, WikipediaAPIWrapper)
+                                           SerpAPIWrapper, WikipediaAPIWrapper, PubMedAPIWrapper)
+# from langchain_community.utilities.pubmed import PubMedAPIWrapper
+
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
@@ -123,9 +126,10 @@ if __name__ == "__main__":
                                                            region="kr-kr")),
                 WikipediaQueryRun(
                     api_wrapper=WikipediaAPIWrapper()),
-                PubmedQueryRun(),
-                IonicTool().tool()] + load_tools(["arxiv"],)
-            st.write(tools[0].api_wrapper)
+                PubmedQueryRun(
+                    api_wrapper=PubMedAPIWrapper()),
+                IonicTool().tool()
+                ] + load_tools(["arxiv"],)
             chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
                                                                     tools=tools)
             executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
@@ -177,26 +181,29 @@ if __name__ == "__main__":
                              openai_api_key=openai_api_key,
                              streaming=True)
             tools = [DuckDuckGoSearchRun(
-                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
+                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
                                                                region="kr-kr",
-                                                               num_results=2)),
+                                                               max_results=5)),
                      WikipediaQueryRun(
-                         api_wrapper=WikipediaAPIWrapper()),
+                        api_wrapper=WikipediaAPIWrapper()),
                      PubmedQueryRun(),
                      IonicTool().tool()] + load_tools(["arxiv"],)
             search_agent = initialize_agent(tools=tools,
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                            handle_parsing_errors=True)
+                                            handle_parsing_errors=True,
+                                            max_iterations=3,
+                                            max_execution_time=15)
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
-                cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)]
+                cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
                 search_instruction = copy.deepcopy(st.session_state.messages2)
                 search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 원인)"
-                response = search_agent.invoke(search_instruction, callbacks=cfg["callbacks"])
-                st.write(f'{response["output"]}')
+                response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
+                output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
+                st.write(f'{output}')
                 st.session_state.messages2.append(
                         {
                             "role": "assistant",
-                            "content": response["output"]
+                            "content": output
                         })
