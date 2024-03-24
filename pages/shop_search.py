@@ -1,3 +1,4 @@
+import asyncio
 import streamlit as st
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
@@ -24,6 +25,15 @@ import json
 import numpy as np
 import pandas as pd
 
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
+        
 
 open_api_url = "http://apis.data.go.kr/B553077/api/open/sdsc2"
 map_addr_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json"
