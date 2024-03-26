@@ -153,7 +153,8 @@ if __name__ == "__main__":
                     }
                     with result_con:
                         _, con, _ = st.columns([0.1, 0.8, 0.1])
-                        scale_severity(form_data, con)
+                        result = scale_severity(form_data, con)
+
 
         with tab2:
             st.title("🔎 세부 평가")

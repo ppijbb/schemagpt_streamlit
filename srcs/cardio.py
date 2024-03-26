@@ -327,7 +327,7 @@ def scale_severity(args, st_layout):
         "risk_lv": risk_lv,
         "other_mean": dict(zip(list(args.keys())[1:], D_mean))
     }
-    labels = ["총점",]
+    label = [f"총점",]
     generals = ["일반", "자신의 건강", "규칙적 운동", "보조제 복용",]
     nutritions = ["영양", "Vit E", "Vit B2", "동물성 단백질", "Protein",]
     patterns = ["패턴", "피로", "무기력", "음주 횟수", "음주량", "신경질", "중강도 신체활동", "불안", "시선 어려움", "대면 어려움"]
@@ -336,18 +336,19 @@ def scale_severity(args, st_layout):
     pat_score = [args[f'p_{p}'] for p in patterns[1:]]
     fig = go.Figure(
         go.Sunburst(
-            labels=labels + generals + nutritions + patterns,
+            name="결과",
+            labels=label + generals + nutritions + patterns,
             parents=[""] +
-                    ["총점"] + ["일반"] * len(generals[1:]) +
-                    ["총점"] + ["영양"] * len(nutritions[1:]) +
-                    ["총점"] + ["패턴"] * len(patterns[1:]),
+                    label + ["일반"] * len(generals[1:]) +
+                    label + ["영양"] * len(nutritions[1:]) +
+                    label + ["패턴"] * len(patterns[1:]),
             values=[score,] +
                    [sum(gen_score)] + gen_score +
                    [sum(nut_score)] + nut_score +
                    [sum(pat_score)] + pat_score,
             branchvalues='total',
             insidetextorientation='radial'
-        )
+        ),
     )
     fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
     st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
