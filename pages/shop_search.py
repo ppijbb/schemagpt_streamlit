@@ -65,7 +65,6 @@ default_map = pd.DataFrame({
         })
 
 
-
 if __name__ == "__main__":
     st.title('🐶 Dog Coffee Searcher 🦮')
     with st.sidebar:

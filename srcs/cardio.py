@@ -65,7 +65,7 @@ def make_grade(indexer, x):
 #     pickle.dump(heq_data[1], f)
 
 
-def heq(args):
+def heq(args, st_layout):
     # args[-1] = args[-1][0]
     # KS 모델 동작에 필요한 데이터 파일에서 읽어옴
     value_data, Voting = heq_data
@@ -114,7 +114,8 @@ def heq(args):
         num2 = num
     except:
         num2 = num
-    print(num, num2, Voting.predict(vx),  # voting
+    print(num, num2,
+          Voting.predict(vx),  # voting
           Voting.estimators_[0].predict(vx),  # LightGBM
           Voting.estimators_[1].predict(vx),  # XGBoost
           Voting.estimators_[2].predict(vx),  # GradientBoost
@@ -161,12 +162,13 @@ def heq(args):
 
     fig = make_subplots(
         rows=2, cols=2,
-        column_widths=[0.1, 0.1],
-        row_heights=[0.1, 0.1],
+        column_widths=[0.5, 0.5],
+        row_heights=[0.5, 0.5],
+        # vertical_spacing=1.0,
         subplot_titles=("영양 분석", "혈액 분석", "기본 분석", "패턴 분석"),
         # shared_yaxes=True
-        specs=[[{"type": "scatterpolargl"}, {"type": "scatterpolargl"}],
-               [            None                    , None]]
+        specs=[[{"type": "polar", }, {"type": "polar", }],
+               [{"type": "bar", }, {"type": "bar", }]]
         )
     for draw_data, title in zip([nut_data, nut_mean_data],
                                 ["사용자 데이터", "정상군 평균"],):
@@ -181,9 +183,9 @@ def heq(args):
             rows=1, cols=1
         )
     for draw_data, title in zip([blo_data, blo_mean_data],
-                                ["사용자 데이터", "정상군 평균"]):
-        fig.add_traces(
-            data=[go.Scatterpolargl(
+                                ["사용자 데이터", "정상군 평균"],):
+        fig.add_traces(data=[
+            go.Scatterpolargl(
                 r=list(draw_data.values()),
                 showlegend=False,
                 theta=list(draw_data.keys()),
@@ -192,38 +194,91 @@ def heq(args):
             )],
             rows=1, cols=2
         )
+
+    for draw_data, title in zip([gen_data, gen_mean_data],
+                                ["사용자 데이터", "정상군 평균"]):
+        fig.add_traces(
+            data=[go.Bar(
+                y=list(draw_data.keys()),
+                x=list(draw_data.values()),
+                orientation='h',
+                showlegend=False,
+                name=title
+            )],
+            rows=2, cols=1
+        )
+
+    for draw_data, title in zip([pat_data, pat_mean_data],
+                                ["사용자 데이터", "정상군 평균"]):
+        fig.add_traces(
+            data=[go.Bar(
+                y=list(draw_data.keys()),
+                x=list(draw_data.values()),
+                orientation='h',
+                showlegend=False,
+                name=title
+            )],
+            rows=2, cols=2
+        )
+
     pie = go.Figure(go.Indicator(
-            mode="gauge+number+delta",
-            value=2.5,
-            domain={'x': [0, 1], 'y': [0, 1]},
-            title={'text': "건강 평가", 'font': {'size': 24}},
-            delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
+            mode="gauge+number", # "gauge+number+delta"
+            value=3-np.argmax(user_level)+0.5,
+            domain={'x': [0, 1.0], 'y': [0, 0.8]},
+            title={'text': f"분석 결과", 'font': {'size': 24}},
+            # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
+            number={"suffix": f"단계: {risk_lv}", "valueformat": ".0", 'font': {'size': 30, 'color': 'black'}},
             gauge={
-                'axis': {'range': [None, 4], 'tickwidth': 1, 'tickcolor': "darkblue"},
-                'bar': {'color': "darkblue"},
+                'axis': {
+                    'range': [0, 4],
+                    'tickvals': [0, 1, 2, 3, 4],
+                    'ticktext': ["건강", "일반", "주의", "위험", "고위험"],
+                    'tickwidth': 1,
+                    'tickcolor': "darkblue",
+                    'tickformatstops': [
+                        {'templateitemname': '건강', 'value': '건강',},
+                        {'templateitemname': '일반', 'value': '일반',},
+                        {'templateitemname': '위험', 'value': '위험',},
+                        {'templateitemname': '고위험', 'value': '고위험'},
+                    ]
+                },
+                'bar': {
+                    'color': "darkblue",
+                    'thickness': 0,
+                    'line': {
+                        'width': 0,
+                    }
+                },
                 # 'bgcolor': "white",
-                'borderwidth': 2,
+                'borderwidth': 1,
                 'bordercolor': "gray",
                 'steps': [
-                    {'range': [0, 1], 'color': 'royalblue'},
-                    {'range': [1, 2], 'color': 'lightcyan'},
-                    {'range': [2, 3], 'color': 'lightsalmon'},
-                    {'range': [3, 4], 'color': 'tomato'}],
+                    {'name': '건강',   'range': [0, 1], 'color': 'royalblue', },
+                    {'name': '일반',   'range': [1, 2], 'color': 'lightcyan', },
+                    {'name': '위험',   'range': [2, 3], 'color': 'lightsalmon', },
+                    {'name': '고위험', 'range': [3, 4], 'color': 'tomato', }],
                 'threshold': {
-                    'line': {'color': "black", 'width': 4},
-                    'thickness': 0.75,
-                    'value': 2+0.5}}))
+                    'thickness': 0.7,
+                    'value': (3 - np.argmax(user_level)) + 0.5,
+                    'line': {
+                        'color': 'black',
+                        'width': 4
+                    }
+                }
+            }))
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"})
     # st.write(risk_lv)
-    fig.update_layout(margin_l=0, margin_r=0, margin_b=0, margin_t=20)
-    st.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
-    st.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
-    # st.write(args)
-    # st.write(result)
+    fig.update_layout(margin={
+        "l": 50, "r": 50, "t": 0, "b": 0, 'pad': 0
+    })
+    st_layout.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
+    st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
+    # st_layout.write(args)
+    # st_layout.write(result)
     return result
 
 
-def scale_severity(args):
+def scale_severity(args, st_layout):
     # 입력 데이터 처리
     CatC, CatM, coef, intercept, pca, D_mean, SCALER = scale_data
     a = coef[0]
@@ -254,13 +309,13 @@ def scale_severity(args):
     input_dist = distance(a, feature[0, 0], b, feature[0, 1], c, feature[0, 2], d)
     cluster_result = level(SCALER[num[0]].transform([[input_dist]]))
 
-    if num == 1 and cluster_result == 1:
+    if num2[0] == 1 and cluster_result == 1:
         risk_lv = '고위험군'
-    elif num == 1 and cluster_result == 0:
+    elif num2[0] == 1 and cluster_result == 0:
         risk_lv = '위험군'
-    elif num == 0 and cluster_result == 0:
+    elif num2[0] == 0 and cluster_result == 0:
         risk_lv = '일반인'
-    elif num == 0 and cluster_result == 1:
+    elif num2[0] == 0 and cluster_result == 1:
         risk_lv = '건강인'
     else:
         risk_lv = '오류'
@@ -272,6 +327,30 @@ def scale_severity(args):
         "risk_lv": risk_lv,
         "other_mean": dict(zip(list(args.keys())[1:], D_mean))
     }
-    st.write(args)
-    st.write(result)
+    labels = ["총점",]
+    generals = ["일반", "자신의 건강", "규칙적 운동", "보조제 복용",]
+    nutritions = ["영양", "Vit E", "Vit B2", "동물성 단백질", "Protein",]
+    patterns = ["패턴", "피로", "무기력", "음주 횟수", "음주량", "신경질", "중강도 신체활동", "불안", "시선 어려움", "대면 어려움"]
+    gen_score = [args[f'g_{g}'] for g in generals[1:]]
+    nut_score = [args[f'n_{n}'] for n in nutritions[1:]]
+    pat_score = [args[f'p_{p}'] for p in patterns[1:]]
+    fig = go.Figure(
+        go.Sunburst(
+            labels=labels + generals + nutritions + patterns,
+            parents=[""] +
+                    ["총점"] + ["일반"] * len(generals[1:]) +
+                    ["총점"] + ["영양"] * len(nutritions[1:]) +
+                    ["총점"] + ["패턴"] * len(patterns[1:]),
+            values=[score,] +
+                   [sum(gen_score)] + gen_score +
+                   [sum(nut_score)] + nut_score +
+                   [sum(pat_score)] + pat_score,
+            branchvalues='total',
+            insidetextorientation='radial'
+        )
+    )
+    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+    st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
+    st_layout.write(result)
+
     return result
