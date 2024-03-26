@@ -18,12 +18,59 @@ def add_static_js():
     return js_data
 
 
+
+if "test" not in st.session_state:
+    st.session_state.test = ['user',
+                             1,2,4,115,79,120,0.9,
+                             76.5,134.9,147.0,39.2,24.0,13.4,4.31,7.0,5.25, 
+                             15.50433,24.60925,7.67180,0.10010,3.39983,75.03800,1136.35250,114.83500,105.34995,  
+                             1.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0]
+if 'test_key' not in st.session_state:
+    st.session_state.test_key = "reset"
+                            
+
+def set_test():
+    test_sets = {
+        "test1": ['테스트 데이터1',
+                  1, 2, 3,115,79,120,0.9, # 1, 2, 4, 115, 79, 120, 0.9,
+                  76.5,134.9,147.0,39.2,24.0,13.4,4.31,7.0,5.25, 
+                  15.50433,24.60925,7.67180,0.10010,3.39983,75.03800,1136.35250,114.83500,105.34995,  
+                  1.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0], 
+        "test2": ['테스트 데이터2',
+                  2, 1, 3, 108.00, 72.00, 116.00, 0.760000, # 2, 1, 4, 108.00, 72.00, 116.00, 0.760000, 
+                  74.60, 127.40, 120.00, 38.20,  215.00,  12.40, 4.06, 4.40,  4.57,
+                  16.302070, 21.769050, 19.861750, 0.600900, 1.047080, 14.363000, 489.085500, 133.289000, 63.254997,
+                  0, 0, 1, 0, 1, 0, 0, 0],
+        "test3": ['테스트 데이터3',
+                  1, 1, 3, 122.00, 70.00, 118.00,  0.850000, # 1, 1, 4, 122.00, 70.00, 118.00,  0.850000,
+                  46.60, 147.80, 155.00, 44.80,  231.00,  15.80, 4.82, 4.70,  4.85,
+                  16.030000, 19.844000, 18.050500, 0.085800, 1.555050, 33.640003, 687.535000, 128.400010, 83.894000,
+                  0, 0, 1, 0, 1, 0, 0, 0],
+        "test4": ['테스트 데이터4',
+                  1, 1, 3, 116.00, 75.00, 107.00,  0.840000, # 1, 1, 4, 116.00, 75.00, 107.00,  0.840000,
+                  64.70, 76.20, 70.00, 38.10,  149.00, 12.80, 4.19, 4.00, 4.45,
+                  7.022000, 7.987100, 6.680100, 0.028600, 0.591825, 6.840000, 426.235020, 11.580000, 29.523998,
+                  1, 1, 1, 1, 1, 0, 0, 0],
+        "reset":  ['user',
+                   1, 2, 3, 115, 79, 120, 0.9, # 1, 2, 4, 115, 79, 120, 0.9,
+                   76.5,134.9,147.0,39.2,24.0,13.4,4.31,7.0,5.25, 
+                   15.50433,24.60925,7.67180,0.10010,3.39983,75.03800,1136.35250,114.83500,105.34995,  
+                   1.0,1.0,1.0,0.0,1.0,1.0,0.0,0.0]}
+    
+    st.session_state.test = test_sets[st.session_state.test_key]
+
+
 if __name__ == "__main__":
     st.title('🫀 Cardio')
     with st.sidebar:
         st.page_link("pages/cardio.py", )
         st.page_link("pages/dep_peptide.py", )
         st.page_link("pages/facial.py", )
+    
+    st.selectbox(label='테스트 데이터 입력', 
+                 options=['test1','test2','test3','test4','reset'], 
+                 key="test_key", 
+                 on_change=set_test)
     form_con = st.expander(label="측정하기", expanded=True)
     result_con = st.expander(label="점수보기", expanded=False)
     with form_con:
@@ -153,7 +200,8 @@ if __name__ == "__main__":
                     }
                     with result_con:
                         _, con, _ = st.columns([0.1, 0.8, 0.1])
-                        result = scale_severity(form_data, con)
+                        with con:
+                            result = scale_severity(form_data, st.container(border=True))
 
 
         with tab2:
@@ -166,172 +214,205 @@ if __name__ == "__main__":
                     general_1 = st.radio(
                             label="★ 규칙적 운동 여부",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[1],
                             captions=["충분히 하고 있다", "어느정도 하고 있다", "가끔 한다", "전혀 하지 않는다"],
                             horizontal=True)
                     general_2 = st.radio(
                             label="★ 보조제 복용 유무 ",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[2],
                             captions=["먹지 않는다", "가끔 먹는다", "규칙적이지 않지만 자주 먹는다", "매일 먹는다"],
                             horizontal=True)
                     general_6 = st.radio(
                             label="★ 자신의 건강 ",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[3],
                             captions=["무척 나쁘다", "조금 나쁘다", "건강한 편이다", "매우 건강하다"],
                             horizontal=True)
                     general_12 = st.slider(
                             label="수축기 혈압 2차\n\n"
                                   "수축기 120, 140이하 고혈압 전단계",
-                            min_value=70, max_value=190, value=110)
+                            min_value=70.0, max_value=190.0, 
+                            value=st.session_state.test[4], step=1.0)
                     general_13 = st.slider(
                             label="이완기 혈압 1차\n\n"
                                   "이완기 80, 90이하 고혈압 전단계",
-                            min_value=20, max_value=110, value=60)
+                            min_value=20.0, max_value=110.0, 
+                            value=st.session_state.test[5], step=1.0)
                     general_14 = st.slider(
                             label="수축기 혈압 1차\n\n"
                                   "수축기 120, 140이하 고혈압 전단계",
-                            min_value=70, max_value=190, value=110)
+                            min_value=70.0, max_value=190.0, 
+                            value=st.session_state.test[6], step=1.0)
                     general_24 = st.slider(
                             label="비만진단 - 복부지방률\n\n"
                                   "표준범위 남자/여자: 0.75-0.85/0.7-0.8\n\n"
                                   "비만 0.9/0.85 이상\n\n",
-                            min_value=0.2, max_value=1.0, value=0.3, step=0.001)
+                            min_value=0.2, max_value=1.0, 
+                            value=st.session_state.test[7], step=0.001)
                 with row1[1]:
                     st.write("혈액 정보")
                     blood_16 = st.slider(
                             label="HDL 콜레스테롤\n\n"
                                   "참고치\n\n"
                                   "-정상 : >40 mg/dL",
-                            min_value=20.0, max_value=120.0, value=50.0, step=0.001)
+                            min_value=20.0, max_value=120.0,
+                            value=st.session_state.test[8], step=0.001)
                     blood_17 = st.slider(
                             label="LDL 콜레스테롤\n\n"
                                   "참고치\n\n"
                                   "-정상 : < 130 mg/dL",
-                            min_value=20.0, max_value=250.0, value=50.0, step=0.001)
+                            min_value=20.0, max_value=250.0, 
+                            value=st.session_state.test[9], step=0.001)
                     blood_18 = st.slider(
                             label="LDL-c 콜레스테롤\n\n"
                                   "참고치\n\n"
                                   "-정상 : < 130 mg/dL",
-                            min_value=20.0, max_value=250.0, value=50.0, step=0.001)
+                            min_value=20.0, max_value=250.0, 
+                            value=st.session_state.test[10], step=0.001)
                     blood_19 = st.slider(
                             label="적혈구용적치(Hct)\n\n"
                                   "참고치\n\n"
                                   "-정상(남자) : 39-50 %\n\n"
                                   "-정상(여자) : 36-47 %",
-                            min_value=20.0, max_value=70.0, value=30.0, step=0.001)
+                            min_value=20.0, max_value=70.0, 
+                            value=st.session_state.test[11], step=0.001)
                     blood_20 = st.slider(
                             label="Cholesterol\n\n"
                                   "참고치\n\n"
                                   "-정상 : 200 mg/dL 미만",
-                            min_value=20.0, max_value=400.0, value=200.0, step=0.001)
+                            min_value=20.0, max_value=400.0, 
+                            value=st.session_state.test[12], step=0.001)
                     blood_23 = st.slider(
                             label="헤모글로빈(HGB)\n\n"
                                   "참고치\n\n"
                                   "-정상(남자) : 13.0-17.1 g/dL\n\n"
                                   "-정상(여자) : 11.2-15.0 g/dL",
-                            min_value=5.0, max_value=25.0, value=11.0, step=0.001)
+                            min_value=5.0, max_value=25.0, 
+                            value=st.session_state.test[13], step=0.001)
                     blood_26 = st.slider(
                             label="적혈구수(RBC)\n\n"
                                   "참고치\n\n"
                                   "-정상(남자) : 440-560 만개/mm3\n\n"
                                   " -정상(여자) : 400-520 만개/mm3",
-                            min_value=2.0, max_value=7.0, value=4.0, step=0.001)
+                            min_value=2.0, max_value=7.0, 
+                            value=st.session_state.test[14], step=0.001)
                     blood_27 = st.slider(
                             label="단핵구(MONO)\n\n"
                                   "참고치\n\n"
                                   "-정상 : 0-9 %",
-                            min_value=0.2, max_value=12.0, value=10.0, step=0.001)
+                            min_value=0.2, max_value=12.0, 
+                            value=st.session_state.test[15], step=0.001)
                     blood_33 = st.slider(
                             label="백혈구수(WBC)\n\n"
                                   "참고치\n\n"
                                   "-정상 : 4.5-9.1 천개/mm3",
-                            min_value=0.0, max_value=12.0, value=10.0, step=0.001)
+                            min_value=0.0, max_value=12.0, 
+                            value=st.session_state.test[16], step=0.001)
                 with row1[2]:
                     st.write("영양 정보")
                     nutrition_15 = st.slider(
                             label="★ Vit E(mg)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 13.531(mg) 이상 ",
-                            min_value=0.0, max_value=40.0, value=10.0, step=0.001)
+                            min_value=0.0, max_value=40.0, 
+                            value=st.session_state.test[17], step=0.001)
                     nutrition_21 = st.slider(
                             label="회분(g)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 17.334(g) 이상 ",
-                            min_value=0.0, max_value=40.0, value=10.0, step=0.001)
+                            min_value=0.0, max_value=40.0, 
+                            value=st.session_state.test[18], step=0.001)
                     nutrition_22 = st.slider(
                             label="식물성 Fe(mg)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 14.310(mg) 미만 ",
-                            min_value=0.0, max_value=40.0, value=10.0, step=0.001)
+                            min_value=0.0, max_value=40.0, 
+                            value=st.session_state.test[19], step=0.001)
                     nutrition_25 = st.slider(
                             label="Mo(ug)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 2.572(ug) 이상 ",
-                            min_value=0.0, max_value=13.0, value=5.0, step=0.001)
+                            min_value=0.0, max_value=13.0, 
+                            value=st.session_state.test[20], step=0.001)
                     nutrition_28 = st.slider(
                             label="★ VitB2(mg)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 1.293(mg) 이상 ",
-                            min_value=0.0, max_value=5.0, value=3.0, step=0.001)
+                            min_value=0.0, max_value=5.0, 
+                            value=st.session_state.test[21], step=0.001)
                     nutrition_29 = st.slider(
                             label="★ 동물성 단백질(g)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 24.602(g) 이상 ",
-                            min_value=0.0, max_value=110.0, value=30.0, step=0.001)
+                            min_value=0.0, max_value=110.0,
+                            value=st.session_state.test[22], step=0.001)
                     nutrition_30 = st.slider(
                             label="Cu(ug)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 688.324(ug) 미만 ",
-                            min_value=50.0, max_value=2000.0, value=40.0, step=0.001)
+                            min_value=50.0, max_value=2000.0, 
+                            value=st.session_state.test[23], step=0.001)
                     nutrition_31 = st.slider(
                             label="Vit C(mg)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 74.102(mg) 미만 ",
-                            min_value=50.0, max_value=330.0, value=70.0, step=0.001)
+                            min_value=50.0, max_value=330.0, 
+                            value=st.session_state.test[24], step=0.001)
                     nutrition_32 = st.slider(
                             label="★ Protein(g)\n\n"
                                   "참고치\n\n"
                                   "-정상(추정) : 5.332(g) 이상 ",
-                            min_value=0.0, max_value=150.0, value=70.0, step=0.001)
+                            min_value=0.0, max_value=150.0, 
+                            value=st.session_state.test[25], step=0.001)
                 with row1[3]:
                     st.write("생활 정보")
                     pattern_3 = st.radio(
                             label="★ 스트레스 무기력감",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[26],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
                     pattern_4 = st.radio(
                             label="★ 스트레스 신경질",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[27],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
                     pattern_5 = st.radio(
                             label="★ 여가_중강도 신체활동 여부",
                             options=[0, 1, ],
+                            index=st.session_state.test[28],
                             captions=["한다", "안한다",],
                             horizontal=True)
                     pattern_7 = st.radio(
                             label="★ 스트레스 피로",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[29],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
                     pattern_8 = st.radio(
                             label="★ 음주 여부 및 음주량",
                             options=[0, 1, 2, 3, 4],
+                            index=st.session_state.test[30],
                             captions=["전혀 없음", "한 달에 1번", "한 달에 2~4번", "일주일에 2~3번", "일주일에 4번 이상"],
                             horizontal=True)
                     pattern_9 = st.radio(
                             label="★ 스트레스 긴장,불안",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[31],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
                     pattern_10 = st.radio(
                             label="★ 스트레스 대면어려움",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[32],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
                     pattern_11 = st.radio(
                             label="★ 스트레스_시선어려움",
                             options=[0, 1, 2, 3],
+                            index=st.session_state.test[33],
                             captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                             horizontal=True)
 
@@ -341,7 +422,7 @@ if __name__ == "__main__":
                     form_data = {
                         "user": "test",
                         "g_규칙적 운동": general_1, "g_보조제 복용": general_2, "p_무기력": pattern_3, "p_산경질": pattern_4,
-                        "p_중강도 신체활동": pattern_5, "g_자신의 건강": general_6, "p_피로": pattern_7, "p_음주": pattern_8,
+                        "p_중강도 신체활동": pattern_5, "g_자신의 건강": general_6+1, "p_피로": pattern_7, "p_음주": pattern_8,
                         "p_긴장/불안": pattern_9, "p_대면 어려움": pattern_10, "p_시선 어려움": pattern_11,
                         "g_수축기 혈압 2차": general_12, "g_이완기 혈압 1차": general_13, "g_수축기 혈압 1차": general_14,
                         "n_Vit E": nutrition_15, "b_HDL": blood_16, "b_LDL": blood_17,

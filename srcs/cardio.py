@@ -64,6 +64,53 @@ def make_grade(indexer, x):
 # with open("file", "wb") as f:
 #     pickle.dump(heq_data[1], f)
 
+def make_gauge(user_level, risk_lv):
+    return go.Indicator(
+            mode="gauge+number", # "gauge+number+delta"
+            value=3-np.argmax(user_level)+0.5,
+            domain={'x': [0, 1.0], 'y': [0, 0.8]},
+            title={'text': f"분석 결과", 'font': {'size': 24}},
+            # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
+            number={"suffix": f"단계: {risk_lv}", "valueformat": ".0", 'font': {'size': 30, 'color': 'black'}},
+            gauge={
+                'axis': {
+                    'range': [0, 4],
+                    'tickvals': [0, 1, 2, 3, 4],
+                    'ticktext': ["건강", "일반", "주의", "위험", "고위험"],
+                    'tickwidth': 1,
+                    'tickcolor': "darkblue",
+                    'tickformatstops': [
+                        {'templateitemname': '건강', 'value': '건강',},
+                        {'templateitemname': '일반', 'value': '일반',},
+                        {'templateitemname': '위험', 'value': '위험',},
+                        {'templateitemname': '고위험', 'value': '고위험'},
+                    ]
+                },
+                'bar': {
+                    'color': "darkblue",
+                    'thickness': 0,
+                    'line': {
+                        'width': 0,
+                    }
+                },
+                # 'bgcolor': "white",
+                'borderwidth': 1,
+                'bordercolor': "gray",
+                'steps': [
+                    {'name': '건강',   'range': [0, 1], 'color': 'royalblue', },
+                    {'name': '일반',   'range': [1, 2], 'color': 'lightcyan', },
+                    {'name': '위험',   'range': [2, 3], 'color': 'lightsalmon', },
+                    {'name': '고위험', 'range': [3, 4], 'color': 'tomato', }],
+                'threshold': {
+                    'thickness': 0.7,
+                    'value': (3 - np.argmax(user_level)) + 0.5,
+                    'line': {
+                        'color': 'black',
+                        'width': 4
+                    }
+                }
+            })
+
 
 def heq(args, st_layout):
     # args[-1] = args[-1][0]
@@ -221,51 +268,7 @@ def heq(args, st_layout):
             rows=2, cols=2
         )
 
-    pie = go.Figure(go.Indicator(
-            mode="gauge+number", # "gauge+number+delta"
-            value=3-np.argmax(user_level)+0.5,
-            domain={'x': [0, 1.0], 'y': [0, 0.8]},
-            title={'text': f"분석 결과", 'font': {'size': 24}},
-            # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
-            number={"suffix": f"단계: {risk_lv}", "valueformat": ".0", 'font': {'size': 30, 'color': 'black'}},
-            gauge={
-                'axis': {
-                    'range': [0, 4],
-                    'tickvals': [0, 1, 2, 3, 4],
-                    'ticktext': ["건강", "일반", "주의", "위험", "고위험"],
-                    'tickwidth': 1,
-                    'tickcolor': "darkblue",
-                    'tickformatstops': [
-                        {'templateitemname': '건강', 'value': '건강',},
-                        {'templateitemname': '일반', 'value': '일반',},
-                        {'templateitemname': '위험', 'value': '위험',},
-                        {'templateitemname': '고위험', 'value': '고위험'},
-                    ]
-                },
-                'bar': {
-                    'color': "darkblue",
-                    'thickness': 0,
-                    'line': {
-                        'width': 0,
-                    }
-                },
-                # 'bgcolor': "white",
-                'borderwidth': 1,
-                'bordercolor': "gray",
-                'steps': [
-                    {'name': '건강',   'range': [0, 1], 'color': 'royalblue', },
-                    {'name': '일반',   'range': [1, 2], 'color': 'lightcyan', },
-                    {'name': '위험',   'range': [2, 3], 'color': 'lightsalmon', },
-                    {'name': '고위험', 'range': [3, 4], 'color': 'tomato', }],
-                'threshold': {
-                    'thickness': 0.7,
-                    'value': (3 - np.argmax(user_level)) + 0.5,
-                    'line': {
-                        'color': 'black',
-                        'width': 4
-                    }
-                }
-            }))
+    pie = go.Figure(make_gauge(user_level, risk_lv))
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"})
     # st.write(risk_lv)
     fig.update_layout(margin={
@@ -295,37 +298,46 @@ def scale_severity(args, st_layout):
     vx = inarg.reshape(1, -1)
 
     num2 = CatM.predict(vx).ravel()
+    user_level = [0, 0, 0, 0]
     score = int(np.sum(inarg))
     if score < 16:
+        user_level[3] = 0.1
         num2[0] = 0
+        risk_lv = '건강인'
     elif 15 < score < 21:
+        user_level[2] = 0.1
         num2[0] = 1
+        risk_lv = '일반인'
     elif 20 < score < 25:
         num2[0] = 2
+        user_level[1] = 0.1
+        risk_lv = '위험군'
     elif score > 24:
+        user_level[0] = 0.1
         num2[0] = 3
+        risk_lv = '고위험군'
     x = [np.append(x, num)]
     feature = pca.transform(x)
     input_dist = distance(a, feature[0, 0], b, feature[0, 1], c, feature[0, 2], d)
     cluster_result = level(SCALER[num[0]].transform([[input_dist]]))
-
-    if num2[0] == 1 and cluster_result == 1:
-        risk_lv = '고위험군'
-    elif num2[0] == 1 and cluster_result == 0:
-        risk_lv = '위험군'
-    elif num2[0] == 0 and cluster_result == 0:
-        risk_lv = '일반인'
-    elif num2[0] == 0 and cluster_result == 1:
-        risk_lv = '건강인'
+    
+    if (num[0] == 1 and cluster_result == 1):
+        ai_risk_lv = '고위험군'
+    elif (num[0] == 1 and cluster_result == 0):
+        ai_risk_lv = '위험군'
+    elif (num[0] == 0 and cluster_result == 0):
+        ai_risk_lv = '일반인'
+    elif (num[0] == 0 and cluster_result == 1):
+        ai_risk_lv = '건강인'
     else:
-        risk_lv = '오류'
+        ai_risk_lv = '오류'
 
     result = {
         "val_check1": int(num[0]),
         "val_check2": int(num2[0]),
         "risk_score": score,
         "risk_lv": risk_lv,
-        "other_mean": dict(zip(list(args.keys())[1:], D_mean))
+        "other_mean": dict(zip([k.split("_")[1] for k in args.keys() if k != "user"], D_mean))
     }
     label = [f"총점",]
     generals = ["일반", "자신의 건강", "규칙적 운동", "보조제 복용",]
@@ -350,8 +362,22 @@ def scale_severity(args, st_layout):
             insidetextorientation='radial'
         ),
     )
-    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+    polar = go.Figure()
+    for draw_data, title in zip([{k.split("_")[1] : v for k, v in args.items() if k != "user"}, result["other_mean"]],
+                                ["사용자 데이터", "정상군 평균"],):
+        polar.add_traces(data=[
+            go.Scatterpolargl(
+                r=list(draw_data.values()),
+                showlegend=False,
+                theta=list(draw_data.keys()),
+                fill="toself",
+                name=title
+            )],
+        )
+    # fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+    pie = go.Figure(make_gauge(user_level, risk_lv))
+    st_layout.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
     st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
-    st_layout.write(result)
-
+    st_layout.plotly_chart(polar, theme="streamlit", user_conatiner_width=True)
+    
     return result
