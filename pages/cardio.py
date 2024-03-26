@@ -154,9 +154,7 @@ if __name__ == "__main__":
                     with result_con:
                         _, con, _ = st.columns([0.1, 0.8, 0.1])
                         scale_severity(form_data, con)
-        labels = ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-        parents = ["",    "Eve",  "Eve", "Seth", "Seth", "Eve",   "Eve",  "Awan",  "Eve"],
-        values = [10,        14,      12,    10,      2,     6,       6,       4,     4],
+
         with tab2:
             st.title("🔎 세부 평가")
             with st.form("세부 평가지"):
