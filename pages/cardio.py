@@ -24,6 +24,8 @@ if "test" not in st.session_state:
                              76.5, 134.9, 147.0, 39.2, 24.0, 13.4, 4.31, 7.0, 5.25,
                              15.50433, 24.60925, 7.67180, 0.10010, 3.39983, 75.03800, 1136.35250, 114.83500, 105.34995,
                              1, 1, 1, 0, 1, 1, 0, 0]
+if "short_test" not in st.session_state:
+    st.session_state.short_test = ['user',0,1,0,0,0,1,1,1,0,1,1,0,0,0,1,0]
 if 'test_key' not in st.session_state:
     st.session_state.test_key = "test1"
                             
@@ -51,8 +53,15 @@ def set_test():
                   7.022000, 7.987100, 6.680100, 0.028600, 0.591825, 6.840000, 426.235020, 11.580000, 29.523998,
                   1, 1, 1, 1, 1, 0, 0, 0]
         }
+    short_test_sets = {
+       "test1": ['테스트 데이터1',0,1,0,0,0,1,1,1,0,1,1,0,0,0,1,0], 
+       "test2": ['테스트 데이터2',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+       "test3": ['테스트 데이터3',2,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2],
+       "test4": ['테스트 데이터4',3,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3] 
+    }
     
     st.session_state.test = test_sets[st.session_state.test_key]
+    st.session_state.short_test = short_test_sets[st.session_state.test_key]
 
 
 if __name__ == "__main__":
@@ -91,32 +100,37 @@ if __name__ == "__main__":
                 short_general_3 = st.radio(
                         label="자신의 건강은 어떻다고 생각하십니까?",
                         options=[0, 1, 2, 3],
-                        index=st.session_state.gn3,
+                        index=st.session_state.short_test[1],
                         captions=["아주 건강하다", "건강하다", "조금 나쁜 편이다", "무척 나쁘다"],
                         horizontal=True)
                 short_pattern_4 = st.radio(
                         label="최근 1개월 동안, 아침까지 피로가 남고, 일에 기력이 솟지 않으셨습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[2],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_pattern_1 = st.radio(
                         label="최근 1개월 동안, 무기력감(모든 일이 귀찮고 하기 싫음)을 느끼셨습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[3],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_pattern_5 = st.radio(
                         label="평소에 술을 얼마나 자주 마십니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[4],
                         captions=["전혀 마시지 않음", "한 달에 1~4번", "일주일에 2~3번", "일주일에 4번 이상"],
                         horizontal=True)
                 short_pattern_5_1 = st.radio(
                         label="한 번에 술을 얼마나 마십니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[5],
                         captions=["0~2잔", "3~6잔", "7~9잔", "10잔 이상"],
                         horizontal=True)
                 short_pattern_2 = st.radio(
                         label="최근 1개월 동안, 사소한 일에 매우 신경질적이었습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[6],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_pattern_3 = st.radio(
@@ -124,31 +138,37 @@ if __name__ == "__main__":
                               "약간 빠르게 뛰는 중간 정도의 강도의 스포츠, 운동, 여가 활동을 하셨습니까?\n\n"
                               "예) 빠르게 걷기, 조깅, 골프, 필라테스, 등산-낮은 산, 자전거 타기 등",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[7],
                         captions=["충분히 하고 있다", "어느 정도 하고 있다", "가끔 한다", "전혀 하지 않는다"],
                         horizontal=True)
                 short_pattern_6 = st.radio(
                         label="최근 1개월 동안, 매우 긴장하거나 불안한 상태셨습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[8],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_pattern_7 = st.radio(
                         label="최근 1개월 동안, 남의 시선을 똑바로 볼수 없으셨습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[9],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_general_1 = st.radio(
                         label="매일 규칙적으로 운동을 하십니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[10],
                         captions=["충분히 하고 있다", "어느정도 하고 있다", "가끔 한다", "전혀 하지 않는다"],
                         horizontal=True)
                 short_general_2 = st.radio(
                         label="매일 보조제를 복용하십니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[11],
                         captions=["먹지 않는다", "가끔 먹는다", "규칙적이지 않지만 자주 먹는다", "매일 먹는다"],
                         horizontal=True)
                 short_pattern_8 = st.radio(
                         label="최근 1개월 동안, 남 앞에 얼굴을 내미는 것이 두려우셨습니까?",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[12],
                         captions=["전혀 없었다", "가끔 느꼈다", "자주 느꼈다", "항상 느꼈다"],
                         horizontal=True)
                 short_nutrition_1 = st.radio(
@@ -156,6 +176,7 @@ if __name__ == "__main__":
                               "예)호두 1.5개, 땅콩 8개, 아몬드 7개 등\n\n"
                               "Vit E(mg) : 13.531(mg) < 정상  (추정)\n\n",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[13],
                         captions=["하루 5회 이상", "하루 3~4회", "하루 1~2회", "일주일 3회 이하"],
                         horizontal=True)
                 short_nutrition_3 = st.radio(
@@ -163,6 +184,7 @@ if __name__ == "__main__":
                               "예)사과 1/3개, 귤 1개, 바나나 1/2개, 딸기 7개 등\n\n"
                               "VitB2(mg) : 1.293(mg) < 정상  (추정)\n\n",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[14],
                         captions=["하루 2회 이상", "하루 1~2회", "일주일에 4~6회", "일주일 3회 이하"],
                         horizontal=True)
                 short_nutrition_6 = st.radio(
@@ -170,6 +192,7 @@ if __name__ == "__main__":
                               "예) 우유, 두유 1컵(200mL), 슬라이스 치즈 1.5장 등\n\n"
                               "동물성 단백질(g) :24.602(g) < 정상  (추정)\n\n",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[15],
                         captions=["하루 2회 이상", "하루 1~2회", "일주일에 4~6회", "일주일 3회 이하"],
                         horizontal=True)
                 short_nutrition_9 = st.radio(
@@ -177,6 +200,7 @@ if __name__ == "__main__":
                               "예) 소, 돼지 ,닭고기 등 순살코기 40g(탁구공 크기), 등푸른 생선(소) 1토막 등\n\n"
                               "Protein(g) : 67.220(g) < 정상  (추정)\n\n",
                         options=[0, 1, 2, 3],
+                        index=st.session_state.short_test[16],
                         captions=["7회 이상", "4~6회", "2~3회", "1회 이하"],
                         horizontal=True)
 
