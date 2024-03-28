@@ -64,11 +64,12 @@ def make_grade(indexer, x):
 # with open("file", "wb") as f:
 #     pickle.dump(heq_data[1], f)
 
+
 def make_gauge(user_level, risk_lv):
     return go.Indicator(
             mode="gauge+number", # "gauge+number+delta"
             value=3-np.argmax(user_level)+0.5,
-            domain={'x': [0, 1.0], 'y': [0, 0.8]},
+            domain={'x': [0.15, 0.85], 'y': [0.15, 0.85]},
             title={'text': f"분석 결과", 'font': {'size': 24}},
             # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
             number={"suffix": f"단계: {risk_lv}", "valueformat": ".0", 'font': {'size': 30, 'color': 'black'}},
@@ -80,9 +81,9 @@ def make_gauge(user_level, risk_lv):
                     'tickwidth': 1,
                     'tickcolor': "darkblue",
                     'tickformatstops': [
-                        {'templateitemname': '건강', 'value': '건강',},
-                        {'templateitemname': '일반', 'value': '일반',},
-                        {'templateitemname': '위험', 'value': '위험',},
+                        {'templateitemname': '건강', 'value': '건강'},
+                        {'templateitemname': '일반', 'value': '일반'},
+                        {'templateitemname': '위험', 'value': '위험'},
                         {'templateitemname': '고위험', 'value': '고위험'},
                     ]
                 },
@@ -211,11 +212,12 @@ def heq(args, st_layout):
         rows=2, cols=2,
         column_widths=[0.5, 0.5],
         row_heights=[0.5, 0.5],
-        # vertical_spacing=1.0,
+        vertical_spacing=0.1,
+        horizontal_spacing=0.4,
         subplot_titles=("영양 분석", "혈액 분석", "기본 분석", "패턴 분석"),
         # shared_yaxes=True
-        specs=[[{"type": "polar", }, {"type": "polar", }],
-               [{"type": "bar", }, {"type": "bar", }]]
+        specs=[[{"type": "polar", "t": 0.1}, {"type": "polar", "t": 0.1}],
+               [{"type": "bar", }, {"type": "bar", }]],
         )
     for draw_data, title in zip([nut_data, nut_mean_data],
                                 ["사용자 데이터", "정상군 평균"],):
@@ -269,13 +271,18 @@ def heq(args, st_layout):
         )
 
     pie = go.Figure(make_gauge(user_level, risk_lv))
-    pie.update_layout(font={'color': "darkblue", 'family': "Arial"})
+    pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
+                      margin={
+                          "l": 50, "r": 50, "t": 0, "b": 0, "pad": 0
+                      })
     # st.write(risk_lv)
     fig.update_layout(margin={
-        "l": 50, "r": 50, "t": 0, "b": 0, 'pad': 0
+        "l": 50, "r": 50, "t": 0, "b": 0, "pad": 0
     })
-    st_layout.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
-    st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
+    with st_layout.container(border=True):
+        st.plotly_chart(pie, theme="streamlit", use_container_width=True)
+    with st_layout.container(border=True):
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     # st_layout.write(args)
     # st_layout.write(result)
     return result
@@ -376,8 +383,13 @@ def scale_severity(args, st_layout):
         )
     # fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
     pie = go.Figure(make_gauge(user_level, risk_lv))
-    st_layout.plotly_chart(pie, theme="streamlit", user_conatiner_width=True)
-    st_layout.plotly_chart(fig, theme="streamlit", user_conatiner_width=True)
-    st_layout.plotly_chart(polar, theme="streamlit", user_conatiner_width=True)
+    pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
+                      margin={"l": 0, "r": 0, "t": 0, "b": 0,})
+    with st_layout.container(border=True):
+        st.plotly_chart(pie, theme="streamlit", use_container_width=True,)
+    with st_layout.container(border=True):
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=400)
+    with st_layout.container(border=True):
+        st.plotly_chart(polar, theme="streamlit", use_container_width=True, height=400)
     
     return result

@@ -9,6 +9,7 @@ from langchain_community.embeddings.sentence_transformer import SentenceTransfor
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.vectorstores import Chroma
+from transformers import pipeline
 
 
 @st.cache_resource
@@ -30,6 +31,12 @@ def get_facial_processors(path: str):
     # face detection
     cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
     return model, cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
+
+
+@st.cache_resource
+def get_zsc_detector():
+    checkpoint = "Thomasboosinger/owlv2-base-patch16-ensemble"  # "google/owlvit-base-patch32" #
+    return pipeline(model=checkpoint, task="zero-shot-object-detection")
 
 
 @st.cache_resource
@@ -57,3 +64,5 @@ def get_heq_data():
 @st.cache_resource
 def get_scale_data():
     return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
+
+

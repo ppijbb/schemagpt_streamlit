@@ -20,7 +20,6 @@ from ionic_langchain.tool import IonicTool
 from langchain_community.llms.fake import FakeStreamingListLLM
 
 
-
 if __name__ == "__main__":
     st.title('🧬 Dep Peptide App')
     with st.sidebar:

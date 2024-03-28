@@ -25,7 +25,7 @@ if "test" not in st.session_state:
                              15.50433, 24.60925, 7.67180, 0.10010, 3.39983, 75.03800, 1136.35250, 114.83500, 105.34995,
                              1, 1, 1, 0, 1, 1, 0, 0]
 if "short_test" not in st.session_state:
-    st.session_state.short_test = ['user',0,1,0,0,0,1,1,1,0,1,1,0,0,0,1,0]
+    st.session_state.short_test = ['user', 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0]
 if 'test_key' not in st.session_state:
     st.session_state.test_key = "test1"
                             
@@ -54,24 +54,34 @@ def set_test():
                   1, 1, 1, 1, 1, 0, 0, 0]
         }
     short_test_sets = {
-       "test1": ['테스트 데이터1',0,1,0,0,0,1,1,1,0,1,1,0,0,0,1,0], 
-       "test2": ['테스트 데이터2',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-       "test3": ['테스트 데이터3',2,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2],
-       "test4": ['테스트 데이터4',3,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3] 
+       "test1": ['테스트 데이터1', 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0],
+       "test2": ['테스트 데이터2', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+       "test3": ['테스트 데이터3', 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2],
+       "test4": ['테스트 데이터4', 3, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
     }
     
     st.session_state.test = test_sets[st.session_state.test_key]
     st.session_state.short_test = short_test_sets[st.session_state.test_key]
 
 
+style = """
+    <style>
+    div[role="radiogroup"] div[data-testid="stMarkdownContainer"]:has(p){
+        visibility: hidden; height: 0px;
+        }
+    </style>"""
+
+
 if __name__ == "__main__":
+    st.markdown(style, unsafe_allow_html=True)
     st.title('🫀 Cardio')
+
     with st.sidebar:
         st.page_link("pages/cardio.py", )
         st.page_link("pages/dep_peptide.py", )
         st.page_link("pages/facial.py", )
     
-    st.selectbox(label='테스트 데이터 입력', 
+    st.selectbox(label='테스트 데이터 선택',
                  options=['test1', 'test2', 'test3', 'test4',],
                  key="test_key", 
                  on_change=set_test)
@@ -84,19 +94,9 @@ if __name__ == "__main__":
         st.session_state.gn3 = 0
         with tab1:
             st.title("🔎 문진 평가")
+            st.write("영양, 일상 생활에서의 습관에서 심혈관 질환 위험성 평가")
 
             with st.form("문진"):
-                st.write("영양, 일상 생활에서의 습관에서 심혈관 질환 위험성 평가")
-                st.markdown(
-                    """
-                <style>
-                    div[role=radiogroup] [data-testid*=stMarkdownContainer'] p{
-                        visibility: hidden;
-                        height: 0px;
-                    }
-                </style>
-                """,
-                    unsafe_allow_html=True, )
                 short_general_3 = st.radio(
                         label="자신의 건강은 어떻다고 생각하십니까?",
                         options=[0, 1, 2, 3],
@@ -234,8 +234,8 @@ if __name__ == "__main__":
 
         with tab2:
             st.title("🔎 세부 평가")
+            st.write("종합 평가")
             with st.form("세부 평가지"):
-                st.write("Inside the form")
                 row1 = st.columns([1, 1, 1, 1])
                 with row1[0]:
                     st.write("일반 정보")
@@ -450,7 +450,7 @@ if __name__ == "__main__":
                     form_data = {
                         "user": "test",
                         "g_규칙적 운동": general_1, "g_보조제 복용": general_2, "p_무기력": pattern_3, "p_산경질": pattern_4,
-                        "p_중강도 신체활동": pattern_5, "g_자신의 건강": general_6+1, "p_피로": pattern_7, "p_음주": pattern_8,
+                        "p_중강도 신체활동": pattern_5+1, "g_자신의 건강": general_6+1, "p_피로": pattern_7, "p_음주": pattern_8,
                         "p_긴장/불안": pattern_9, "p_대면 어려움": pattern_10, "p_시선 어려움": pattern_11,
                         "g_수축기 혈압 2차": general_12, "g_이완기 혈압 1차": general_13, "g_수축기 혈압 1차": general_14,
                         "n_Vit E": nutrition_15, "b_HDL": blood_16, "b_LDL": blood_17,
@@ -464,9 +464,5 @@ if __name__ == "__main__":
                         heq(form_data, con)
 
         with tab3:
-            with (open(os.getcwd()+"/static/views/index.html", "r") as f):
-                html_obj = f'{f.read()}'
-                # html_obj = html_obj.replace("text/javascript", "applcation/javascript")
-                # html_obj = html_obj.replace("text/css", "text/html")
-                # st.markdown(add_static_js(), unsafe_allow_html=True)
-                main_component = components.html(html_obj, scrolling=True, height=700)
+            st.title("🔎 테스트")
+            st.write("페이지")
