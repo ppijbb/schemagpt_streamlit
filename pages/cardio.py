@@ -6,20 +6,7 @@ import streamlit.components.v1 as components
 
 from srcs.cardio import heq, scale_severity
 from srcs.st_style_md import hide_radio_value_md
-
-
-@st.cache_resource
-def add_static_js():
-    js_dir = f"{os.getcwd()}/static/css"
-    js_file_list = [dir_ for dir_ in os.listdir(js_dir) if dir_.endswith("2.css")]
-
-    js_data = ""
-
-    for js in js_file_list:
-        with open(f"{js_dir}/{js}", "r") as f:
-            js_data += f'<style>\n{f.read()}\n</style>\n'
-    return js_data
-
+from srcs.st_cache import get_or_create_eventloop
 
 if "test" not in st.session_state:
     st.session_state.test = ['user',
@@ -71,10 +58,10 @@ if __name__ == "__main__":
     hide_radio_value_md()
     st.title('🫀 Cardio')
 
-    with st.sidebar:
-        st.page_link("pages/cardio.py", )
-        st.page_link("pages/dep_peptide.py", )
-        st.page_link("pages/facial.py", )
+    # with st.sidebar:
+    #     st.page_link("pages/cardio.py", )
+    #     st.page_link("pages/dep_peptide.py", )
+    #     st.page_link("pages/facial.py", )
     
     st.selectbox(label='테스트 데이터 선택',
                  options=['test1', 'test2', 'test3', 'test4',],

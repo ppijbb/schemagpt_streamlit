@@ -19,11 +19,13 @@ from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
 from langchain_community.llms.fake import FakeStreamingListLLM
 
+from srcs.st_cache import get_or_create_eventloop
+
 
 if __name__ == "__main__":
     st.title('🧬 Dep Peptide App')
-    with st.sidebar:
-        st.page_link("pages/cardio.py",)
-        st.page_link("pages/dep_peptide.py",)
-        st.page_link("pages/facial.py",)
+    # with st.sidebar:
+    #     st.page_link("pages/cardio.py",)
+    #     st.page_link("pages/dep_peptide.py",)
+    #     st.page_link("pages/facial.py",)
         

@@ -1,10 +1,13 @@
+from typing import List
+import os
+from typing import Optional, Set
+import threading
+
 import cv2
 import numpy as np
 import av
-from typing import List
-import os
-from datetime import datetime as dt
 from PIL import ImageFont, ImageDraw, Image
+from aiortc.contrib.media import MediaPlayer, PlayerStreamTrack, REAL_TIME_FORMATS
 
 import streamlit as st
 from streamlit_webrtc.models import VideoProcessorBase
@@ -12,6 +15,47 @@ from streamlit_webrtc.models import VideoProcessorBase
 from srcs.st_cache import get_zsc_detector
 
 detector = get_zsc_detector()
+
+
+class ArrayMediaPlayer(MediaPlayer):
+    def __init__(
+        self, file, format=None, options=None, timeout=None, loop=False, decode=True
+    ):
+        self.__container = file
+        self.__thread: Optional[threading.Thread] = None
+        self.__thread_quit: Optional[threading.Event] = None
+
+        # examine streams
+        self.__started: Set[PlayerStreamTrack] = set()
+        self.__streams = []
+        self.__decode = decode
+        self.__audio: Optional[PlayerStreamTrack] = None
+        self.__video: Optional[PlayerStreamTrack] = None
+        for stream in self.__container.streams:
+            if stream.type == "audio" and not self.__audio:
+                if self.__decode:
+                    self.__audio = PlayerStreamTrack(self, kind="audio")
+                    self.__streams.append(stream)
+                elif stream.codec_context.name in ["opus", "pcm_alaw", "pcm_mulaw"]:
+                    self.__audio = PlayerStreamTrack(self, kind="audio")
+                    self.__streams.append(stream)
+            elif stream.type == "video" and not self.__video:
+                if self.__decode:
+                    self.__video = PlayerStreamTrack(self, kind="video")
+                    self.__streams.append(stream)
+                elif stream.codec_context.name in ["h264", "vp8"]:
+                    self.__video = PlayerStreamTrack(self, kind="video")
+                    self.__streams.append(stream)
+
+        # check whether we need to throttle playback
+        container_format = set(self.__container.format.name.split(","))
+        self._throttle_playback = not container_format.intersection(REAL_TIME_FORMATS)
+
+        # check whether the looping is supported
+        assert (
+            not loop or self.__container.duration is not None
+        ), "The `loop` argument requires a seekable file"
+        self._loop_playback = loop
 
 
 class VideoProcessor(VideoProcessorBase):
@@ -79,12 +123,12 @@ def img_convert(img) -> np.array:
     return img
 
 
-def find_detections(image, labels):
+def find_detections(image, labels, st_state):
     image = Image.fromarray(image)
     predictions = detector(image,
                            candidate_labels=labels,)
     draw = ImageDraw.Draw(image)
-    st.session_state.detected_objects = predictions
+    st_state = predictions
     for prediction in predictions:
         box = prediction["box"]
         label = prediction["label"]
@@ -97,13 +141,13 @@ def find_detections(image, labels):
     return image
 
 
-def track():
+def track(st_state):
     w_l = []
     h_l = []
     windows = []
     roi_hists = []
 
-    for prediction in st.session_state.detected_objects:
+    for prediction in st_state:
         box = prediction['box']
         data = [
             box['xmin'] - 7, box['ymin'] - 7,
@@ -120,5 +164,3 @@ def track():
         roi_hists += [roi_hist]
         cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
     return None
-
-

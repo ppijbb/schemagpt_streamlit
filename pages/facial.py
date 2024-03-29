@@ -18,7 +18,7 @@ def show():
             "video": {
                 "frameRate": {
                     "max": 60,
-                    "ideal": 1
+                    "ideal": 0
                 },
                 "width": {
                     "min": 640,
@@ -51,10 +51,10 @@ def show():
 
 if __name__ == "__main__":
     st.title('😄😑😭 Facial Emotion Recognition')
-    with st.sidebar:
-        st.page_link("pages/cardio.py",)
-        st.page_link("pages/dep_peptide.py",)
-        st.page_link("pages/facial.py",)
+    # with st.sidebar:
+    #     st.page_link("pages/cardio.py",)
+    #     st.page_link("pages/dep_peptide.py",)
+    #     st.page_link("pages/facial.py",)
     # hide_menu_style = """
     #         <style>
     #         .css-1avcm0n {visibility: hidden;}

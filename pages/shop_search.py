@@ -1,5 +1,10 @@
 import asyncio
+import requests
+import json
+import numpy as np
+import pandas as pd
 import streamlit as st
+
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage
@@ -20,19 +25,12 @@ from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
 from langchain_community.llms.fake import FakeStreamingListLLM
 
-import requests
-import json
-import numpy as np
-import pandas as pd
+from srcs.st_cache import get_or_create_eventloop
 
-def get_or_create_eventloop():
-    try:
-        return asyncio.get_event_loop()
-    except RuntimeError as ex:
-        if "There is no current event loop in thread" in str(ex):
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return asyncio.get_event_loop()
+
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 
 open_api_url = "http://apis.data.go.kr/B553077/api/open/sdsc2"
 map_addr_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json"
@@ -53,7 +51,8 @@ if 'map' not in st.session_state:
         }
         )
 
-def add_pin_in_map(lat:float, lon:float, size:float, color:float):
+
+def add_pin_in_map(lat: float, lon: float, size: float, color: float):
     st.session_state.map = pd.concat([
         st.session_state.map,
         pd.DataFrame({
@@ -83,15 +82,12 @@ payload={
 }
 
 
-
-
-
 if __name__ == "__main__":
     st.title('🐶 Dog Coffee Searcher 🦮')
-    with st.sidebar:
-        st.page_link("pages/cardio.py",)
-        st.page_link("pages/dep_peptide.py",)
-        st.page_link("pages/facial.py",)
+    # with st.sidebar:
+    #     st.page_link("pages/cardio.py",)
+    #     st.page_link("pages/dep_peptide.py",)
+    #     st.page_link("pages/facial.py",)
     
     map_section, search_section = st.columns(2)
     with map_section:

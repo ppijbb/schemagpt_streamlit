@@ -39,18 +39,7 @@ from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
 
 from srcs import schema_therapy
-from srcs.st_cache import get_utterance_data
-
-
-def get_or_create_eventloop():
-    try:
-        return asyncio.get_event_loop()
-    except RuntimeError as ex:
-        if "There is no current event loop in thread" in str(ex):
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return asyncio.get_event_loop()
-
+from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 
 st.set_page_config(layout="wide",
                    initial_sidebar_state="expanded",)
@@ -67,9 +56,9 @@ if __name__ == "__main__":
         st.session_state["shared"] = True
 
     with st.sidebar:
-        st.page_link("pages/cardio.py",)
-        st.page_link("pages/dep_peptide.py",)
-        st.page_link("pages/facial.py",)
+        # st.page_link("pages/cardio.py",)
+        # st.page_link("pages/dep_peptide.py",)
+        # st.page_link("pages/facial.py",)
 
         try:
             openai_api_key = st.secrets["OPENAI_API_KEY"]
