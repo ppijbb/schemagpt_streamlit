@@ -50,20 +50,6 @@ def make_grade(indexer, x):
         elif indexer[2] <= x:
             return " 관심필요"
 
-# from joblib import dump
-#
-# # 모델 저장
-# dump(heq_data[0], 'heq1.joblib')
-# dump(heq_data[1], 'heq2.joblib')
-# dump(scale_data[1], 'scale2.joblib')
-# heq_data[1].estimators_[1].save_model("clf.json")  # XGBoost
-# heq_data[1].estimators_[1] = None
-# print(heq_data[1])
-# import pickle
-#
-# with open("file", "wb") as f:
-#     pickle.dump(heq_data[1], f)
-
 
 def make_gauge(user_level, risk_lv):
     return go.Indicator(

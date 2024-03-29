@@ -1,8 +1,11 @@
 import os
 import sys
+
 import streamlit as st
-from srcs.cardio import heq, scale_severity
 import streamlit.components.v1 as components
+
+from srcs.cardio import heq, scale_severity
+from srcs.st_style_md import hide_radio_value_md
 
 
 @st.cache_resource
@@ -64,16 +67,8 @@ def set_test():
     st.session_state.short_test = short_test_sets[st.session_state.test_key]
 
 
-style = """
-    <style>
-    div[role="radiogroup"] div[data-testid="stMarkdownContainer"]:has(p){
-        visibility: hidden; height: 0px;
-        }
-    </style>"""
-
-
 if __name__ == "__main__":
-    st.markdown(style, unsafe_allow_html=True)
+    hide_radio_value_md()
     st.title('🫀 Cardio')
 
     with st.sidebar:
