@@ -1,6 +1,7 @@
 import av
 import string
 import asyncio
+from io import BytesIO
 
 from PIL import Image, ImageDraw
 import streamlit as st
@@ -122,7 +123,8 @@ if __name__ == "__main__":
                                        on_change=colorize_multiselect_options)
         if camera_image is not None:
             vod_stream = None
-            first_frame = uploaded_file
+            # first_frame = camera_image.getvalue()
+            first_frame = Image.open(camera_image)
             st.session_state.target_image = first_frame
 
     st.divider()
