@@ -59,7 +59,7 @@ class ArrayMediaPlayer(MediaPlayer):
 
 
 class VideoProcessor(VideoProcessorBase):
-    result_dict = dict()
+    object_list = []
     code = None
     dir_path = os.getcwd()
 
@@ -117,18 +117,18 @@ def img_convert(img) -> np.array:
                                            (st.session_state.morphology_kernel0,
                                             st.session_state.morphology_kernel1),)
         # tophat = cv2.morphologyEx(img_gray, cv2.MORPH_TOPHAT, kernel) # Apply top hat operation
-        tophat = cv2.morphologyEx(img_gray, cv2.MORPH_TOPHAT, kernel)  # Apply top hat operation
+        tophat = cv2.morphologyEx(img_gray, cv2.MORPH_TOPHAT, kernel)   # Apply top hat operation
         img = np.stack([tophat, tophat, tophat], axis=2)
     img = (img * st.session_state.bright_ratio).astype(np.uint8)
     return img
 
 
-def find_detections(image, labels, st_state):
+def find_detections(image, labels,):
     image = Image.fromarray(image)
     predictions = detector(image,
                            candidate_labels=labels,)
     draw = ImageDraw.Draw(image)
-    st_state = predictions
+
     for prediction in predictions:
         box = prediction["box"]
         label = prediction["label"]
@@ -138,7 +138,10 @@ def find_detections(image, labels, st_state):
         draw.text((xmin, ymax + 1), f"{label}: {round(score, 2)}", fill="white")
 
     ImageDraw.Draw(image)
-    return image
+    return {
+        "image": image,
+        "predictions": predictions
+    }
 
 
 def track(st_state):
@@ -164,3 +167,7 @@ def track(st_state):
         roi_hists += [roi_hist]
         cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
     return None
+
+
+def get_media_player(url):
+    return MediaPlayer(url)
