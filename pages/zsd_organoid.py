@@ -11,7 +11,7 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from pages.rtc.config import RTC_CONFIGURATION
 from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, find_detections, img_convert
-from srcs.object_tracking import ArrayMediaPlayer, get_media_player
+from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
 
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     file_video_section, web_video_section, camera_video_section = st.columns(3)
     detect = False
     # st.session_state.original_image = None
-    vod_stream = None
+    st.session_state.vod_stream = None
     found_objects = None
 
     # uploaded file processing
@@ -262,7 +262,8 @@ if __name__ == "__main__":
             elif st.session_state.image_source == "web":
                 video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
                                                image=st.session_state.target_image)
-                player_factory = (lambda x=0: ArrayMediaPlayer(st.session_state.vod_stream))
+                vod_stream= st.session_state.vod_stream
+                player_factory = (lambda x=0: MediaPlayer(file=vod_stream))
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
                     mode=WebRtcMode.RECVONLY,

@@ -10,18 +10,18 @@ from PIL import ImageFont, ImageDraw, Image
 from aiortc.contrib.media import MediaPlayer, PlayerStreamTrack, REAL_TIME_FORMATS
 
 import streamlit as st
-from streamlit_webrtc.models import VideoProcessorBase
+from streamlit_webrtc.models import VideoProcessorBase, CallbackAttachableProcessor
 
 from srcs.st_cache import get_zsc_detector
 
 detector = get_zsc_detector()
 
 
-class ArrayMediaPlayer(MediaPlayer):
+class MediaPlayer(MediaPlayer):
     def __init__(
         self, file, format=None, options=None, timeout=None, loop=False, decode=True
     ):
-        super(ArrayMediaPlayer, self).__init__(file, format, options, timeout, loop, decode)
+        # super(ArrayMediaPlayer, self).__init__(file, format, options, timeout, loop, decode)
         self.__container = file
         self.__thread: Optional[threading.Thread] = None
         self.__thread_quit: Optional[threading.Event] = None
@@ -70,12 +70,14 @@ class VideoProcessor(VideoProcessorBase):
     windows = []
     roi_hists = []
     term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
+    tracking = False
 
     def __init__(self, predictions, image):
         super(VideoProcessor).__init__()
         self.track(predictions=predictions, image=image)
 
     def __call__(self):
+        print(self)
         return self
 
     def track(self, predictions, image):
@@ -97,6 +99,7 @@ class VideoProcessor(VideoProcessorBase):
             cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
         self.x_w = np.mean(self.w_l).astype(int)
         self.y_h = np.mean(self.h_l).astype(int)
+        self.tracking = True
 
     def recv(self, frame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
