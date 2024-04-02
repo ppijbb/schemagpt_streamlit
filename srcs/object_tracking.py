@@ -21,6 +21,7 @@ class ArrayMediaPlayer(MediaPlayer):
     def __init__(
         self, file, format=None, options=None, timeout=None, loop=False, decode=True
     ):
+        super(ArrayMediaPlayer, self).__init__(file, format, options, timeout, loop, decode)
         self.__container = file
         self.__thread: Optional[threading.Thread] = None
         self.__thread_quit: Optional[threading.Event] = None
@@ -165,13 +166,12 @@ def find_detections(image, labels,):
     predictions = detector(image,
                            candidate_labels=labels,)
     draw = ImageDraw.Draw(image)
-
     for prediction in predictions:
         box = prediction["box"]
         label = prediction["label"]
         score = prediction["score"]
         xmin, ymin, xmax, ymax = box.values()
-        draw.rectangle((xmin - 5, ymin - 5, xmax + 5, ymax + 5), outline="red", width=2)
+        draw.rectangle((xmin, ymin, xmax, ymax), outline="red", width=2)
         draw.text((xmin, ymax + 1), f"{label}: {round(score, 2)}", fill="white")
 
     ImageDraw.Draw(image)

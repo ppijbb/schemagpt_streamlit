@@ -22,7 +22,7 @@ loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 if 'zsd_labels' not in st.session_state:
-    st.session_state.zsd_labels = ["bottle", "car", "bicycle", "a handsome guy", "green fruit"]
+    st.session_state.zsd_labels = ["a water bottle", "car", "bicycle", "a handsome guy", "green fruit"]
 if 'target_image' not in st.session_state:
     st.session_state.target_image = Image.new("RGB", (800, 1280), (255, 255, 255))
 if 'original_image' not in st.session_state:
@@ -88,12 +88,8 @@ def onchange_cam():
 
 
 def get_web_media():
-    try:
-        url = st.session_state.video_url_selected
-    except:
-        url = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
-    media = get_media_player(url=url)
-    return media
+    url = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
+    return get_media_player(url=url)
 
 
 if __name__ == "__main__":
@@ -264,7 +260,7 @@ if __name__ == "__main__":
             elif st.session_state.image_source == "web":
                 video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
                                                image=st.session_state.target_image)
-                player_factory = (lambda x: ArrayMediaPlayer(vod_stream)) if found_objects and vod_stream is not None else None
+                player_factory = (lambda x=0: ArrayMediaPlayer(vod_stream))
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
                     mode=WebRtcMode.RECVONLY,
@@ -303,39 +299,4 @@ if __name__ == "__main__":
                 )
             else:
                 st.write("real time detecting activate after capture")
-        else:
-            webrtc_ctx = webrtc_streamer(
-                key=string.punctuation,
-                mode=WebRtcMode.RECVONLY,
-                rtc_configuration=RTC_CONFIGURATION,
-                media_stream_constraints={
-                    "video": {
-                        "frameRate": {
-                            "max": 60,
-                            "ideal": 30
-                        },
-                        "width": {
-                            "min": 320,
-                            "max": 1024
-                        },
-                        "height": {
-                            "min": 240,
-                            "max": 768
-                        },
-                    },
-                    "audio": True
-                },
-                player_factory=get_web_media,
-                async_processing=True,
-                desired_playing_state=True,
-                video_html_attrs={
-                    "style": {
-                        "width": "100%",
-                        "max-width": "768px",
-                        "margin": "0 auto",
-                        "justify-content": "center"
-                    },
-                    "controls": True,
-                    "autoPlay": True
-                },
-            )
+
