@@ -9,6 +9,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
 from pages.rtc.config import RTC_CONFIGURATION
+from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, find_detections, img_convert
 from srcs.object_tracking import ArrayMediaPlayer, get_media_player
 from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
@@ -50,6 +51,8 @@ if 'detect_button' not in st.session_state:
     st.session_state.detect_button = False
 if 'image_source' not in st.session_state:
     st.session_state.image_source = "web"  # web/file/cam
+if 'video_url_selected' not in st.session_state:
+    st.session_state.video_url_selected = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
 if 'start_rtc_detecting' not in st.session_state:
     st.session_state.start_rtc_detecting = False
 
@@ -62,35 +65,40 @@ def detect_button_click():
     st.session_state.detect_button = True
 
 
-def onchange_radio():
-    if bool(st.session_state.camera_image):
-        st.session_state.camera_image.close()
-    st.session_state.camera_image = None
-    if bool(st.session_state.uploaded_file):
-        st.session_state.uploaded_file.close()
-    st.session_state.uploaded_file = None
+def onchange_image():
+    if st.session_state.original_image is not None:
+        del st.session_state["original_image"]
+    st.session_state.original_image = None
     colorize_multiselect_options()
+
+
+def onchange_web():
+    st.session_state.image_source = "web"
+    onchange_image()
 
 
 def onchange_file():
-    if bool(st.session_state.camera_image):
-        st.session_state.camera_image.close()
-    st.session_state.camera_image = None
-    st.session_state.video_url_selected = None
-    colorize_multiselect_options()
+    st.session_state.image_source = "file"
+    onchange_image()
 
 
-def onchange_webcam():
-    if bool(st.session_state.uploaded_file):
-        st.session_state.uploaded_file.close()
-    st.session_state.uploaded_file = None
-    st.session_state.video_url_selected = None
-    colorize_multiselect_options()
+def onchange_cam():
+    st.session_state.image_source = "cam"
+    onchange_image()
+
+
+def get_web_media():
+    try:
+        url = st.session_state.video_url_selected
+    except:
+        url = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
+    media = get_media_player(url=url)
+    return media
 
 
 if __name__ == "__main__":
     st.title('🧫 ZSD Detection & Tracking')
-    st.write("this will track the things you want")
+    st.write("입력받은 라벨을 찾아드립니다.")
 
     # with st.sidebar:
     #     st.page_link("pages/cardio.py",)
@@ -99,8 +107,8 @@ if __name__ == "__main__":
     #     st.page_link("pages/zsd_organoid.py", )
 
     new_label = st.text_input(
-        label="add label",
-        placeholder="write label here",
+        label="라벨 추가하기",
+        placeholder="write label here with english",
         on_change=colorize_multiselect_options)
     selected_labels = st.multiselect(
         label="the things you want to detect ( max 7 labels )",
@@ -114,22 +122,22 @@ if __name__ == "__main__":
     st.divider()
     file_video_section, web_video_section, camera_video_section = st.columns(3)
     detect = False
-    st.session_state.original_image = None
+    # st.session_state.original_image = None
     vod_stream = None
     found_objects = None
 
     # uploaded file processing
     with file_video_section:
-        st.session_state.uploaded_file = st.file_uploader("파일 선택",
-                                                          type=["mp4", "mpeg"],
-                                                          on_change=onchange_file)
-        if st.session_state.uploaded_file is not None:
+        st.file_uploader("파일 선택",
+                         type=["mp4", "mpeg"],
+                         key="uploaded_file",
+                         on_change=onchange_file)
+        if st.session_state.uploaded_file is not None and st.session_state.image_source == "file":
             st.session_state.uploaded_file.seek(0)
             vod_stream = av.open(st.session_state.uploaded_file, format='mp4')
             vod_generator = vod_stream.decode(video=0)
-            st.session_state.original_image = next(vod_generator).to_image()
+            st.session_state["original_image"] = next(vod_generator).to_image()
             st.session_state.target_image = st.session_state.original_image
-            st.session_state.image_source = "file"
 
     # web video file processing
     with web_video_section:
@@ -138,29 +146,30 @@ if __name__ == "__main__":
             label="Select Video in web",
             options=["https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4",
                      "https://github.com/intel-iot-devkit/sample-videos/raw/master/fruit-and-vegetable-detection.mp4",
-                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/person-bicycle-car-detection.mp4"],
-            captions=["bottle",
-                      "fruit and vegetable.",
-                      "person bicycle car"],
+                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/person-bicycle-car-detection.mp4",],
+            captions=["물병",
+                      "과일과 야채",
+                      "사람 자전거 차량",],
             key="video_url_selected",
-            on_change=onchange_radio)
-        if st.session_state.video_url_selected is not None:
+            on_change=onchange_web)
+        if st.session_state.video_url_selected is not None and st.session_state.image_source == "web":
             vod_stream = av.open(st.session_state.video_url_selected, format='mp4')
             vod_generator = vod_stream.decode(video=0)
-            st.session_state.original_image = next(vod_generator).to_image()
+            st.session_state.original_image = None
+            st.session_state["original_image"] = next(vod_generator).to_image()
             st.session_state.target_image = st.session_state.original_image
-            st.session_state.image_source = "web"
 
     # webcam(if) video processing
     with camera_video_section:
-        st.session_state.camera_image = st.camera_input(label="camera input detection",
-                                                        on_change=onchange_webcam)
-        if st.session_state.camera_image is not None:
+        st.camera_input(label="camera input detection",
+                        on_change=onchange_cam,
+                        key="camera_image")
+        # print("camera", st.session_state.camera_image)
+        if st.session_state.camera_image is not None and st.session_state.image_source == "cam":
             vod_stream = None
             # st.session_state.original_image = camera_image.getvalue()
-            st.session_state.original_image = Image.open(st.session_state.camera_image)
+            st.session_state["original_image"] = Image.open(st.session_state.camera_image)
             st.session_state.target_image = st.session_state.original_image
-            st.session_state.image_source = "cam"
 
     st.divider()
     control_section, detection_section = st.columns((0.3, 0.7))
@@ -197,9 +206,10 @@ if __name__ == "__main__":
                            label_visibility="collapsed")
         st.button(label="detect!",
                   on_click=detect_button_click)
+
     with detection_section:
         with st.container(border=True,):
-            if bool(st.session_state.original_image):
+            if st.session_state.original_image is not None:
                 st.session_state.target_image = img_convert(st.session_state.original_image)
                 st.image(image=st.session_state.target_image,
                          use_column_width="always")
@@ -212,12 +222,10 @@ if __name__ == "__main__":
                              use_column_width="always")
                     st.session_state.detect_button = False
                     st.session_state.detected_objects = found_objects["predictions"]
-
     st.divider()
     with st.spinner("Real-time tracking is currently being prepared..."):
         if st.session_state.detected_objects:
             if st.session_state.image_source == "cam":
-                player_factory = ArrayMediaPlayer(vod_stream) if found_objects and vod_stream is not None else None
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
                     mode=WebRtcMode.SENDRECV,
@@ -239,8 +247,7 @@ if __name__ == "__main__":
                         },
                         "audio": True
                     },
-                    # video_processor_factory=VideoProcessor,
-                    player_factory=get_media_player("https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4",),
+                    video_processor_factory=VideoProcessor,
                     async_processing=True,
                     desired_playing_state=True,
                     video_html_attrs={
@@ -255,10 +262,12 @@ if __name__ == "__main__":
                     },
                 )
             elif st.session_state.image_source == "web":
+                video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
+                                               image=st.session_state.target_image)
                 player_factory = (lambda x: ArrayMediaPlayer(vod_stream)) if found_objects and vod_stream is not None else None
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
-                    mode=WebRtcMode.SENDRECV,
+                    mode=WebRtcMode.RECVONLY,
                     rtc_configuration=RTC_CONFIGURATION,
                     media_stream_constraints={
                         "video": {
@@ -277,7 +286,7 @@ if __name__ == "__main__":
                         },
                         "audio": True
                     },
-                    # video_processor_factory=player_factory,
+                    video_processor_factory=video_factory,
                     player_factory=player_factory,
                     async_processing=True,
                     desired_playing_state=True,
@@ -294,3 +303,39 @@ if __name__ == "__main__":
                 )
             else:
                 st.write("real time detecting activate after capture")
+        else:
+            webrtc_ctx = webrtc_streamer(
+                key=string.punctuation,
+                mode=WebRtcMode.RECVONLY,
+                rtc_configuration=RTC_CONFIGURATION,
+                media_stream_constraints={
+                    "video": {
+                        "frameRate": {
+                            "max": 60,
+                            "ideal": 30
+                        },
+                        "width": {
+                            "min": 320,
+                            "max": 1024
+                        },
+                        "height": {
+                            "min": 240,
+                            "max": 768
+                        },
+                    },
+                    "audio": True
+                },
+                player_factory=get_web_media,
+                async_processing=True,
+                desired_playing_state=True,
+                video_html_attrs={
+                    "style": {
+                        "width": "100%",
+                        "max-width": "768px",
+                        "margin": "0 auto",
+                        "justify-content": "center"
+                    },
+                    "controls": True,
+                    "autoPlay": True
+                },
+            )

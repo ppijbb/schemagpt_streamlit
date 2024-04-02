@@ -62,6 +62,40 @@ class VideoProcessor(VideoProcessorBase):
     object_list = []
     code = None
     dir_path = os.getcwd()
+    w_l = []
+    h_l = []
+    x_w = None
+    y_h = None
+    windows = []
+    roi_hists = []
+    term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
+
+    def __init__(self, predictions, image):
+        super(VideoProcessor).__init__()
+        self.track(predictions=predictions, image=image)
+
+    def __call__(self):
+        return self
+
+    def track(self, predictions, image):
+        for prediction in predictions:
+            box = prediction['box']
+            data = [
+                box['xmin'] - 7, box['ymin'] - 7,
+                box['xmax'] + 7, box['ymax'] + 7,
+            ]
+            self.w_l += [box["xmax"] - box["xmin"]]
+            self.h_l += [box["ymax"] - box["ymin"]]
+            self.windows += [data]
+
+            roi = image[box["ymin"]:box["ymax"], box["xmin"]:box["xmax"]]
+            hsv_roi = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            mask = cv2.inRange(hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
+            roi_hist = cv2.calcHist([hsv_roi], [0], mask, [180], [0, 180])
+            self.roi_hists += [roi_hist]
+            cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
+        self.x_w = np.mean(self.w_l).astype(int)
+        self.y_h = np.mean(self.h_l).astype(int)
 
     def recv(self, frame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
@@ -75,24 +109,27 @@ class VideoProcessor(VideoProcessorBase):
     async def recv_queued(self, frames: List[av.VideoFrame]) -> List[av.VideoFrame]:
         return [self.recv(frames[-1])]
 
-    def on_ended(self):
-        """
-        TODO : add what will do something in the end
-        """
-        print("############### Connection Ended #################")
+    # def on_ended(self, ):
+    #     """
+    #     TODO : add what will do something in the end
+    #     """
+    #     print("############### Connection Ended #################")
 
     def process_video(self, image):
+        # pass image is numpy.ndarray
         font_path = f"{self.dir_path}/pages/font/jalnan/yg-jalnan.ttf"
         font_regular = ImageFont.truetype(font=font_path, size=35)
         font_regular_small = ImageFont.truetype(font=font_path, size=18)
         font_small = ImageFont.truetype(font=font_path, size=16)
         paint_width = image.shape[1]
-        emotions = ['happy', 'sad', 'neutral']
-        labels = ["긍정", "부정", "중립"]
-        labels_y = [10, 40, 65]
-        labels_c = [(0, 255, 0), (0, 0, 255), (125, 125, 125)]
-        start_x = int(40)
-        end_x = int(paint_width / 4)
+
+        for i, (window, roi_hist) in enumerate(zip(self.windows, self.roi_hists)):
+            dst = cv2.calcBackProject([image], [0], roi_hist, [0, 180], 1)
+            ret, track_window = cv2.meanShift(dst, window, self.term_crit)
+
+            # 추적 결과를 사각형으로 표시
+            (x, y, w, h) = track_window
+            cv2.rectangle(image, (x - 7, y - 7), (x + self.x_w + 7, y + self.y_h + 7), (0, 255, 0), 2)
 
         return image
 
@@ -142,31 +179,6 @@ def find_detections(image, labels,):
         "image": image,
         "predictions": predictions
     }
-
-
-def track(st_state):
-    w_l = []
-    h_l = []
-    windows = []
-    roi_hists = []
-
-    for prediction in st_state:
-        box = prediction['box']
-        data = [
-            box['xmin'] - 7, box['ymin'] - 7,
-            box['xmax'] + 7, box['ymax'] + 7,
-        ]
-        w_l += [box["xmax"] - box["xmin"]]
-        h_l += [box["ymax"] - box["ymin"]]
-        windows += [data]
-
-        roi = st.session_state.target_image[box["ymin"]:box["ymax"], box["xmin"]:box["xmax"]]
-        hsv_roi = cv2.cvtColor(st.session_state.target_image, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
-        roi_hist = cv2.calcHist([hsv_roi], [0], mask, [180], [0, 180])
-        roi_hists += [roi_hist]
-        cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
-    return None
 
 
 def get_media_player(url):

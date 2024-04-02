@@ -1,5 +1,5 @@
 public_stun_server_list = [
-    "stun:stun.xten.com:3478",
+    # "stun:stun.xten.com:3478",
     # "stun:stun.ekiga.net",
     # "stun:stun.fwdnet.net",
     # "stun:stun.ideasip.com",
