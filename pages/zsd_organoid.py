@@ -47,6 +47,8 @@ if not any([k for k in st.session_state if 'denoising_color' in k]):
 if not any([k for k in st.session_state if 'morphology_kernel' in k]):
     st.session_state.morphology_kernel0 = 18
     st.session_state.morphology_kernel1 = 18
+if 'vod_stream' not in st.session_state:
+    st.session_state.vod_stream = None
 if 'detect_button' not in st.session_state:
     st.session_state.detect_button = False
 if 'image_source' not in st.session_state:
@@ -130,8 +132,8 @@ if __name__ == "__main__":
                          on_change=onchange_file)
         if st.session_state.uploaded_file is not None and st.session_state.image_source == "file":
             st.session_state.uploaded_file.seek(0)
-            vod_stream = av.open(st.session_state.uploaded_file, format='mp4')
-            vod_generator = vod_stream.decode(video=0)
+            st.session_state.vod_stream = av.open(st.session_state.uploaded_file, format='mp4')
+            vod_generator = st.session_state.vod_stream.decode(video=0)
             st.session_state["original_image"] = next(vod_generator).to_image()
             st.session_state.target_image = st.session_state.original_image
 
@@ -149,8 +151,8 @@ if __name__ == "__main__":
             key="video_url_selected",
             on_change=onchange_web)
         if st.session_state.video_url_selected is not None and st.session_state.image_source == "web":
-            vod_stream = av.open(st.session_state.video_url_selected, format='mp4')
-            vod_generator = vod_stream.decode(video=0)
+            st.session_state.vod_stream = av.open(st.session_state.video_url_selected, format='mp4')
+            vod_generator = st.session_state.vod_stream.decode(video=0)
             st.session_state.original_image = None
             st.session_state["original_image"] = next(vod_generator).to_image()
             st.session_state.target_image = st.session_state.original_image
@@ -162,7 +164,7 @@ if __name__ == "__main__":
                         key="camera_image")
         # print("camera", st.session_state.camera_image)
         if st.session_state.camera_image is not None and st.session_state.image_source == "cam":
-            vod_stream = None
+            st.session_state.vod_stream = None
             # st.session_state.original_image = camera_image.getvalue()
             st.session_state["original_image"] = Image.open(st.session_state.camera_image)
             st.session_state.target_image = st.session_state.original_image
@@ -219,8 +221,8 @@ if __name__ == "__main__":
                     st.session_state.detect_button = False
                     st.session_state.detected_objects = found_objects["predictions"]
     st.divider()
-    with st.spinner("Real-time tracking is currently being prepared..."):
-        if st.session_state.detected_objects:
+    if st.session_state.detected_objects:
+        with st.spinner("Real-time tracking is currently being prepared..."):
             if st.session_state.image_source == "cam":
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
@@ -260,7 +262,7 @@ if __name__ == "__main__":
             elif st.session_state.image_source == "web":
                 video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
                                                image=st.session_state.target_image)
-                player_factory = (lambda x=0: ArrayMediaPlayer(vod_stream))
+                player_factory = (lambda x=0: ArrayMediaPlayer(st.session_state.vod_stream))
                 webrtc_ctx = webrtc_streamer(
                     key=string.punctuation,
                     mode=WebRtcMode.RECVONLY,
