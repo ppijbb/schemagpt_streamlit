@@ -68,6 +68,7 @@ class VideoProcessor(VideoProcessorBase):
     y_h = None
     windows = []
     roi_hists = []
+    obj_labels = []
     term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
     tracking = False
 
@@ -80,6 +81,7 @@ class VideoProcessor(VideoProcessorBase):
 
     def track(self, predictions, image):
         for prediction in predictions:
+            self.obj_labels += [prediction['label']]
             box = prediction['box']
             data = [
                 box['xmin'] - 7, box['ymin'] - 7,
@@ -120,19 +122,22 @@ class VideoProcessor(VideoProcessorBase):
     def process_video(self, image):
         # pass image is numpy.ndarray
         font_path = f"{self.dir_path}/pages/font/jalnan/yg-jalnan.ttf"
-        font_regular = ImageFont.truetype(font=font_path, size=35)
-        font_regular_small = ImageFont.truetype(font=font_path, size=18)
         font_small = ImageFont.truetype(font=font_path, size=16)
-        paint_width = image.shape[1]
 
-        for i, (window, roi_hist) in enumerate(zip(self.windows, self.roi_hists)):
+        for i, (window, roi_hist, label) in enumerate(zip(self.windows, self.roi_hists, self.obj_labels)):
             dst = cv2.calcBackProject([image], [0], roi_hist, [0, 180], 1)
             ret, track_window = cv2.meanShift(dst, window, self.term_crit)
 
             # 추적 결과를 사각형으로 표시
             (x, y, w, h) = track_window
             cv2.rectangle(image, (x - 7, y - 7), (x + self.x_w + 7, y + self.y_h + 7), (0, 255, 0), 2)
-
+            image_pil = Image.fromarray(image)
+            draw = ImageDraw.Draw(image_pil)
+            draw.text(xy=(x-7, y+self.y_h+7),
+                      text=label,
+                      font=font_small,
+                      fill=(0, 0, 0, 0))
+            image = np.array(image_pil)
         return image
 
 

@@ -230,7 +230,6 @@ if __name__ == "__main__":
     st.divider()
     if st.session_state.detected_objects:
         with st.spinner("Real-time tracking is currently being prepared..."):
-            print(len(st.session_state.detected_objects))
             video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
                                            image=st.session_state.target_image)
             vod_stream = st.session_state.vod_stream
