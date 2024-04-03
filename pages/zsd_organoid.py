@@ -10,7 +10,7 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
 from pages.rtc.config import RTC_CONFIGURATION
 from pages.rtc.public_stun import public_stun_server_list
-from srcs.object_tracking import VideoProcessor, find_detections, img_convert
+from srcs.object_tracking import VideoProcessor, detect_objects_in_image, img_convert
 from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
 
@@ -27,6 +27,8 @@ if 'target_image' not in st.session_state:
     st.session_state.target_image = Image.new("RGB", (800, 1280), (255, 255, 255))
 if 'original_image' not in st.session_state:
     st.session_state.original_image = None
+if 'detected_image' not in st.session_state:
+    st.session_state.detected_image = None
 if 'normalizing_range' not in st.session_state:
     st.session_state.normalizing_range = [0, 198]
 if 'bright_ratio' not in st.session_state:
@@ -119,7 +121,6 @@ if __name__ == "__main__":
         add_label(new_label)
     st.divider()
     file_video_section, web_video_section, camera_video_section = st.columns(3)
-    detect = False
     # st.session_state.original_image = None
     st.session_state.vod_stream = None
     found_objects = None
@@ -213,93 +214,59 @@ if __name__ == "__main__":
                          use_column_width="always")
                 if st.session_state.detect_button:
                     with st.spinner('Detecting objects... it takes time....'):
-                        found_objects = find_detections(image=st.session_state.target_image,
-                                                        labels=selected_labels,)
-                # cap = cv2.VideoCapture(uploaded_file)
-                    st.image(image=found_objects["image"],
-                             use_column_width="always")
+                        found_objects = detect_objects_in_image(image=st.session_state.target_image,
+                                                                labels=selected_labels, )
+                        st.session_state.detected_objects = found_objects["predictions"]
+                        if bool(found_objects):
+                            st.session_state.detected_image = found_objects["image"]
+                        else:
+                            st.session_state.detected_image = st.session_state.target_image
                     st.session_state.detect_button = False
-                    st.session_state.detected_objects = found_objects["predictions"]
+
+                if st.session_state.detected_image is not None:
+                    st.image(image=st.session_state.detected_image,
+                             use_column_width="always")
+
     st.divider()
     if st.session_state.detected_objects:
         with st.spinner("Real-time tracking is currently being prepared..."):
-            if st.session_state.image_source == "cam":
-                webrtc_ctx = webrtc_streamer(
-                    key=string.punctuation,
-                    mode=WebRtcMode.SENDRECV,
-                    rtc_configuration=RTC_CONFIGURATION,
-                    media_stream_constraints={
-                        "video": {
-                            "frameRate": {
-                                "max": 60,
-                                "ideal": 30
-                            },
-                            "width": {
-                                "min": 320,
-                                "max": 1024
-                            },
-                            "height": {
-                                "min": 240,
-                                "max": 768
-                            },
+            print(len(st.session_state.detected_objects))
+            video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
+                                           image=st.session_state.target_image)
+            vod_stream = st.session_state.vod_stream
+            webrtc_ctx = webrtc_streamer(
+                key=string.punctuation,
+                mode=WebRtcMode.RECVONLY if st.session_state.image_source == "web" else WebRtcMode.SENDRECV,
+                rtc_configuration=RTC_CONFIGURATION,
+                media_stream_constraints={
+                    "video": {
+                        # "frameRate": {
+                        #     "max": 60,
+                        #     "ideal": 1
+                        # },
+                        "width": {
+                            "min": 320,
+                            "max": 1024
                         },
-                        "audio": True
-                    },
-                    video_processor_factory=VideoProcessor,
-                    async_processing=True,
-                    desired_playing_state=True,
-                    video_html_attrs={
-                        "style": {
-                            "width": "100%",
-                            "max-width": "768px",
-                            "margin": "0 auto",
-                            "justify-content": "center"
+                        "height": {
+                            "min": 240,
+                            "max": 768
                         },
-                        "controls": True,
-                        "autoPlay": False
                     },
-                )
-            elif st.session_state.image_source == "web":
-                video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
-                                               image=st.session_state.target_image)
-                vod_stream= st.session_state.vod_stream
-                player_factory = (lambda x=0: MediaPlayer(file=vod_stream))
-                webrtc_ctx = webrtc_streamer(
-                    key=string.punctuation,
-                    mode=WebRtcMode.RECVONLY,
-                    rtc_configuration=RTC_CONFIGURATION,
-                    media_stream_constraints={
-                        "video": {
-                            # "frameRate": {
-                            #     "max": 60,
-                            #     "ideal": 1
-                            # },
-                            "width": {
-                                "min": 320,
-                                "max": 1024
-                            },
-                            "height": {
-                                "min": 240,
-                                "max": 768
-                            },
-                        },
-                        "audio": True
+                    "audio": True
+                },
+                video_processor_factory=video_factory,
+                player_factory=(lambda x=0: MediaPlayer(file=vod_stream)) if st.session_state.image_source == "web" else None,
+                async_processing=True,
+                desired_playing_state=True,
+                video_html_attrs={
+                    "style": {
+                        "width": "100%",
+                        "max-width": "768px",
+                        "margin": "0 auto",
+                        "justify-content": "center"
                     },
-                    video_processor_factory=video_factory,
-                    player_factory=player_factory,
-                    async_processing=True,
-                    desired_playing_state=True,
-                    video_html_attrs={
-                        "style": {
-                            "width": "100%",
-                            "max-width": "768px",
-                            "margin": "0 auto",
-                            "justify-content": "center"
-                        },
-                        "controls": True,
-                        "autoPlay": False
-                    },
-                )
-            else:
-                st.write("real time detecting activate after capture")
-
+                    "controls": True,
+                    "autoPlay": False
+                },
+            )

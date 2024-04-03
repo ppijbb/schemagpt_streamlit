@@ -10,7 +10,7 @@ from PIL import ImageFont, ImageDraw, Image
 from aiortc.contrib.media import MediaPlayer, PlayerStreamTrack, REAL_TIME_FORMATS
 
 import streamlit as st
-from streamlit_webrtc.models import VideoProcessorBase, CallbackAttachableProcessor
+from streamlit_webrtc.models import VideoProcessorBase, CallbackAttachableProcessor, VideoProcessorT
 
 from srcs.st_cache import get_zsc_detector
 
@@ -21,7 +21,6 @@ class MediaPlayer(MediaPlayer):
     def __init__(
         self, file, format=None, options=None, timeout=None, loop=False, decode=True
     ):
-        # super(ArrayMediaPlayer, self).__init__(file, format, options, timeout, loop, decode)
         self.__container = file
         self.__thread: Optional[threading.Thread] = None
         self.__thread_quit: Optional[threading.Event] = None
@@ -76,8 +75,7 @@ class VideoProcessor(VideoProcessorBase):
         super(VideoProcessor).__init__()
         self.track(predictions=predictions, image=image)
 
-    def __call__(self):
-        print(self)
+    def __call__(self,):
         return self
 
     def track(self, predictions, image):
@@ -101,10 +99,10 @@ class VideoProcessor(VideoProcessorBase):
         self.y_h = np.mean(self.h_l).astype(int)
         self.tracking = True
 
-    def recv(self, frame) -> av.VideoFrame:
+    def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+        frame = frame.reformat(frame.width, frame.height, "bgr24")
         img = frame.to_ndarray(format="bgr24")
-
-        img, _result = self.process_video(img)
+        img = self.process_video(img)
         # img = process(img)
         # if _result:
         #     self.result_dict.update(_result)
@@ -164,7 +162,7 @@ def img_convert(img) -> np.array:
     return img
 
 
-def find_detections(image, labels,):
+def detect_objects_in_image(image, labels, ):
     image = Image.fromarray(image)
     predictions = detector(image,
                            candidate_labels=labels,)
