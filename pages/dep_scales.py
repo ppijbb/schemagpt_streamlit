@@ -21,8 +21,5 @@ from langchain_community.llms.fake import FakeStreamingListLLM
 
 from srcs.st_cache import get_or_create_eventloop
 
-
 if __name__ == "__main__":
-    st.title('🧬 Dep Peptide App')
-
-
+    st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')

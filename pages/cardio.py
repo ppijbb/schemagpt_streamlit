@@ -62,15 +62,23 @@ if __name__ == "__main__":
     #     st.page_link("pages/cardio.py", )
     #     st.page_link("pages/dep_peptide.py", )
     #     st.page_link("pages/facial.py", )
-    
-    st.selectbox(label='테스트 데이터 선택',
-                 options=['test1', 'test2', 'test3', 'test4',],
-                 key="test_key", 
-                 on_change=set_test)
+    st.page_link(page="https://www.seoul.co.kr/news/society/2021/07/23/20210723500107", #"https://www.eulji.ac.kr/index.html?menuno=3203",
+                 label="관련 링크",
+                 help="을지대 고령호발질환 연구팀, ‘한국형 심뇌혈관 건강 자가 평가표’ 개발",
+                 icon="🫀")
+    st.page_link(page="https://www.eulji.ac.kr/index.html?menuno=3203",
+                 label="관련 링크2",
+                 help="을지대 고령호발질환 연구팀, ‘한국형 심뇌혈관 건강 자가 평가표’ 개발",
+                 icon="📝")
+
     form_con = st.expander(label="측정하기", expanded=True)
     result_con = st.expander(label="점수보기", expanded=False)
 
     with form_con:
+        st.selectbox(label='테스트 데이터 선택',
+                     options=['test1', 'test2', 'test3', 'test4', ],
+                     key="test_key",
+                     on_change=set_test)
         tab1, tab2, tab3 = st.tabs(["기본 평가", "세부 평가", "테스트"])
 
         st.session_state.gn3 = 0
