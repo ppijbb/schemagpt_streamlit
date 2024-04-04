@@ -1,2 +1,3 @@
 secrets.toml
 chromadb_oai
+__pycache__
