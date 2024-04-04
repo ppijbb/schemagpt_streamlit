@@ -72,21 +72,29 @@ class VideoProcessor(VideoProcessorBase):
     obj_labels = []
     term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
     tracking = False
+    use_cv_tracker=False
 
-    def __init__(self, predictions, image):
+    def __init__(self, predictions, image, cv_tracking):
         super(VideoProcessor).__init__()
+        self.use_cv_tracker = cv_tracking
         self.track(predictions=predictions, image=image)
 
     def __call__(self,):
         return self
 
     def track(self, predictions, image):
+        self.obj_labels = []
+        self.w_l = []
+        self.h_l = []
+        self.windows = []
+        self.roi_hists = []
+
         for prediction in predictions:
             self.obj_labels += [prediction['label']]
             box = prediction['box']
             data = [
-                box['xmin'] - 7, box['ymin'] - 7,
-                box['xmax'] + 7, box['ymax'] + 7,
+                box['xmin'] - 10, box['ymin'] - 10,
+                box['xmax'] + 10, box['ymax'] + 10,
             ]
             self.w_l += [box["xmax"] - box["xmin"]]
             self.h_l += [box["ymax"] - box["ymin"]]
@@ -105,10 +113,13 @@ class VideoProcessor(VideoProcessorBase):
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
         frame = frame.reformat(frame.width, frame.height, "bgr24")
         img = frame.to_ndarray(format="bgr24")
-        img = self.process_video(img)
-        # img = process(img)
-        # if _result:
-        #     self.result_dict.update(_result)
+        if self.use_cv_tracker:
+            labels = list(set(self.obj_labels))
+            img = detect_objects_in_image(img, labels, )["image"]
+        else:
+            img = self.process_video(img)
+        if not isinstance(img, np.ndarray):
+            img = np.array(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
     async def recv_queued(self, frames: List[av.VideoFrame]) -> List[av.VideoFrame]:
@@ -124,7 +135,6 @@ class VideoProcessor(VideoProcessorBase):
         # pass image is numpy.ndarray
         font_path = f"{self.dir_path}/pages/font/jalnan/yg-jalnan.ttf"
         font_small = ImageFont.truetype(font=font_path, size=16)
-
         for i, (window, roi_hist, label) in enumerate(zip(self.windows, self.roi_hists, self.obj_labels)):
             dst = cv2.calcBackProject([image], [0], roi_hist, [0, 180], 1)
             ret, track_window = cv2.meanShift(dst, window, self.term_crit)
@@ -138,8 +148,7 @@ class VideoProcessor(VideoProcessorBase):
                       text=label,
                       font=font_small,
                       fill=(0, 0, 0, 0))
-            image = np.array(image_pil)
-        return image
+        return image_pil
 
 
 def img_convert(img) -> np.array:

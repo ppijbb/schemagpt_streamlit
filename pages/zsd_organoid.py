@@ -59,6 +59,8 @@ if 'video_url_selected' not in st.session_state:
     st.session_state.video_url_selected = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
 if 'start_rtc_detecting' not in st.session_state:
     st.session_state.start_rtc_detecting = False
+if 'zsd_tracking' not in st.session_state:
+    st.session_state.zsd_tracking = False
 
 
 def add_label(label: str):
@@ -228,10 +230,14 @@ if __name__ == "__main__":
                              use_column_width="always")
 
     st.divider()
+    st.toggle(label="AI tracking",
+              help="체크되지 않은 경우 OpenCV 트래킹을 수행",
+              key="zsd_tracking")
     if st.session_state.detected_objects:
         with st.spinner("Real-time tracking is currently being prepared..."):
             video_factory = VideoProcessor(predictions=st.session_state.detected_objects,
-                                           image=st.session_state.target_image)
+                                           image=st.session_state.target_image,
+                                           cv_tracking=st.session_state.zsd_tracking)
             vod_stream = st.session_state.vod_stream
             webrtc_ctx = webrtc_streamer(
                 key=string.punctuation,
