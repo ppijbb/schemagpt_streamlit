@@ -3,6 +3,7 @@ import os
 from typing import Optional, Set
 import threading
 
+import torch
 import cv2
 import numpy as np
 import av
@@ -167,6 +168,7 @@ def img_convert(img) -> np.array:
     return img
 
 
+@torch.no_grad()
 def detect_objects_in_image(image, labels, ):
     image = Image.fromarray(image)
     predictions = detector(image,

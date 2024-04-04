@@ -46,8 +46,16 @@ def get_facial_processors(path: str):
 
 @st.cache_resource
 def get_zsc_detector():
-    checkpoint = "Thomasboosinger/owlv2-base-patch16-ensemble"  # "google/owlvit-base-patch32" #
+    # "Thomasboosinger/owlv2-base-patch16-ensemble"  #
+    checkpoint = "google/owlvit-base-patch32"
     return pipeline(model=checkpoint, task="zero-shot-object-detection")
+
+
+@st.cache_resource
+def get_yolo_detector():
+    # "devonho/detr-resnet-50_finetuned_cppe5"
+    checkpoint = "hustvl/yolos-small"
+    return pipeline(model=checkpoint, task="object-detection")
 
 
 @st.cache_resource
