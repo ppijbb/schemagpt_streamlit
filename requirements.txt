@@ -1,6 +1,7 @@
 av
 streamlit
 streamlit-webrtc
+streamlit-pdf-viewer
 openai
 langchain
 langchain-openai

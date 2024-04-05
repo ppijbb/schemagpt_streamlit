@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 import streamlit as st
+import pydeck as pdk
 
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
@@ -46,10 +47,10 @@ if 'map' not in st.session_state:
         {
             "lat": np.random.randn(10) / 10 + st.session_state.lat,
             "lon": np.random.randn(10) / 10 + st.session_state.lon,
-            "size": np.random.randn(10) * 10,
+            "size": np.random.randn(10),
             "color": np.random.rand(10, 4).tolist(),
         }
-        )
+    )
 
 
 def add_pin_in_map(lat: float, lon: float, size: float, color: float):
@@ -61,14 +62,14 @@ def add_pin_in_map(lat: float, lon: float, size: float, color: float):
             "size": size, 
             "color": color
         })
-    ], ignore_index=True)
+    ], ignore_index=True).drop_duplicates(subset=["lat", "lon"], keep='last')
 
 
 headers = {
     "Content-Type": "application/json",
 }
 # 반경 내 상권 정보 조회 API
-payload={ 
+payload = {
     "serviceKey": st.secrets["SERVICE_KEY"],
     "pageNo": 1,
     "numOfRows": 20,
@@ -91,12 +92,40 @@ if __name__ == "__main__":
     
     map_section, search_section = st.columns(2)
     with map_section:
-    # map_con = st.expander(label="지도보기")
-        st.map(data=st.session_state.map,
-               size='size',
-               color='color',
-               zoom=10,
-               use_container_width=False)
+        # map_con = st.expander(label="지도보기")
+        st.pydeck_chart(pdk.Deck(
+            map_style='mapbox://styles/mapbox/outdoors-v11',
+            initial_view_state=pdk.ViewState(
+                latitude=st.session_state.lat,
+                longitude=st.session_state.lon,
+                zoom=15,
+                pitch=65,
+                bearing=15,
+            ),
+            layers=[
+                pdk.Layer(
+                    'HexagonLayer',
+                    data=st.session_state.map,
+                    get_position='[lon, lat]',
+                    get_fill_color='[200, 30, 0, 160*size]',
+                    radius=200,
+                    get_elevation="size",
+                    elevation_scale=50,
+                    elevation_range=[0, 1000],
+                    pickable=True,
+                    extruded=True,
+                    auto_highlight=True,
+                    coverage=1
+                ),
+                pdk.Layer(
+                    'ScatterplotLayer',
+                    data=st.session_state.map,
+                    get_position='[lon, lat]',
+                    get_color='[200, 30, 0, 160]',
+                    get_radius=200,
+                ),
+            ],
+        ))
         x = st.number_input(label='x',
                             key="lon",
                             step=0.0000001,
@@ -113,10 +142,10 @@ if __name__ == "__main__":
                                                            region="kr-kr",
                                                            max_results=5,
                                                            source="text")),
-                WikipediaQueryRun(
-                    api_wrapper=WikipediaAPIWrapper()),
-                PubmedQueryRun(),
-                IonicTool().tool()] + load_tools(["arxiv"],)
+                 WikipediaQueryRun(
+                     api_wrapper=WikipediaAPIWrapper()),
+                 PubmedQueryRun(),
+                 IonicTool().tool()] + load_tools(["arxiv"],)
         
         if query := st.chat_input(placeholder="검색",):        
             payload.update({
@@ -166,12 +195,12 @@ if __name__ == "__main__":
                 for s in shops:
                     add_pin_in_map(lat=s["lat"],
                                    lon=s["lon"],
-                                   size=np.random.rand(1)*10,
+                                   size=np.random.rand(1),
                                    color=np.random.rand(1, 4).tolist())
                     search_query = f'{s["bizesNm"]} {query}'
                     st.markdown(f'> {search_query}')
                     for result in tools[0].invoke(search_query).split("..."):
-                        st.text_area('',f'{result}')                        
+                        st.text_area('', f'{result}')
                         st.markdown("---")
             else:
                 st.markdown("검색 결과가 없습니다")

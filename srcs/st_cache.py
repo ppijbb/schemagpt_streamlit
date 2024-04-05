@@ -5,12 +5,14 @@ import cv2
 import os
 import pickle
 import pandas as pd
+from xgboost import XGBClassifier
+from transformers import pipeline
+import asyncio
+
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.vectorstores import Chroma
-from transformers import pipeline
-import asyncio
 
 
 def get_or_create_eventloop():
@@ -83,6 +85,13 @@ def get_heq_data():
 @st.cache_resource
 def get_scale_data():
     return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
+
+
+@st.cache_resource
+def get_dep_scale_model():
+    cgi_classifier = XGBClassifier(tree_method='gpu_hist')
+    cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
+    return cgi_classifier
 
 
 @st.cache_resource

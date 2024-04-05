@@ -147,10 +147,16 @@ if __name__ == "__main__":
             label="Select Video in web",
             options=["https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4",
                      "https://github.com/intel-iot-devkit/sample-videos/raw/master/fruit-and-vegetable-detection.mp4",
-                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/person-bicycle-car-detection.mp4",],
+                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/person-bicycle-car-detection.mp4",
+                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/people-detection.mp4",
+                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/bolt-multi-size-detection.mp4",
+                     "https://github.com/intel-iot-devkit/sample-videos/raw/master/worker-zone-detection.mp4"],
             captions=["물병",
                       "과일과 야채",
-                      "사람 자전거 차량",],
+                      "움직이는 사람, 자전거, 차량",
+                      "지나가는 사람",
+                      "다양한 크기의 볼트",
+                      "공사장에 있는 사람"],
             key="video_url_selected",
             on_change=onchange_web)
         if st.session_state.video_url_selected is not None and st.session_state.image_source == "web":

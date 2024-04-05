@@ -62,11 +62,14 @@ if __name__ == "__main__":
     #     st.page_link("pages/cardio.py", )
     #     st.page_link("pages/dep_peptide.py", )
     #     st.page_link("pages/facial.py", )
-    st.page_link(page="https://www.seoul.co.kr/news/society/2021/07/23/20210723500107", #"https://www.eulji.ac.kr/index.html?menuno=3203",
+
+    col1, col2 = st.columns([0.7, 0.3])
+    col1.image("pages/image/cardio/reflat.png")
+    col2.page_link(page="https://www.seoul.co.kr/news/society/2021/07/23/20210723500107", #"https://www.eulji.ac.kr/index.html?menuno=3203",
                  label="관련 링크",
                  help="을지대 고령호발질환 연구팀, ‘한국형 심뇌혈관 건강 자가 평가표’ 개발",
                  icon="🫀")
-    st.page_link(page="https://www.eulji.ac.kr/index.html?menuno=3203",
+    col2.page_link(page="https://www.eulji.ac.kr/index.html?menuno=3203",
                  label="관련 링크2",
                  help="을지대 고령호발질환 연구팀, ‘한국형 심뇌혈관 건강 자가 평가표’ 개발",
                  icon="📝")
