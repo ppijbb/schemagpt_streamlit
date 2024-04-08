@@ -56,8 +56,8 @@ if __name__ == "__main__":
 
     with st.sidebar:
         col1, col2 = st.columns(2)
-        col1.markdown("[![github](https://img.icons8.com/material-outlined/48/000000/github.png)](https://github.com/ppijbb)")
-        col2.markdown("[![LinkedIn](https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg)](https://www.linkedin.com/in/권환-정-ba37b122b)")
+        col1.markdown("[![github](https://img.icons8.com/?size=48&id=fmFqQmR0UdsR&format=png)](https://github.com/ppijbb)")
+        col2.markdown("[![LinkedIn](https://img.icons8.com/?size=48&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
 
     st.markdown("### 📚 STACKS")
     st.markdown('''
