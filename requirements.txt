@@ -23,3 +23,4 @@ xmltodict
 ionic-langchain
 arxiv
 plotly
+pytesseract
