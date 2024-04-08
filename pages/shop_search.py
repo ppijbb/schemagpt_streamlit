@@ -48,7 +48,7 @@ if 'map' not in st.session_state:
             "lat": np.random.randn(10) / 10 + st.session_state.lat,
             "lon": np.random.randn(10) / 10 + st.session_state.lon,
             "size": np.random.randn(10),
-            "height": np.random.randn(10),
+            "height": np.random.randn(10)*1000,
             "color": np.random.rand(10, 4).tolist(),
         }
     )
@@ -61,7 +61,7 @@ def add_pin_in_map(lat: float, lon: float, size: float, color: float):
             "lat": lat, 
             "lon": lon, 
             "size": size,
-            "height": np.random.randn(1),
+            "height": np.random.randn(1)*1000,
             "color": color
         })
     ], ignore_index=True).drop_duplicates(subset=["lat", "lon"], keep='last')
@@ -104,13 +104,14 @@ if __name__ == "__main__":
                 pitch=65,
                 bearing=15,
             ),
+            tooltip={"html": "value: {height}"},
             layers=[
                 pdk.Layer(
                     'HexagonLayer',
                     data=st.session_state.map,
                     get_position='[lon, lat]',
-                    get_fill_color='[200, 30, 0, 160*size]',
-                    radius=200,
+                    # get_fill_color='[200, 30, 0, 160*size]',
+                    radius=100,
                     get_elevation="height",
                     elevation_scale=50,
                     elevation_range=[0, 1000],
