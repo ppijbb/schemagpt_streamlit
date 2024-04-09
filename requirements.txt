@@ -2,6 +2,7 @@ av
 streamlit
 streamlit-webrtc
 streamlit-pdf-viewer
+streamlit-shap
 openai
 langchain
 langchain-openai
@@ -21,6 +22,8 @@ scikit-learn
 wikipedia
 xmltodict
 ionic-langchain
+ipython
 arxiv
 plotly
 pytesseract
+shap

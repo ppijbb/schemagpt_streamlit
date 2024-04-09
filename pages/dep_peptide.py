@@ -4,6 +4,12 @@ from streamlit_pdf_viewer import pdf_viewer
 from srcs.st_cache import get_or_create_eventloop
 
 
+st.set_page_config(page_title="peptide",
+                   page_icon="🧬",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
+
+
 if __name__ == "__main__":
     st.title('🧬 Dep Peptide App')
 

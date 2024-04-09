@@ -15,6 +15,11 @@ from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
 
 
+st.set_page_config(page_title="zsd",
+                   page_icon="🔫",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
+
 colorize_multiselect_options()
 
 

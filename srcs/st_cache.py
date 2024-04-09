@@ -8,6 +8,8 @@ import pandas as pd
 from xgboost import XGBClassifier
 from transformers import pipeline
 import asyncio
+import shap
+import easyocr
 
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.embeddings import OpenAIEmbeddings
@@ -91,7 +93,7 @@ def get_scale_data():
 def get_dep_scale_model():
     cgi_classifier = XGBClassifier(tree_method='gpu_hist')
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
-    return cgi_classifier
+    return cgi_classifier, shap.Explainer(cgi_classifier)
 
 
 @st.cache_resource
@@ -105,3 +107,8 @@ def add_static_js():
         with open(f"{js_dir}/{js}", "r") as f:
             js_data += f'<style>\n{f.read()}\n</style>\n'
     return js_data
+
+
+@st.cache_resource
+def get_ocr():
+    return easyocr.Reader(['ko', 'en'])

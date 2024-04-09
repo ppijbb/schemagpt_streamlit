@@ -8,6 +8,11 @@ from srcs.cardio import heq, scale_severity
 from srcs.st_style_md import hide_radio_value_md
 from srcs.st_cache import get_or_create_eventloop
 
+st.set_page_config(page_title="shop search",
+                   page_icon="🫀",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
+
 if "test" not in st.session_state:
     st.session_state.test = ['user',
                              1, 2, 3, 115.0, 79.0, 120.0, 0.9, # 1, 2, 4, 115, 79, 120, 0.9,

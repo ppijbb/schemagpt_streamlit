@@ -7,6 +7,12 @@ from srcs.facial import VideoProcessor
 from pages.rtc.config import RTC_CONFIGURATION
 
 
+st.set_page_config(page_title="facial emotion recognition",
+                   page_icon="🫠",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
+
+
 def show():
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]

@@ -41,7 +41,9 @@ from ionic_langchain.tool import IonicTool
 from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 
-st.set_page_config(layout="wide",
+st.set_page_config(page_title="main",
+                   page_icon="👋",
+                   layout="wide",
                    initial_sidebar_state="expanded",)
 
 

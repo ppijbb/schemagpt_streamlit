@@ -29,6 +29,11 @@ from langchain_community.llms.fake import FakeStreamingListLLM
 from srcs.st_cache import get_or_create_eventloop
 
 
+st.set_page_config(page_title="shop search",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
+
+
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
