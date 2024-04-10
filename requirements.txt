@@ -27,3 +27,6 @@ arxiv
 plotly
 pytesseract
 shap
+easyocr
+paddlepaddle
+paddleocr
