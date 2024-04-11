@@ -10,6 +10,8 @@ from transformers import pipeline
 import asyncio
 import shap
 import easyocr
+import paddle
+from paddleocr import PaddleOCR, draw_ocr # main OCR dependencies
 
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.embeddings import OpenAIEmbeddings
@@ -111,4 +113,13 @@ def add_static_js():
 
 @st.cache_resource
 def get_ocr():
-    return easyocr.Reader(['ko', 'en'])
+
+    return {
+        "easy": easyocr.Reader(["ko", "en"]),
+        "paddle": PaddleOCR(lang="korean",
+                            show_log=False,
+                            ocr_version="PP-OCRv4",
+                            structure_version="PP-StructureV2")
+    }
+
+
