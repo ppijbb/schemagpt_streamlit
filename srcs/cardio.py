@@ -12,6 +12,19 @@ from plotly.subplots import make_subplots
 heq_data = get_heq_data()
 scale_data = get_scale_data()
 
+feature_names = [
+    # 범주형
+   "규칙적 운동", "보조제 복용", "무기력", "산경질",
+   "중강도 신체활동", "자신의 건강", "피로", "음주",
+   "긴장/불안", "대면 어려움", "시선 어려움",
+   # 수치형
+   "수축기 혈압 2차", "이완기 혈압 1차", "수축기 혈압 1차",
+   "Vit E", "HDL", "LDL",
+   "LDL-c", "적혈구용적치", "콜레스테롤", "회분",
+   "철분(식물성)", "헤모글로빈", "복부지방률", "Mo",
+   "적혈구수", "단핵구", "Vit B2", "동물성 단백질",
+   "Cu", "Vit C", "Protein", "백혈구수"
+]
 
 def distance(a, x, b, y, c, z, d):
     up = abs(a * x + b * y + c * z + d)
@@ -54,7 +67,7 @@ def make_grade(indexer, x):
 def make_gauge(user_level, risk_lv):
     return go.Indicator(
             mode="gauge+number", # "gauge+number+delta"
-            value=3-np.argmax(user_level)+0.5,
+            value=3-np.argmax(user_level)+1,
             domain={'x': [0.15, 0.85], 'y': [0.15, 0.85]},
             title={'text': f"분석 결과", 'font': {'size': 24}},
             # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
@@ -98,6 +111,10 @@ def make_gauge(user_level, risk_lv):
                 }
             })
 
+def processed_v_to_int(value):
+    v = value.split(" 단계 ")
+    v[0] = int(v[0])
+    return v
 
 def heq(args, st_layout):
     # args[-1] = args[-1][0]
@@ -148,12 +165,12 @@ def heq(args, st_layout):
         num2 = num
     except:
         num2 = num
-    print(num, num2,
-          Voting.predict(vx),  # voting
-          Voting.estimators_[0].predict(vx),  # LightGBM
-          Voting.estimators_[1].predict(vx),  # XGBoost
-          Voting.estimators_[2].predict(vx),  # GradientBoost
-          Voting.estimators_[3].predict(vx))  # CatBoost
+    # print(num, num2,
+    #       Voting.predict(vx),  # voting
+    #       Voting.estimators_[0].predict(vx),  # LightGBM
+    #       Voting.estimators_[1].predict(vx),  # XGBoost
+    #       Voting.estimators_[2].predict(vx),  # GradientBoost
+    #       Voting.estimators_[3].predict(vx))  # CatBoost
 
     x = [np.append(x, num2)]
     feature = pca.transform(x)
@@ -180,7 +197,7 @@ def heq(args, st_layout):
         "val_check2": int(num2[0]),
         "risk_lv": risk_lv,
         "other_mean": dict(zip(list(args.keys())[1:], data_mean)),
-        "processed_values": processed_values,
+        "processed_values": processed_values[1:],
         "cont_value_branch": cont_branch,
         "directions": directions
     }
@@ -269,6 +286,31 @@ def heq(args, st_layout):
         st.plotly_chart(pie, theme="streamlit", use_container_width=True)
     with st_layout.container(border=True):
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        numeric_df = pd.DataFrame(dict(zip(feature_names[11:], [processed_v_to_int(v) for v in processed_values[12:]]))).T
+
+    numeric_df.rename(columns = {0 : "score", 1: "level"}, inplace = True)
+    st_layout.data_editor(
+        numeric_df,
+        column_config={
+            "score": st.column_config.ProgressColumn(
+                "단계(max : 12)",
+                help="해당 수치의 단계",
+                format="%d 단계",
+                width="medium",
+                min_value=0,
+                max_value=12,
+            ),
+            "level": st.column_config.TextColumn(
+                "위험 수준",
+                help="해당 수치의 위험 수준",
+                width="small",
+                default="",
+                max_chars=50,
+                # validate="^st\.[a-z_]+$",
+            )
+        },
+        hide_index=True,
+    )
     # st_layout.write(args)
     # st_layout.write(result)
     return result
