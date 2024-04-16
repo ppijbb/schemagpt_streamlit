@@ -29,11 +29,6 @@ from langchain_community.llms.fake import FakeStreamingListLLM
 from srcs.st_cache import get_or_create_eventloop
 
 
-st.set_page_config(page_title="shop search",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
-
-
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
@@ -91,6 +86,9 @@ payload = {
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="shop search",
+                   layout="wide",
+                   initial_sidebar_state="auto",)
     st.title('🐶 Dog Coffee Searcher 🦮')
     # with st.sidebar:
     #     st.page_link("pages/cardio.py",)

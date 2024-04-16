@@ -8,10 +8,6 @@ from srcs.cardio import heq, scale_severity
 from srcs.st_style_md import hide_radio_value_md
 from srcs.st_cache import get_or_create_eventloop
 
-st.set_page_config(page_title="shop search",
-                   page_icon="🫀",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
 
 if "test" not in st.session_state:
     st.session_state.test = ['user',
@@ -60,6 +56,10 @@ def set_test():
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="shop search",
+                   page_icon="🫀",
+                   layout="wide",
+                   initial_sidebar_state="expanded",)
     hide_radio_value_md()
     st.title('🫀 Cardio')
 

@@ -7,12 +7,6 @@ from srcs.facial import VideoProcessor, AudioProcessor
 from pages.rtc.config import RTC_CONFIGURATION
 
 
-st.set_page_config(page_title="facial emotion recognition",
-                   page_icon="🫠",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
-
-
 def show():
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]
@@ -57,6 +51,10 @@ def show():
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="facial emotion recognition",
+                   page_icon="🫠",
+                   layout="wide",
+                   initial_sidebar_state="auto",)
     st.title('😄😑😭 Facial Emotion Recognition')
     st.markdown("마이크와 웹캠을 이용합니다.")
     # with st.sidebar:

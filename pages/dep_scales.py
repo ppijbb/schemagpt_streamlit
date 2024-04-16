@@ -9,18 +9,16 @@ from srcs.st_cache import get_or_create_eventloop, get_dep_scale_model
 from srcs.st_style_md import hide_radio_value_md
 
 
-st.set_page_config(page_title="depressive scale",
-                   page_icon="👩‍⚕️",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
-
-
 shap.plots.initjs()
 hide_radio_value_md()
 scale_xgb, explainer = get_dep_scale_model()
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="depressive scale",
+                   page_icon="👩‍⚕️",
+                   layout="wide",
+                   initial_sidebar_state="auto",)
     st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')
     st.image("pages/image/dep_scale/output.png")
     with st.form("BDI"):

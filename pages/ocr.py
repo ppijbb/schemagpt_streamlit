@@ -15,10 +15,7 @@ from srcs.st_cache import get_ocr
 
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-st.set_page_config(page_title="ocr test",
-                   page_icon="🔡",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+
 reader = get_ocr()
 if "image_list" not in st.session_state:
     st.session_state.image_list = os.listdir("pages/image/ocr")
@@ -34,6 +31,10 @@ def ocr_img_to_bgr_array(image: Image.Image):
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="ocr test",
+                   page_icon="🔡",
+                   layout="wide",
+                   initial_sidebar_state="auto",)
     st.title('🗒️🆗OCR test page')
 
     st.write(pytesseract.get_tesseract_version)

@@ -4,13 +4,11 @@ from streamlit_pdf_viewer import pdf_viewer
 from srcs.st_cache import get_or_create_eventloop
 
 
-st.set_page_config(page_title="peptide",
+if __name__ == "__main__":
+    st.set_page_config(page_title="peptide",
                    page_icon="🧬",
                    layout="wide",
                    initial_sidebar_state="auto",)
-
-
-if __name__ == "__main__":
     st.title('🧬 Dep Peptide App')
 
     st.write("우울증 진단 환자 대상 약물 치료 이후 증상이 있는 그룹, 없는 그룹, 대조군 그룹에 대한 단백체 분석")

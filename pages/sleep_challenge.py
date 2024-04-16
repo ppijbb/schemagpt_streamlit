@@ -4,13 +4,11 @@ from streamlit_pdf_viewer import pdf_viewer
 from srcs.st_cache import get_or_create_eventloop
 
 
-st.set_page_config(page_title="sleep challenge",
+if __name__ == "__main__":
+    st.set_page_config(page_title="sleep challenge",
                    page_icon="🛌",
                    layout="wide",
                    initial_sidebar_state="auto",)
-
-
-if __name__ == "__main__":
     st.title('🛌 SNUBH sleep challenge')
 
     st.write("수면 중 수면 무호흡증 판별 대회")
