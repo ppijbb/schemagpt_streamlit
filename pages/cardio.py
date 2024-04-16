@@ -11,7 +11,7 @@ from srcs.st_cache import get_or_create_eventloop
 st.set_page_config(page_title="shop search",
                    page_icon="🫀",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 
 if "test" not in st.session_state:
     st.session_state.test = ['user',

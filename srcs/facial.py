@@ -8,13 +8,14 @@ import os
 from datetime import datetime as dt
 
 from PIL import ImageFont, ImageDraw, Image
+import speech_recognition as sr
 import tensorflow as tf
 import keras
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image as _IMG
-from streamlit_webrtc.models import VideoProcessorBase
-
+from streamlit_webrtc.models import VideoProcessorBase, AudioProcessorBase
+import speech_recognition as sr
 from srcs.st_cache import get_facial_processors
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -151,24 +152,33 @@ def process_face(image):
     return processed, result
 
 
-# def process(image):
-#     image.flags.writeable = False
-#     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#     results = hands.process(image)
-#
-#     # Draw the hand annotations on the image.
-#     image.flags.writeable = True
-#     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-#     if results.multi_hand_landmarks:
-#       for hand_landmarks in results.multi_hand_landmarks:
-#         mp_drawing.draw_landmarks(
-#             image,
-#             hand_landmarks,
-#             mp_hands.HAND_CONNECTIONS,
-#             mp_drawing_styles.get_default_hand_landmarks_style(),
-#             mp_drawing_styles.get_default_hand_connections_style())
-#     return image
-#     # return cv2.flip(image, 1)
+class AudioProcessor(AudioProcessorBase):
+    result_dict = dict()
+    code = None
+    recognizer = sr.Recognizer()
+
+    def array_to_audiodata(self, audio_array, sample_rate):
+        # print(audio_array.shape)
+        return sr.AudioData(frame_data=audio_array.tobytes(),
+                            sample_rate=sample_rate,
+                            sample_width=2)
+
+    def recv(self, frame) -> av.AudioFrame:
+        try:
+            audio_data = self.array_to_audiodata(audio_array=frame.to_ndarray(),
+                                                 sample_rate=frame.sample_rate)
+            print(self.recognizer.recognize_google(audio_data, language="ko", show_all=True))
+        except sr.UnknownValueError:
+            pass
+        except sr.RequestError as e:
+            print("요청 에러:", e)
+        return frame
+
+    async def recv_queued(self, frames: List[av.AudioFrame]) -> List[av.AudioFrame]:
+        return [self.recv(frames[-1])]
+
+    def on_ended(self):
+        print("############### Connection Ended #################")
 
 
 class VideoProcessor(VideoProcessorBase):

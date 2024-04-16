@@ -44,7 +44,7 @@ from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 
 st.set_page_config(page_title="chat app",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 
 vector_db = get_utterance_data()
 

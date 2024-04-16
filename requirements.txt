@@ -30,3 +30,4 @@ shap
 easyocr
 paddlepaddle
 paddleocr
+SpeechRecognition

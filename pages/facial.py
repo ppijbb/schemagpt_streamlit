@@ -3,14 +3,14 @@ import string
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
-from srcs.facial import VideoProcessor
+from srcs.facial import VideoProcessor, AudioProcessor
 from pages.rtc.config import RTC_CONFIGURATION
 
 
 st.set_page_config(page_title="facial emotion recognition",
                    page_icon="🫠",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 
 
 def show():
@@ -22,10 +22,10 @@ def show():
         rtc_configuration=RTC_CONFIGURATION,
         media_stream_constraints={
             "video": {
-                "frameRate": {
-                    "max": 60,
-                    "ideal": 0
-                },
+                # "frameRate": {
+                #     "max": 60,
+                #     "ideal": 0
+                # },
                 "width": {
                     "min": 640,
                     "max": 1024
@@ -38,6 +38,7 @@ def show():
             "audio": True
         },
         video_processor_factory=VideoProcessor,
+        audio_processor_factory=AudioProcessor,
         async_processing=True,
         desired_playing_state=True,
         video_html_attrs={
@@ -57,6 +58,7 @@ def show():
 
 if __name__ == "__main__":
     st.title('😄😑😭 Facial Emotion Recognition')
+    st.markdown("마이크와 웹캠을 이용합니다.")
     # with st.sidebar:
     #     st.page_link("pages/cardio.py",)
     #     st.page_link("pages/dep_peptide.py",)

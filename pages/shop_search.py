@@ -31,7 +31,7 @@ from srcs.st_cache import get_or_create_eventloop
 
 st.set_page_config(page_title="shop search",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 
 
 loop = asyncio.new_event_loop()

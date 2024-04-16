@@ -44,7 +44,7 @@ from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 st.set_page_config(page_title="main",
                    page_icon="👋",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 
 
 loop = asyncio.new_event_loop()
@@ -57,9 +57,10 @@ if __name__ == "__main__":
         st.session_state["shared"] = True
 
     with st.sidebar:
-        col1, col2 = st.columns(2)
-        col1.markdown("[![github](https://img.icons8.com/?size=48&id=fmFqQmR0UdsR&format=png)](https://github.com/ppijbb)")
-        col2.markdown("[![LinkedIn](https://img.icons8.com/?size=48&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
+        side1, side2, side3 = st.columns(3)
+        side1.markdown("[![github](https://img.icons8.com/?size=24&id=fmFqQmR0UdsR&format=png)](https://github.com/ppijbb)")
+        side2.markdown("[![LinkedIn](https://img.icons8.com/?size=24&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
+        side3.markdown("[![Gmail](https://img.icons8.com/?size=24&id=37246&format=png)](mailto:ppijbb@gmail.com)")
 
     st.markdown("### 📚 STACKS")
     st.markdown('''

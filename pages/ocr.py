@@ -18,7 +18,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 st.set_page_config(page_title="ocr test",
                    page_icon="🔡",
                    layout="wide",
-                   initial_sidebar_state="expanded",)
+                   initial_sidebar_state="auto",)
 reader = get_ocr()
 if "image_list" not in st.session_state:
     st.session_state.image_list = os.listdir("pages/image/ocr")
