@@ -87,8 +87,9 @@ payload = {
 
 if __name__ == "__main__":
     st.set_page_config(page_title="shop search",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+                       page_icon="🏪",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
     st.title('🐶 Dog Coffee Searcher 🦮')
     # with st.sidebar:
     #     st.page_link("pages/cardio.py",)

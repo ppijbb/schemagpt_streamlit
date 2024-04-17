@@ -15,8 +15,8 @@ from srcs.st_cache import get_ocr
 
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-reader = get_ocr()
 if "image_list" not in st.session_state:
     st.session_state.image_list = os.listdir("pages/image/ocr")
 
@@ -30,11 +30,7 @@ def ocr_img_to_bgr_array(image: Image.Image):
         ocr_img_to_bgr_array(image.convert("RGB"))
 
 
-if __name__ == "__main__":
-    st.set_page_config(page_title="ocr test",
-                   page_icon="🔡",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+def view(reader):
     st.title('🗒️🆗OCR test page')
 
     st.write(pytesseract.get_tesseract_version)
@@ -44,7 +40,7 @@ if __name__ == "__main__":
 
     with col1.container(height=section_height):
         selected_image = st.selectbox("image select",
-                                      options=st.session_state.image_list,)
+                                      options=st.session_state.image_list, )
         st.image(image=f"pages/image/ocr/{selected_image}")
     with torch.no_grad():
         image_path = f"pages/image/ocr/{selected_image}"
@@ -59,19 +55,19 @@ if __name__ == "__main__":
             cropped_len = round(h / w)
             for i in range(cropped_len):
                 # RGB -> BGR
-                page = ocr_img_to_bgr_array(image=img.crop((0, round(i * w), w, min(round((i+1) * w), h))))
+                page = ocr_img_to_bgr_array(image=img.crop((0, round(i * w), w, min(round((i + 1) * w), h))))
                 parsed_easy_data += reader["easy"].readtext(image=page,
                                                             decoder="greedy",
                                                             min_size=3)
                 parsed_paddle_data += reader["paddle"].ocr(page,
-                                                           cls=False,)[0]
+                                                           cls=False, )[0]
                 progress = i / cropped_len * 100
                 tqdm_bar.progress(round(progress), text=f"{progress} % done...")
             easy_data = [data[1] for data in parsed_easy_data]
             paddle_data = [data[1][0] for data in parsed_paddle_data]
             tqdm_bar.empty()
 
-            for t, readable_text in zip(scrollable_box.tabs(["easy", "paddle"]), [easy_data, paddle_data,]):
+            for t, readable_text in zip(scrollable_box.tabs(["easy", "paddle"]), [easy_data, paddle_data, ]):
                 t.write("\n\n".join(readable_text).replace("~", "\~"))
             # t.markdown(
             #     # pytesseract.image_to_string(
@@ -79,3 +75,11 @@ if __name__ == "__main__":
             #     #         lang="kor"
             #     #     )
             # )
+
+
+if __name__ == "__main__":
+    st.set_page_config(page_title="ocr test",
+                       page_icon="🔡",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    view(reader=get_ocr())

@@ -56,13 +56,27 @@ def set_test():
 
 
 if __name__ == "__main__":
-    st.set_page_config(page_title="shop search",
-                   page_icon="🫀",
-                   layout="wide",
-                   initial_sidebar_state="expanded",)
+    st.set_page_config(page_title="cardiovascular",
+                       page_icon="🫀",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
     hide_radio_value_md()
-    st.title('🫀 Cardio')
-
+    st.title('🫀 Research on demonstration of prognostic and diagnostic' 
+             'systems for aging related diseases')
+    st.markdown('''
+        과학기술정보통신부 바이오.의료기술개발(R&D) 사업
+        
+        고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구
+        
+        위탁연구기관 연구원으로 참여 (2021.04.01~2021.07.31)
+    ''')
+    st.markdown('''
+        [개발 내용]
+        - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
+        - 심혈관 질환의 표준화 지수 정량화 방법 개발
+        - 클라우드 기반 분석 엔진 개발
+        - 
+    ''')
     # with st.sidebar:
     #     st.page_link("pages/cardio.py", )
     #     st.page_link("pages/dep_peptide.py", )
@@ -70,10 +84,12 @@ if __name__ == "__main__":
 
     col1, col2 = st.columns([0.7, 0.3])
     col1.image("pages/image/cardio/reflat.png")
+    _, center, _ = col1.columns([0.45, 0.1, 0.45])
+    center.markdown("심뇌혈관 건강 자가 평가")
     col2.page_link(page="https://www.seoul.co.kr/news/society/2021/07/23/20210723500107", #"https://www.eulji.ac.kr/index.html?menuno=3203",
                    label="관련 링크",
                    help="을지대 고령호발질환 연구팀, ‘한국형 심뇌혈관 건강 자가 평가표’ 개발",
-                   icon="🩺")
+                   icon="📑")
     col2.page_link(page="https://mobile.newsis.com/view.html?ar_id=NISX20210723_0001523673#_PA",
                    label="관련 링크2",
                    help="을지대 연구팀, ‘한국형 심뇌혈관 건강 자가평가표’ 개발",
@@ -81,7 +97,11 @@ if __name__ == "__main__":
     col2.page_link(page="https://www.asiae.co.kr/article/2021091409375978106",
                    label="관련 링크3",
                    help="을지대 '한국형 심뇌혈관 건강 자가 평가표' 개발",
-                   icon="📝") # 
+                   icon="📃")
+    col2.page_link(page="https://scienceon.kisti.re.kr/commons/util/originalView.do",
+                   label="연구 보고서",
+                   help="고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구 과제 연구 보고서",
+                   icon="📄")
 
     form_con = st.expander(label="측정하기", expanded=True)
     result_con = st.expander(label="점수보기", expanded=False)

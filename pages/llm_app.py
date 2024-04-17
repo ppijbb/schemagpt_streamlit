@@ -42,16 +42,16 @@ from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 
 
-vector_db = get_utterance_data()
-
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 
 if __name__ == "__main__":
     st.set_page_config(page_title="chat app",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+                       page_icon="🤖",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    vector_db = get_utterance_data()
     st.title('🤖 LLM based Chatbot App')
     if "shared" not in st.session_state:
         st.session_state["shared"] = True

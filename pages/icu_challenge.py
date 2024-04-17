@@ -8,9 +8,9 @@ from srcs.st_cache import get_or_create_eventloop
 
 if __name__ == "__main__":
     st.set_page_config(page_title="icu challenge",
-                   page_icon="🏥",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+                       page_icon="🏥",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
     st.title('🏥 SNUBH-AWS ICU Datathon')
 
     st.markdown("응급실 데이터 분석")

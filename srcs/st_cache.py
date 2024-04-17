@@ -115,7 +115,7 @@ def add_static_js():
 def get_ocr():
 
     return {
-        "easy": easyocr.Reader(["ko", "en"]),
+        "easy": easyocr.Reader(["ko", "en"], gpu=False),
         "paddle": PaddleOCR(lang="korean",
                             show_log=False,
                             ocr_version="PP-OCRv4",

@@ -9,18 +9,21 @@ from srcs.st_cache import get_or_create_eventloop, get_dep_scale_model
 from srcs.st_style_md import hide_radio_value_md
 
 
-shap.plots.initjs()
-hide_radio_value_md()
-scale_xgb, explainer = get_dep_scale_model()
+def view():
+    shap.plots.initjs()
+    hide_radio_value_md()
+    st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')
+    st.markdown("")
+    st.image("pages/image/dep_scale/output.png")
 
 
 if __name__ == "__main__":
     st.set_page_config(page_title="depressive scale",
-                   page_icon="👩‍⚕️",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
-    st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')
-    st.image("pages/image/dep_scale/output.png")
+                       page_icon="👩‍⚕️",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    scale_xgb, explainer = get_dep_scale_model()
+    view()
     with st.form("BDI"):
         bdi_1 = st.radio(
             label="슬픔",
@@ -240,15 +243,16 @@ if __name__ == "__main__":
             }
             features = np.array([list(form_data.values()) + [sum(form_data.values())]])
             result = scale_xgb.predict(features)[0]
-            shap_values = explainer(features,)
+            shap_values = explainer(features, )
             print(shap_values.__dir__())
             print(type(shap_values.base_values))
             print(shap_values.values.shape)
+            print(len(list(form_data.keys()) + ["sum"]))
             plot_component = shap.multioutput_decision_plot(base_values=shap_values.base_values.tolist(),
                                                             shap_values=shap_values.values.tolist(),
                                                             row_index=result,
                                                             highlight=[0],
-                                                            # feature_names=list(form_data.keys()) + ["sum"],
+                                                            feature_names=np.array([k for k in form_data.keys()] + ["sum"]),
                                                             show=True)
             print(type(plot_component))
             st_shap(plot_component)

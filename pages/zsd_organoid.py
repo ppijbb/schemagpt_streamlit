@@ -15,9 +15,6 @@ from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
 
 
-colorize_multiselect_options()
-
-
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
@@ -100,9 +97,10 @@ def get_web_media():
 
 if __name__ == "__main__":
     st.set_page_config(page_title="zsd",
-                   page_icon="🔫",
-                   layout="wide",
-                   initial_sidebar_state="auto",)
+                       page_icon="🔫",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    colorize_multiselect_options()
     st.title('🧫 ZSD Detection & Tracking')
     st.write("입력받은 라벨을 찾아드립니다.")
 
