@@ -268,15 +268,22 @@ def heq(args, st_layout):
                 x=list(draw_data.values()),
                 orientation='h',
                 showlegend=False,
-                name=title
+                name=title,
+                dx=1
             )],
             rows=2, cols=2
         )
-
+    fig.update_layout(
+        xaxis = dict(
+            tickmode = 'linear',
+            tick0 = 0.0,
+            dtick = 1.0
+        )
+    )
     pie = go.Figure(make_gauge(user_level, risk_lv))
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
                       margin={
-                          "l": 50, "r": 50, "t": 0, "b": 0, "pad": 0
+                          "l": 0, "r": 0, "t": 0, "b": 0, "pad": 0
                       })
     # st.write(risk_lv)
     fig.update_layout(margin={
@@ -286,7 +293,8 @@ def heq(args, st_layout):
         st.plotly_chart(pie, theme="streamlit", use_container_width=True)
     with st_layout.container(border=True):
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-        numeric_df = pd.DataFrame(dict(zip(feature_names[11:], [processed_v_to_int(v) for v in processed_values[12:]]))).T
+        numeric_df = pd.DataFrame(dict(zip(feature_names[11:], 
+                                           [processed_v_to_int(v) for v in processed_values[12:]]))).T
 
     numeric_df.rename(columns = {0 : "score", 1: "level"}, inplace = True)
     st_layout.data_editor(
@@ -309,10 +317,9 @@ def heq(args, st_layout):
                 # validate="^st\.[a-z_]+$",
             )
         },
-        hide_index=True,
+        use_container_width=True,
     )
-    # st_layout.write(args)
-    # st_layout.write(result)
+
     return result
 
 

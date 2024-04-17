@@ -75,7 +75,6 @@ if __name__ == "__main__":
         - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
         - 심혈관 질환의 표준화 지수 정량화 방법 개발
         - 클라우드 기반 분석 엔진 개발
-        - 
     ''')
     # with st.sidebar:
     #     st.page_link("pages/cardio.py", )
@@ -84,7 +83,7 @@ if __name__ == "__main__":
 
     col1, col2 = st.columns([0.7, 0.3])
     col1.image("pages/image/cardio/reflat.png")
-    _, center, _ = col1.columns([0.45, 0.1, 0.45])
+    _, center = col1.columns([0.4, 0.6,])
     center.markdown("심뇌혈관 건강 자가 평가")
     col2.page_link(page="https://www.seoul.co.kr/news/society/2021/07/23/20210723500107", #"https://www.eulji.ac.kr/index.html?menuno=3203",
                    label="관련 링크",
