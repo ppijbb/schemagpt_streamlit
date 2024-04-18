@@ -64,26 +64,29 @@ if __name__ == "__main__":
     st.title('🫀 Research on demonstration of prognostic and diagnostic' 
              'systems for aging related diseases')
     st.markdown('''
-    ## 프로젝트 소개
-        과학기술정보통신부 바이오.의료기술개발(R&D) 사업
-        고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구
-        위탁연구기관(㈜튜링바이오) 연구원으로 참여 (2021.04.01~2021.07.31)
-    ''')
+        ## 프로젝트 소개
+        
+            과학기술정보통신부 바이오.의료기술개발(R&D) 사업
+            고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구
+            위탁연구기관(㈜튜링바이오) 연구원으로 참여 (2021.04.01~2021.07.31)
+            멀티오믹스 데이터 분석 및 ML 모델 개발
+        ''')
     st.markdown('''
-    ## 개발 내용
-    - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
-    - 심혈관 질환의 표준화 지수 정량화 방법 개발
-    - 클라우드 기반 분석 엔진 개발
-    ''')
+        ## 개발 내용
+        - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
+        - 심혈관 질환의 표준화 지수 정량화 방법 개발
+        - 클라우드 기반 분석 엔진 개발
+        ''')
     st.markdown('''
-    ## 사용 기술
-    - SVM 벡터 평면 거리 기준 
-    - 심혈관 질환의 표준화 지수 정량화 방법 개발
-    - 클라우드 기반 분석 엔진 개발
-    ''')
+        ## 사용 기술
+        <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+        <img src="https://img.shields.io/badge/scikitlearn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=black">
+        <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+        <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=black">
+        ''', unsafe_allow_html=True)
     st.markdown('''
-    ## 참고자료
-    ''')
+        ## 참고자료
+        ''')
     col1, col2 = st.columns([0.7, 0.3])
     col1.image("pages/image/cardio/reflat.png")
     _, center = col1.columns([0.4, 0.6,])
@@ -104,9 +107,10 @@ if __name__ == "__main__":
                    label="연구 보고서",
                    help="고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구 과제 연구 보고서",
                    icon="📄")
+    
     st.markdown('''
-    ## Demo
-    ''')
+        ## Demo
+        ''')
     form_con = st.expander(label="측정하기", expanded=True)
     result_con = st.expander(label="점수보기", expanded=False)
 

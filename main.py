@@ -63,7 +63,16 @@ if __name__ == "__main__":
         side2.markdown("[![LinkedIn](https://img.icons8.com/?size=24&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
         side3.markdown("[![Gmail](https://img.icons8.com/?size=24&id=37246&format=png)](mailto:ppijbb@gmail.com)")
     
-    st.markdown("정권환입니다")
+    st.markdown("""
+      # 안녕하세요 발전하는 개발자 정권환입니다
+      
+      안녕하세요. 
+
+      헬스케어, 디지털 바이오 중심의 데이터 분석, AI 엔지니어(ML/DL) 개발자 입니다.
+
+      서버 아키텍처부터 AI 모델 서빙까지 원활한 커뮤니케이션 가능합니다.
+      
+      """)
 
     section1, section2 = st.columns(2)
     with section1:
@@ -166,6 +175,3 @@ if __name__ == "__main__":
   </div>
       ''',
       unsafe_allow_html=True)
-    
-
-    
