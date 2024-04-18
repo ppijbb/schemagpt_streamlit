@@ -16,4 +16,4 @@ if __name__ == "__main__":
     st.write("")
     st.markdown("---")
     st.markdown("참가팀 66팀 중 최종 9등")
-    pdf_viewer("pages/image/dep_peptide/DepressReport.pdf", width=450, height=300)
+    # pdf_viewer("pages/image/dep_peptide/DepressReport.pdf", width=450, height=300)

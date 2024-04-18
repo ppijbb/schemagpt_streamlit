@@ -13,8 +13,10 @@ def view():
     shap.plots.initjs()
     hide_radio_value_md()
     st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')
-    st.markdown("")
+    st.markdown("우울증 자가 문진 BDI-II, HAM-D 점수에서 임상의의 전반적 임상 인상 중증도 분석 프로젝트")
+    st.markdown("(2021.05~2021.06) ")
     st.image("pages/image/dep_scale/output.png")
+    st.image("pages/image/dep_scale/cgi_score.png")
 
 
 if __name__ == "__main__":

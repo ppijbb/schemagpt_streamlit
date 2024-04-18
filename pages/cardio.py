@@ -64,23 +64,26 @@ if __name__ == "__main__":
     st.title('🫀 Research on demonstration of prognostic and diagnostic' 
              'systems for aging related diseases')
     st.markdown('''
+    ## 프로젝트 소개
         과학기술정보통신부 바이오.의료기술개발(R&D) 사업
-        
         고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구
-        
-        위탁연구기관 연구원으로 참여 (2021.04.01~2021.07.31)
+        위탁연구기관(㈜튜링바이오) 연구원으로 참여 (2021.04.01~2021.07.31)
     ''')
     st.markdown('''
-        [개발 내용]
-        - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
-        - 심혈관 질환의 표준화 지수 정량화 방법 개발
-        - 클라우드 기반 분석 엔진 개발
+    ## 개발 내용
+    - 고령호발성 질환 개선 및 개인 건강 증진을 위한 생활 및 식이 패턴 건강 지수 개발
+    - 심혈관 질환의 표준화 지수 정량화 방법 개발
+    - 클라우드 기반 분석 엔진 개발
     ''')
-    # with st.sidebar:
-    #     st.page_link("pages/cardio.py", )
-    #     st.page_link("pages/dep_peptide.py", )
-    #     st.page_link("pages/facial.py", )
-
+    st.markdown('''
+    ## 사용 기술
+    - SVM 벡터 평면 거리 기준 
+    - 심혈관 질환의 표준화 지수 정량화 방법 개발
+    - 클라우드 기반 분석 엔진 개발
+    ''')
+    st.markdown('''
+    ## 참고자료
+    ''')
     col1, col2 = st.columns([0.7, 0.3])
     col1.image("pages/image/cardio/reflat.png")
     _, center = col1.columns([0.4, 0.6,])
@@ -101,7 +104,9 @@ if __name__ == "__main__":
                    label="연구 보고서",
                    help="고령호발질환 예측 및 진단 시스템 실증 및 실용화 연구 과제 연구 보고서",
                    icon="📄")
-
+    st.markdown('''
+    ## Demo
+    ''')
     form_con = st.expander(label="측정하기", expanded=True)
     result_con = st.expander(label="점수보기", expanded=False)
 
