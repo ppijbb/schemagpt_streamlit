@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_shap import st_shap
 
+import pandas as pd
 import numpy as np
 import shap
 
@@ -221,40 +222,42 @@ if __name__ == "__main__":
         submitted = st.form_submit_button("결과보기")
         if submitted:
             form_data = {
-                "bdi1": bdi_1,
-                "bdi2": bdi_2,
-                "bdi3": bdi_3,
-                "bdi4": bdi_4,
-                "bdi5": bdi_5,
-                "bdi6": bdi_6,
-                "bdi7": bdi_7,
-                "bdi8": bdi_8,
-                "bdi9": bdi_9,
-                "bdi10": bdi_10,
-                "bdi11": bdi_11,
-                "bdi12": bdi_12,
-                "bdi13": bdi_13,
-                "bdi14": bdi_14,
-                "bdi15": bdi_15,
-                "bdi16": bdi_16,
-                "bdi17": bdi_17,
-                "bdi18": bdi_18,
-                "bdi19": bdi_19,
-                "bdi20": bdi_20,
-                "bdi21": bdi_21,
+                "슬픔": bdi_1,
+                "비관주의": bdi_2,
+                "과거의 실패": bdi_3,
+                "즐거움 상실": bdi_4,
+                "죄책감": bdi_5,
+                "벌 받는 느낌": bdi_6,
+                "자기혐오": bdi_7,
+                "자기비판": bdi_8,
+                "자살 사고 및 자살 소망": bdi_9,
+                "울음": bdi_10,
+                "초조": bdi_11,
+                "흥미상실": bdi_12,
+                "우유부단": bdi_13,
+                "무가치함": bdi_14,
+                "기력상실": bdi_15,
+                "수면 양상 변화": bdi_16,
+                "짜증": bdi_17,
+                "식욕 변화": bdi_18,
+                "주의 집중 어려움": bdi_19,
+                "피로감": bdi_20,
+                "성에 대한 흥미상실": bdi_21,
             }
-            features = np.array([list(form_data.values()) + [sum(form_data.values())]])
+            form_data.update({"sum": sum(form_data.values())})
+            features = np.array([list(form_data.values())])
             result = scale_xgb.predict(features)[0]
+
             shap_values = explainer(features, )
             print(shap_values.__dir__())
-            print(type(shap_values.base_values))
+            shap_values.feature_names = [k for k in form_data.keys()]
+            print(shap_values.feature_names)
+            print(shap_values.base_values.shape)
             print(shap_values.values.shape)
-            print(len(list(form_data.keys()) + ["sum"]))
             plot_component = shap.multioutput_decision_plot(base_values=shap_values.base_values.tolist(),
                                                             shap_values=shap_values.values.tolist(),
                                                             row_index=result,
-                                                            highlight=[0],
-                                                            feature_names=np.array([k for k in form_data.keys()] + ["sum"]),
+                                                            # highlight=[0, 1, 2, 3, 4, 5],
+                                                            # feature_names=[[k for k in form_data.keys()]],
                                                             show=True)
-            print(type(plot_component))
             st_shap(plot_component)
