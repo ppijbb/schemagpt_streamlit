@@ -80,7 +80,7 @@ if __name__ == "__main__":
       years, inc = st.columns([0.4, 0.6])
       years.markdown("###### 2011.03~2014.02")
       inc.markdown("###### 노원 고등학교")
-      inc.markdown("이과")
+      inc.markdown("-")
       years, inc = st.columns([0.4, 0.6])
       years.markdown("###### 2014.03~2021.02")
       inc.markdown("###### 가천대학교")

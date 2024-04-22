@@ -14,10 +14,30 @@ def view():
     shap.plots.initjs()
     hide_radio_value_md()
     st.title('👩‍⚕️📝🙍‍♂️ Depression self-scoring inventory Analysis')
-    st.markdown("우울증 자가 문진 BDI-II, HAM-D 점수에서 임상의의 전반적 임상 인상 중증도 분석 프로젝트")
-    st.markdown("(2021.05~2021.06) ")
-    st.image("pages/image/dep_scale/output.png")
-    st.image("pages/image/dep_scale/cgi_score.png")
+    st.markdown('''
+                
+        ## 프로젝트 소개
+        
+            우울증 자가문진과 임상의 임상 인상척도 사이의 상관관계 연구
+            우울증 자가문진 BDI-II, HAM-D 데이터 분석
+            참여기관의 사정으로 인해 과제 중지
+
+
+        ## 개발 내용
+        - 우울증 자가평가도구로 여려 의료기관에서 활용되는 BDI-II, HAM-D 문진 데이터 처리
+        - 입력 데이터는 0~3과 같이 점수에 대한 선택지들로, 모든 변수가 범주형 데이터
+        - BDI-II, HAM-D 사이의 Pearson 상관관계 분석. 두 문진 모두 DSM-5에 기반한 문진이라 비슷한 항목들 끼리 높은 상관성을 가짐
+        - 
+        
+
+        ## 사용 기술
+        <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+        <img src="https://img.shields.io/badge/scikitlearn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=black">
+        <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+        ''', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    col1.image("pages/image/dep_scale/output.png")
+    col2.image("pages/image/dep_scale/cgi_score.png")
 
 
 if __name__ == "__main__":
