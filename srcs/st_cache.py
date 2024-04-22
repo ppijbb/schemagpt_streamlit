@@ -95,7 +95,7 @@ def get_scale_data():
 def get_dep_scale_model():
     cgi_classifier = XGBClassifier(tree_method='gpu_hist')
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
-    return cgi_classifier, shap.Explainer(cgi_classifier)
+    return cgi_classifier, shap.Explainer(cgi_classifier,)
 
 
 @st.cache_resource

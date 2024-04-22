@@ -247,17 +247,20 @@ if __name__ == "__main__":
             form_data.update({"sum": sum(form_data.values())})
             features = np.array([list(form_data.values())])
             result = scale_xgb.predict(features)[0]
-
             shap_values = explainer(features, )
-            print(shap_values.__dir__())
             shap_values.feature_names = [k for k in form_data.keys()]
-            print(shap_values.feature_names)
-            print(shap_values.base_values.shape)
-            print(shap_values.values.shape)
+            print(explainer.expected_value)
+            print(shap_values.base_values)
+            plot_component = shap.summary_plot(base_values=shap_values.base_values.tolist(),
+                                               shap_values=shap_values.values.tolist(),
+                                               show=True)
+            st_shap(plot_component)
             plot_component = shap.multioutput_decision_plot(base_values=shap_values.base_values.tolist(),
                                                             shap_values=shap_values.values.tolist(),
                                                             row_index=result,
-                                                            # highlight=[0, 1, 2, 3, 4, 5],
-                                                            # feature_names=[[k for k in form_data.keys()]],
+                                                            highlight=[result],
+                                                            # link='logit',
+                                                            # feature_names=list(form_data.keys()),
                                                             show=True)
+
             st_shap(plot_component)
