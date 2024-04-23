@@ -31,14 +31,14 @@ if __name__ == "__main__":
         
         ### MIMIC
         - 예선 단계 미국 중환자실 데이터 Medical Information Mart For Intensive Care III (MIMIC-III) 데이터 분석 내용 평가
-        - 흉부 X-ray, ECG, 중환자실 발생 정형 데이터, 
+        - 흉부 X-ray, ECG, 중환자실에서 수집된 환경 및 생체 데이터 등의 정형 데이터를 활용한 multi-modal 학습
         - 제공된 정형 데이터 중 기존 연구 레퍼런스 참고하여 의미가 있는 feature 추출 
+        - X-ray 데이터는 efficient net-b4 를 이용해 featrue 추출
         
         ### ICU Dataset
         - 본선 단계 분당 서울대 병원 데이터 분석 내용 평가
-        - MIMIC 데이터와 동일한 구조
-        - 제공 데이터 중 X-ray와 중환자실 정형 데이터만 활용 가능
-        
+        - MIMIC 데이터와 동일한 구조이나 활용 가능한 데이터는 X-ray와 정형데이터
+        - X-ray 데이터를 학습한 efficient net-b4와 CatBoost, GradientBoost, LGBM, XGBoost, Gaussian NB 의 Ensemble 모델 학습     
         
 
         ## 사용 기술
@@ -48,6 +48,7 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=black">
         <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=black"> 
         <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+        <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=black">
         ''', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:

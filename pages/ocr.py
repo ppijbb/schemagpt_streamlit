@@ -32,8 +32,20 @@ def ocr_img_to_bgr_array(image: Image.Image):
 
 def view(reader):
     st.title('🗒️🆗OCR test page')
+    st.markdown('''            
+        ## 프로젝트 소개
+        
+            공연 정보 탐색을 위한 공연 안내 이미지에서 텍스트 추출
+            
 
-    st.write(pytesseract.get_tesseract_version)
+        ## 개발 내용
+        - 오픈소스 OCR 적용하여 텍스트 추출
+        - 이미지 전처리를 통한 추출 텍스트 품질 개선
+
+        ## 사용 기술
+        <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+        <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+        ''', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
     section_height = 600

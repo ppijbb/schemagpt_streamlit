@@ -91,6 +91,24 @@ if __name__ == "__main__":
                        layout="wide",
                        initial_sidebar_state="auto",)
     st.title('🐶 Dog Coffee Searcher 🦮')
+    st.markdown('''            
+        ## 프로젝트 소개
+        
+            애견 관련 사업체 탐색 프로젝트
+            검색하는 위치의 애견 카페 또는 애견 미용실 등의 정보 제공
+
+        ## 개발 내용
+        - 상가정보 조회 API에서 특정위치의 특정 업종의 업체 목록 조회
+        - DuckDuckGO 엔진에서 업체별 정보 수집
+        - 상가 주소 좌표 변환 통계청 API 결과로 지도 시각화
+        - 지도상에 시각화
+        - 각 업체별 리뷰, 정보 제공
+
+        ## 사용 기술
+        <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+        <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=black">
+        <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+        ''', unsafe_allow_html=True)
     # with st.sidebar:
     #     st.page_link("pages/cardio.py",)
     #     st.page_link("pages/dep_peptide.py",)
