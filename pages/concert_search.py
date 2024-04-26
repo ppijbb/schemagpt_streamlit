@@ -35,7 +35,7 @@ loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 
-open_api_url = "http://kopis.or.kr/openApi/restful/"
+open_api_url = "http://kopis.or.kr/openApi/restful/pblprfr"
 concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
 concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
 map_addr_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json"
@@ -76,13 +76,26 @@ def add_pin_in_map(lat: float, lon: float, size: float, color: float):
 headers = {
     "Content-Type": "application/json",
 }
+
+#  "AAAA": 연극
+#  "BBBC": 무용(서양/한국무용)
+#  "BBBE": 대중무용
+#  "CCCA": 클래식(서양음악)
+#  "CCCC": 국악(한국음악)
+#  "CCCD": 대중음악
+#  "EEEA": 복합
+#  "EEEB": 서커스/마술
+#  "GGGA": 뮤지컬
+
 # 반경 내 상권 정보 조회 API
 payload = {
     "service": st.secrets["CONCERT_SECRET_KEY"],
-    "stdate": (get_now()-dt.timedelta(days=14)).strftime("%y%m%d"),
-    "eddate": (get_now()+dt.timedelta(days=60)).strftime("%y%m%d"),
-    "cpage": 50, 
-    "rows": 10
+    "stdate": (get_now()-dt.timedelta(days=30)).strftime("%Y%m%d"),
+    "eddate": (get_now()+dt.timedelta(days=60)).strftime("%Y%m%d"),
+    "cpage": "50", 
+    "rows": "10",
+    "shcate": "CCCD",
+    "newsql": "Y"
 }
 
 
@@ -206,12 +219,14 @@ if __name__ == "__main__":
                     })
             try:
                 # 공연 정보 검색
-                response = requests.get(url=f"{open_api_url}/pblprfr?", 
+                response = requests.get(url=f"{open_api_url}?", 
                                         headers=headers, 
                                         params=payload)
-                # 
-                st.write(response.text)
-                st.write(xml.etree.ElementTree.parse(response.raw))
+                elements = xml.etree.ElementTree.fromstring(response.text)
+
+                for child in elements:
+                    st.markdown(child.items())
+                    
                 shops = response.json()['body']['items']
             except Exception as e:
                 st.write(f"공연 검색 오류: {e}")
