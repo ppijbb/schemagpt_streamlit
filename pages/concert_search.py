@@ -223,11 +223,12 @@ if __name__ == "__main__":
                                         headers=headers, 
                                         params=payload)
                 elements = xml.etree.ElementTree.fromstring(response.text)
-
-                for child in elements:
-                    st.markdown(child.items())
+                # st.markdown(response.text)
+                items = [{i.tag: i.text for i in e} for e in elements]
+                st.markdown(items)
                     
-                shops = response.json()['body']['items']
+                    
+                shops = None
             except Exception as e:
                 st.write(f"공연 검색 오류: {e}")
                 shops = []
