@@ -7,6 +7,7 @@ import streamlit as st
 import pydeck as pdk
 import datetime as dt
 import xml
+import uuid
 
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
@@ -275,10 +276,10 @@ if __name__ == "__main__":
                                    lon=s["place_lo"],
                                    size=np.random.rand(1),
                                    color=np.random.rand(1, 4).tolist())
-                    search_query = f'{s["prfnm"]} {s["detail_prfpdfrom"]} {query}'
+                    search_query = f'{s["prfnm"]} {s["detail_prfpdfrom"]}'
                     st.markdown(f'> {search_query}')
                     for result in tools[0].invoke(search_query).split("..."):
-                        st.text_area('', f'{result}')
+                        st.text_area('', f'{result}', key=uuid.uuid4())
                         st.markdown("---")
             else:
                 st.markdown("검색 결과가 없습니다")
