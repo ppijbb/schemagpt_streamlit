@@ -35,7 +35,7 @@ loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 
-open_api_url = "http://kopis.or.kr/openApi/restful/pblprfr"
+open_api_url = "http://kopis.or.kr/openApi/restful"
 concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
 concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
 map_addr_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json"
@@ -77,6 +77,20 @@ headers = {
     "Content-Type": "application/json",
 }
 
+# 반경 내 상권 정보 조회 API
+payload = {
+    "serviceKey": st.secrets["SERVICE_KEY"],
+    "pageNo": 1,
+    "numOfRows": 20,
+    "radius": 500,
+    "cx": st.session_state.lon,
+    "cy": st.session_state.lat,
+    "indsLclsCd": "G2",
+    "indsMclsCd": "G220",
+    "indsSclsCd": "G22001",
+    "type": "json"
+}
+
 #  "AAAA": 연극
 #  "BBBC": 무용(서양/한국무용)
 #  "BBBE": 대중무용
@@ -87,14 +101,21 @@ headers = {
 #  "EEEB": 서커스/마술
 #  "GGGA": 뮤지컬
 
-# 반경 내 상권 정보 조회 API
-payload = {
+
+# 기간 내 공연 리스트 조회 API payload
+concert_payload = {
     "service": st.secrets["CONCERT_SECRET_KEY"],
     "stdate": (get_now()-dt.timedelta(days=30)).strftime("%Y%m%d"),
     "eddate": (get_now()+dt.timedelta(days=60)).strftime("%Y%m%d"),
     "cpage": "50", 
     "rows": "10",
     "shcate": "CCCD",
+    "newsql": "Y"
+}
+
+# 해당 공연 및 공연장 정보 조회 API payload
+detail_payload = {
+    "service": st.secrets["CONCERT_SECRET_KEY"],
     "newsql": "Y"
 }
 
@@ -219,27 +240,42 @@ if __name__ == "__main__":
                     })
             try:
                 # 공연 정보 검색
-                response = requests.get(url=f"{open_api_url}?", 
+                concerts = []
+                response = requests.get(url=f"{open_api_url}/pblprfr?", 
                                         headers=headers, 
-                                        params=payload)
+                                        params=concert_payload)
                 elements = xml.etree.ElementTree.fromstring(response.text)
                 # st.markdown(response.text)
-                items = [{i.tag: i.text for i in e} for e in elements]
-                st.markdown(items)
-                    
-                    
-                shops = None
+                for e in elements:
+                    items = {i.tag: i.text for i in e}
+                    mt20 = items["mt20id"]
+                    details_response = requests.get(url=f"{open_api_url}/pblprfr/{mt20}?", 
+                                                    headers=headers, 
+                                                    params=detail_payload)
+                    detail_elements = xml.etree.ElementTree.fromstring(details_response.text)
+                    for e in detail_elements:
+                        items.update({f"detail_{i.tag}": i.text for i in e})
+                    mt10 = items["detail_mt10id"]
+                    details_response = requests.get(url=f"{open_api_url}/prfplc/{mt10}?", 
+                                                    headers=headers, 
+                                                    params=detail_payload)
+                    detail_elements = xml.etree.ElementTree.fromstring(details_response.text)
+                    for e in detail_elements:
+                        items.update({f"place_{i.tag}": i.text for i in e})
+                    print(items)
+                    concerts += [items]
+
             except Exception as e:
                 st.write(f"공연 검색 오류: {e}")
-                shops = []
+                concerts = []
 
-            if bool(shops):
-                for s in shops:
-                    add_pin_in_map(lat=s["lat"],
-                                   lon=s["lon"],
+            if bool(concerts):
+                for s in concerts:
+                    add_pin_in_map(lat=s["place_la"],
+                                   lon=s["place_lo"],
                                    size=np.random.rand(1),
                                    color=np.random.rand(1, 4).tolist())
-                    search_query = f'{s["bizesNm"]} {query}'
+                    search_query = f'{s["prfnm"]} {s["detail_prfpdfrom"]} {query}'
                     st.markdown(f'> {search_query}')
                     for result in tools[0].invoke(search_query).split("..."):
                         st.text_area('', f'{result}')
