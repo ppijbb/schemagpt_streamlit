@@ -447,7 +447,7 @@ def scale_severity(args, st_layout):
                             [sum(nut_score)] + nut_score +
                             [sum(pat_score)] + pat_score,
                         branchvalues='total',
-                        insidetextorientation='radial'
+                        insidetextorientation='radial',
                     ),
                   row=1, col=2)
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
