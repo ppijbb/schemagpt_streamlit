@@ -400,7 +400,8 @@ def scale_severity(args, st_layout):
     pat_score = [args[f'p_{p}'] for p in patterns[1:]]
 
     pie = make_subplots(rows=1, cols=2,
-                        specs=[[{"type": "indicator", "t": 0.1}, {"type": "sunburst", "t": 0.1}]],)
+                        specs=[[{"type": "indicator", "t": 0.1}, {"type": "sunburst", "t": 0.1}]],
+                        subplot_titles=("위험도", "총 점",))
     # fig = go.Figure(
     #     go.Sunburst(
     #         name="결과",
@@ -417,8 +418,6 @@ def scale_severity(args, st_layout):
     #         insidetextorientation='radial'
     #     ),
     # )
-
-
     
     polar = go.Figure()
     for draw_data, title in zip([{k.split("_")[1] : v for k, v in args.items() if k != "user"}, result["other_mean"]],
@@ -431,7 +430,8 @@ def scale_severity(args, st_layout):
                 fill="toself",
                 name=title
             ),)
-    # fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+    polar.update_layout(title='데이터 비교',
+                        margin=dict(t=0, l=10, r=10, b=0))
     
     pie.add_trace(make_gauge(user_level, risk_lv),
                   row=1, col=1)
@@ -450,8 +450,9 @@ def scale_severity(args, st_layout):
                         insidetextorientation='radial',
                     ),
                   row=1, col=2)
+    print(type(pie))
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
-                      margin={"l": 0, "r": 0, "t": 0, "b": 0,})
+                      margin=dict(t=0, l=10, r=10, b=0))
     with st_layout.container(border=True):
         st.plotly_chart(pie, theme="streamlit", use_container_width=True,)
     # with st_layout.container(border=True):
