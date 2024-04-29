@@ -61,7 +61,7 @@ if __name__ == "__main__":
                        layout="wide",
                        initial_sidebar_state="auto",)
     hide_radio_value_md()
-    st.title('🫀 Research on demonstration of prognostic and diagnostic' 
+    st.title('🩺💖 Research on demonstration of prognostic and diagnostic' 
              'systems for aging related diseases')
     st.markdown('''
                 
