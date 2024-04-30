@@ -3,6 +3,7 @@ streamlit
 streamlit-webrtc
 streamlit-pdf-viewer
 streamlit-shap
+streamlit-option-menu
 openai
 langchain
 langchain-openai
