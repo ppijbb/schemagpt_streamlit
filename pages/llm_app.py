@@ -93,7 +93,7 @@ if __name__ == "__main__":
             <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=black">
             <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=black"> 
             ''', unsafe_allow_html=True)
-    st.image("pages/image/llm_app/architecture.png")
+    st.image("pages/image/llm_app/architecture.jpg")
 
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
@@ -224,7 +224,7 @@ if __name__ == "__main__":
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True,
-                                            max_iterations=3,
+                                            # max_iterations=3,
                                             max_execution_time=15)
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
