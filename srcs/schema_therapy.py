@@ -45,3 +45,21 @@ you: 단계: 진행
 답변: 지루하지만 한편으로는 평안하지 않으세요? 전 별다른 일이 없다는 게 한편으로는 좋아보여요!
 </example>
 """
+
+prefix_prompt = """Answer the following dialog as a psychotherapist. You have access to the following tools:"""
+
+format_instructions ="""Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question"""
+
+suffix_prompt = """Begin!
+
+Question: {input}
+Thought:{agent_scratchpad}"""

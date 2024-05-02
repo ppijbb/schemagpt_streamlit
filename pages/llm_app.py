@@ -232,12 +232,17 @@ if __name__ == "__main__":
                      IonicTool().tool()] + load_tools(["arxiv"],)
             search_agent = initialize_agent(tools=tools,
                                             llm=llm,
-                                            agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                            # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+                                            # agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+                                            agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True,
                                             max_iterations=5,
                                             early_stopping_method="generate",
-                                            return_intermediate_steps=True
+                                            return_intermediate_steps=True,
+                                            agent_kwargs={
+                                                'prefix': schema_therapy.prefix_prompt,
+                                                'format_instructions': schema_therapy.format_instructions,
+                                                'suffix': schema_therapy.suffix_prompt
+                                            }
                                             # max_execution_time=15
                                             )
             with col2_chat_container.chat_message("assistant"):
@@ -247,7 +252,7 @@ if __name__ == "__main__":
                 search_instruction = copy.deepcopy(st.session_state.messages2)
                 search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 schema therapy 방략)"
                 response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
-                # st.write(response)
+                st.write(response)
                 output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
                 full_msg = ""
                 for o in output:
