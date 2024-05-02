@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 st.info("Please add your OpenAI API key to continue.")
                 st.stop()
 
-            llm = ChatOpenAI(model_name="ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
+            llm = ChatOpenAI(model_name="gpt-3.5-turbo",#"ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
                              openai_api_key=openai_api_key,
                              streaming=True)
             tools = [DuckDuckGoSearchRun(
@@ -223,6 +223,7 @@ if __name__ == "__main__":
             search_agent = initialize_agent(tools=tools,
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+                                            # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True,
                                             # max_iterations=3,
                                             max_execution_time=15)
@@ -230,7 +231,7 @@ if __name__ == "__main__":
                 cfg = RunnableConfig()
                 cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
                 search_instruction = copy.deepcopy(st.session_state.messages2)
-                search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 원인)"
+                search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 schema therapy 방략)"
                 response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
                 output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
                 st.write(f'{output}')
