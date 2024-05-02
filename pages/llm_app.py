@@ -156,6 +156,9 @@ if __name__ == "__main__":
             tools = [
                 DuckDuckGoSearchRun(
                     api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=10, 
+                                                           region="en-en")),
+                DuckDuckGoSearchRun(
+                    api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=10, 
                                                            region="kr-kr")),
                 WikipediaQueryRun(
                     api_wrapper=WikipediaAPIWrapper()),
@@ -168,6 +171,7 @@ if __name__ == "__main__":
             executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
                                                           tools=tools,
                                                           memory=memory,
+                                                          max_iterations=3,
                                                           early_stopping_method="generate",
                                                           return_intermediate_steps=True,
                                                           handle_parsing_errors=True,)
@@ -216,6 +220,10 @@ if __name__ == "__main__":
                              streaming=True)
             tools = [DuckDuckGoSearchRun(
                         api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
+                                                               region="kr-kr",
+                                                               max_results=20)),
+                     DuckDuckGoSearchRun(
+                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
                                                                region="en-en",
                                                                max_results=20)),
                      WikipediaQueryRun(
@@ -234,12 +242,18 @@ if __name__ == "__main__":
                                             )
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
+                message_placeholder = st.empty()
                 cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
                 search_instruction = copy.deepcopy(st.session_state.messages2)
                 search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 schema therapy 방략)"
                 response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
+                # st.write(response)
                 output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
-                st.write(f'{output}')
+                full_msg = ""
+                for o in output:
+                    full_msg += o
+                    message_placeholder.markdown(f'{full_msg}▌')
+                message_placeholder.markdown(full_msg)
                 st.session_state.messages2.append(
                         {
                             "role": "assistant",
