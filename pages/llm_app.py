@@ -111,10 +111,11 @@ if __name__ == "__main__":
                 "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/2_Chat_with_search.py)"
                 "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 
+    st.title("Langchain Version")
     col1, col2 = st.columns(2)
-
+    
     with col1:
-        st.title("🔎 Search with DuckDuckgo")
+        st.title("🔎 DDG GPT")
         """
         DuckDuckGo 검색 엔진을 통한 응답
         """
@@ -154,7 +155,7 @@ if __name__ == "__main__":
                              streaming=True)
             tools = [
                 DuckDuckGoSearchRun(
-                    api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=2, 
+                    api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=10, 
                                                            region="kr-kr")),
                 WikipediaQueryRun(
                     api_wrapper=WikipediaAPIWrapper()),
@@ -167,6 +168,7 @@ if __name__ == "__main__":
             executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
                                                           tools=tools,
                                                           memory=memory,
+                                                          early_stopping_method="generate",
                                                           return_intermediate_steps=True,
                                                           handle_parsing_errors=True,)
             cfg = RunnableConfig()
@@ -214,8 +216,8 @@ if __name__ == "__main__":
                              streaming=True)
             tools = [DuckDuckGoSearchRun(
                         api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
-                                                               region="kr-kr",
-                                                               max_results=5)),
+                                                               region="en-en",
+                                                               max_results=20)),
                      WikipediaQueryRun(
                         api_wrapper=WikipediaAPIWrapper()),
                      PubmedQueryRun(),
@@ -225,8 +227,11 @@ if __name__ == "__main__":
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True,
-                                            # max_iterations=3,
-                                            max_execution_time=15)
+                                            max_iterations=5,
+                                            early_stopping_method="generate",
+                                            return_intermediate_steps=True
+                                            # max_execution_time=15
+                                            )
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
                 cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
