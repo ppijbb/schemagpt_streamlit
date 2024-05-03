@@ -23,6 +23,7 @@ from langchain_core.messages import SystemMessage
 from langchain.retrievers.web_research import WebResearchRetriever
 from langchain.agents import initialize_agent, load_tools
 from langchain.agents import AgentType, ConversationalChatAgent, AgentExecutor, Tool
+from langchain.agents.loading import AGENT_TO_CLASS, load_agent
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
 
@@ -232,19 +233,23 @@ if __name__ == "__main__":
                      IonicTool().tool()] + load_tools(["arxiv"],)
             search_agent = initialize_agent(tools=tools,
                                             llm=llm,
-                                            # agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                            agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+                                            agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+                                            # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             handle_parsing_errors=True,
                                             max_iterations=5,
                                             early_stopping_method="generate",
                                             return_intermediate_steps=True,
                                             agent_kwargs={
-                                                'prefix': schema_therapy.prefix_prompt,
-                                                'format_instructions': schema_therapy.format_instructions,
-                                                'suffix': schema_therapy.suffix_prompt
-                                            }
+                                                # "format_instructions": schema_therapy.format_instructions,
+                                                "system_message_prefix": schema_therapy.prefix_prompt,
+                                                "system_message_suffix": schema_therapy.suffix_prompt
+                                                }
                                             # max_execution_time=15
                                             )
+            # st.write(search_agent.agent.__dir__())
+
+            # st.write(AGENT_TO_CLASS[AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION])
+            # st.write(search_agent.agent.tool_run_logging_kwargs())
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
                 message_placeholder = st.empty()

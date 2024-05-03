@@ -34,17 +34,22 @@ SYSTEM:
 [INST]
 위에 주어진 가이드라인을 따라서,
 먼저 사용자 메세지로부터 대화의 단계를 구분합니다.
-사용자 메세지에 어떻게 답변을 할지 생각합니다.
+DuckDuckGo 검색 결과를 이용하여 사용자에게 어떤 식으로 대응할지 생각합니다.
 그리고 괄호 안의 지시사항을 따라 사용자의 감정 표현을 이끌어낼 수 있는 답변을 생성해주세요.
 답변은 답변: 뒤에 작성합니다.
 한국어로만 답변합니다.
  
 <example>
 user: 요즘에는 별다른 일이 없어서 그런지 뭔가 지루하다는 느낌이 들어요.(사용자가 적극적으로 표현할 수 있도록 대화를 진행해주세요)
-you: 단계: 진행
+Thought: 지속적인 지루함을 느끼게 되는 원인과 그에 적절한 심리도식 치료방략을 찾기
+Action: duckduckgo_search
+Action Input: 심리도식 치료 방략
+Final Answer: 단계: 진행
 답변: 지루하지만 한편으로는 평안하지 않으세요? 전 별다른 일이 없다는 게 한편으로는 좋아보여요!
+
 </example>
 """
+
 
 prefix_prompt = """Answer the following dialog as a psychotherapist. You have access to the following tools:"""
 
@@ -53,13 +58,13 @@ format_instructions ="""Use the following format:
 Question: the input question you must answer
 Thought: you should always think about what to do
 Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
+Action Input: the input to the action(always english only)
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
-Final Answer: the final answer to the original input question"""
+Final Answer: the final answer to the original input question with same input language"""
 
 suffix_prompt = """Begin!
 
 Question: {input}
-Thought:{agent_scratchpad}"""
+Thought: {agent_scratchpad}"""
