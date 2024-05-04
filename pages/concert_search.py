@@ -108,8 +108,8 @@ concert_payload = {
     "service": st.secrets["CONCERT_SECRET_KEY"],
     "stdate": (get_now()-dt.timedelta(days=30)).strftime("%Y%m%d"),
     "eddate": (get_now()+dt.timedelta(days=60)).strftime("%Y%m%d"),
-    "cpage": "50", 
-    "rows": "10",
+    "cpage": "1", 
+    "rows": "1000",
     "shcate": "CCCD",
     "newsql": "Y"
 }
@@ -263,7 +263,8 @@ if __name__ == "__main__":
                     detail_elements = xml.etree.ElementTree.fromstring(details_response.text)
                     for e in detail_elements:
                         items.update({f"place_{i.tag}": i.text for i in e})
-                    print(items)
+                    if not isinstance(items, dict):
+                        print(type(items), items)
                     concerts += [items]
 
             except Exception as e:
@@ -279,7 +280,7 @@ if __name__ == "__main__":
                     search_query = f'{s["prfnm"]} {s["detail_prfpdfrom"]}'
                     st.markdown(f'> {search_query}')
                     for result in tools[0].invoke(search_query).split("..."):
-                        st.text_area('', f'{result}', key=uuid.uuid4())
+                        st.text_area(s["prfnm"], f'{result}', key=uuid.uuid4())
                         st.markdown("---")
             else:
                 st.markdown("검색 결과가 없습니다")
