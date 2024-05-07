@@ -38,7 +38,7 @@ asyncio.set_event_loop(loop)
 
 open_api_url = "http://kopis.or.kr/openApi/restful"
 concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
-concert_api_url = "http://api.kcisa.kr/openapi/API_CCA_144/request"
+
 map_addr_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json"
 map_loca_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/geocodewgs84.json"
 map_auth_api_url = "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json"
@@ -90,6 +90,13 @@ payload = {
     "indsMclsCd": "G220",
     "indsSclsCd": "G22001",
     "type": "json"
+}
+
+# 문화 정보 조회 API
+monhwa_payload = {
+    "serviceKey": st.secrets["MONHWA_API_KEY"],
+    "pageNo": 1,
+    "numOfRows": 100,
 }
 
 #  "AAAA": 연극
@@ -242,6 +249,15 @@ if __name__ == "__main__":
             try:
                 # 공연 정보 검색
                 concerts = []
+                response = requests.get(url=f"{concert_api_url}", 
+                                        headers=headers, 
+                                        params=concert_payload)                
+                monhwa_data = response.json()
+                st.write(monhwa_data["items"])
+                st.write(monhwa_data["numofRows"])
+                st.write(monhwa_data["pageNo"])
+                st.write(monhwa_data["totalCount"])
+
                 response = requests.get(url=f"{open_api_url}/pblprfr?", 
                                         headers=headers, 
                                         params=concert_payload)
