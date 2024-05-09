@@ -251,7 +251,7 @@ if __name__ == "__main__":
                                         params={
                                                 "serviceKey": st.secrets["MONHWA_API_KEY"],
                                                 "pageNo": "1",
-                                                "numOfRows": "500",
+                                                "numOfRows": "700",
                                             })
                 monhwa_data = response.json()["response"]["body"]
                 total = monhwa_data["totalCount"]
