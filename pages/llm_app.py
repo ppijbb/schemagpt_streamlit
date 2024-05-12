@@ -255,7 +255,7 @@ if __name__ == "__main__":
                 message_placeholder = st.empty()
                 cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
                 search_instruction = copy.deepcopy(st.session_state.messages2)
-                search_instruction[-1]["content"] += f"\n(해당문장에서 비롯된 심리 도식 [{maladaptive_schema}]의 schema therapy 방략)"
+                search_instruction[-1]["content"] += f"\n(해당문장에 대한한 심리 도식 [{maladaptive_schema}]의 schema therapy 방략)"
                 response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
                 # st.write(response)
                 output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
