@@ -80,6 +80,7 @@ if __name__ == "__main__":
                   문장 감성 레벨 평가 모델
             - 초기 학습한 문진 질문 생성 모델과 응답 발화 생성 모델은 LLM에서 처리하도록 수정
             - 우울 문진에 적합한 채팅을 할 수 있는 Prompt Engineering + Fine tuning
+            - 현재 버전에서는 Langchain 이용, agent 추가
             
             ### BackEnd
             - MySQL DB 사용
