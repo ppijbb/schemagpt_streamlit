@@ -62,7 +62,7 @@ Action Input: the input to the action(always english only)
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
-Final Answer: the final answer to the original input question with korean"""
+Final Answer: the final answer to the original input question with korean language"""
 
 suffix_prompt = """Begin!
 
