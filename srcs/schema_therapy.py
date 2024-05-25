@@ -47,6 +47,12 @@ Action Input: 심리도식 치료 방략
 Observation: No good DuckDuckGo Search Result was found
 Final Answer: 지루하지만 한편으로는 평안하지 않으세요? 전 별다른 일이 없다는 게 한편으로는 좋아보여요!
 
+user: 이유없이 피곤해요 느낌이 들어요.(사용자가 적극적으로 표현할 수 있도록 대화를 진행해주세요)
+Thought: 이유없는 피곤함을 느끼게 되는 원인과 그에 적절한 심리도식 치료방략을 찾기
+Action: duckduckgo_search
+Action Input: 심리도식 치료 방략
+Observation: No good DuckDuckGo Search Result was found
+Final Answer: 언제부터 그러셨던 걸까요?
 </example>
 """
 
