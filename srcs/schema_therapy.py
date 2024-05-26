@@ -52,7 +52,7 @@ Thought: 이유없는 피곤함을 느끼게 되는 원인과 그에 적절한 �
 Action: duckduckgo_search
 Action Input: 심리도식 치료 방략
 Observation: No good DuckDuckGo Search Result was found
-Final Answer: 언제부터 그러셨던 걸까요?
+Final Answer: 언제부터 그러셨던 걸까요? 이야기하면서 같이 찾아볼까요
 </example>
 """
 
