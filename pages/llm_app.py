@@ -243,7 +243,7 @@ if __name__ == "__main__":
                                             agent_kwargs={
                                                 # "format_instructions": schema_therapy.format_instructions,
                                                 "system_message_prefix": schema_therapy.prefix_prompt,
-                                                "system_message_suffix": schema_therapy.suffix_prompt
+                                                # "system_message_suffix": schema_therapy.suffix_prompt
                                                 }
                                             # max_execution_time=15
                                             )
