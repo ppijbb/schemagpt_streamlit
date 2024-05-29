@@ -236,7 +236,7 @@ if __name__ == "__main__":
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                            handle_parsing_errors=True,
+                                            handle_parsing_errors=False,
                                             max_iterations=5,
                                             early_stopping_method="generate",
                                             return_intermediate_steps=True,
