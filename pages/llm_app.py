@@ -241,9 +241,9 @@ if __name__ == "__main__":
                                             early_stopping_method="generate",
                                             return_intermediate_steps=True,
                                             agent_kwargs={
-                                                "format_instructions": schema_therapy.format_instructions,
+                                                # "format_instructions": schema_therapy.format_instructions,
                                                 "system_message_prefix": schema_therapy.prefix_prompt,
-                                                "system_message_suffix": schema_therapy.suffix_prompt
+                                                # "system_message_suffix": schema_therapy.suffix_prompt
                                                 }
                                             # max_execution_time=15
                                             )
