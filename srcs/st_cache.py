@@ -14,8 +14,9 @@ import paddle
 from paddleocr import PaddleOCR, draw_ocr # main OCR dependencies
 
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
+from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
 from langchain_community.vectorstores import Chroma
 
 
@@ -66,18 +67,28 @@ def get_yolo_detector():
 
 @st.cache_resource
 def get_utterance_data(url="/"):
+    model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
     try:
-        embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
+        # embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
+        embedding_function = HuggingFaceEmbeddings(model_name=model_name,
+                                                   model_kwargs={'device': 'cpu'},
+                                                   encode_kwargs={'normalize_embeddings': False})
     except Exception as e:
         print(e)
         embedding_function = OpenAIEmbeddings()
-    data = DataFrameLoader(pd.read_excel("schema_utterance.xlsx"), page_content_column="domain").load()
+    
+    text_splitter = SentenceTransformersTokenTextSplitter(chunk_size=1000, 
+                                                          chunk_overlap=0, 
+                                                          model_name=model_name)
+    documents = DataFrameLoader(data_frame=pd.read_excel("schema_utterance.xlsx"), 
+                                page_content_column="sentence").load()
+    data = text_splitter.split_documents(documents)
 
-    return Chroma.from_documents(
-        #  collection_name="schema_collection",
-        persist_directory="./chromadb_oai",
-        documents=data,
-        embedding=embedding_function, )
+
+    return Chroma.from_documents(# collection_name="schema_collection",
+                                 persist_directory="./chromadb_oai",
+                                 documents=data,
+                                 embedding=embedding_function, ).as_retriever()
 
 
 @st.cache_resource

@@ -211,7 +211,7 @@ if __name__ == "__main__":
                     "content": col2_prompt
                 })
             col2_chat_container.chat_message("user").write(col2_prompt)
-            searched_result = vector_db.similarity_search(col2_prompt)[0]
+            searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
             maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
             if not openai_api_key:
                 st.info("Please add your OpenAI API key to continue.")
@@ -236,14 +236,14 @@ if __name__ == "__main__":
                                             llm=llm,
                                             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                             # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                            handle_parsing_errors=False,
+                                            handle_parsing_errors=True,
                                             max_iterations=5,
                                             early_stopping_method="generate",
                                             return_intermediate_steps=True,
                                             agent_kwargs={
-                                                # "format_instructions": schema_therapy.format_instructions,
+                                                "format_instructions": schema_therapy.format_instructions,
                                                 "system_message_prefix": schema_therapy.prefix_prompt,
-                                                # "system_message_suffix": schema_therapy.suffix_prompt
+                                                "system_message_suffix": schema_therapy.suffix_prompt
                                                 }
                                             # max_execution_time=15
                                             )

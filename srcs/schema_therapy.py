@@ -42,15 +42,13 @@ DuckDuckGo 검색 결과를 이용하여 사용자에게 어떤 식으로 대응
 <example>
 user: 요즘에는 별다른 일이 없어서 그런지 뭔가 지루하다는 느낌이 들어요.(사용자가 적극적으로 표현할 수 있도록 대화를 진행해주세요)
 Thought: 지속적인 지루함을 느끼게 되는 원인과 그에 적절한 심리도식 치료방략을 찾기
-Action: duckduckgo_search
-Action Input: 심리도식 치료 방략
+Action: {"action": "duckduckgo_search", "action_input": "심리도식 치료 방략"}
 Observation: No good DuckDuckGo Search Result was found
 Final Answer: 지루하지만 한편으로는 평안하지 않으세요? 전 별다른 일이 없다는 게 한편으로는 좋아보여요!
 
 user: 이유없이 피곤해요 느낌이 들어요.(사용자가 적극적으로 표현할 수 있도록 대화를 진행해주세요)
 Thought: 이유없는 피곤함을 느끼게 되는 원인과 그에 적절한 심리도식 치료방략을 찾기
-Action: duckduckgo_search
-Action Input: 심리도식 치료 방략
+Action: {"action": "duckduckgo_search", "action_input": "심리도식 치료 방략"}
 Observation: No good DuckDuckGo Search Result was found
 Final Answer: 언제부터 그러셨던 걸까요? 이야기하면서 같이 찾아볼까요
 </example>
@@ -59,8 +57,7 @@ Final Answer: 언제부터 그러셨던 걸까요? 이야기하면서 같이 찾
 
 prefix_prompt = """Answer the following dialog as a psychotherapist. You have access to the following tools:"""
 
-format_instructions ="""Use the following format:
-
+format_instructions ="""주어진 포맷을 이용하세요:
 Question: the input question you must answer
 Thought: you should always think about what to do
 Action: the action to take, should be one of [{tool_names}]
@@ -68,9 +65,10 @@ Action Input: the input to the action(always english only)
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
-Final Answer: the final answer to the original input question with korean language"""
+Final Answer: the final answer to the original input question
+"""
 
 suffix_prompt = """Begin!
-
 Question: {input}
-Thought: {agent_scratchpad}"""
+Thought: {agent_scratchpad}
+"""
