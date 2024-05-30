@@ -103,7 +103,7 @@ if __name__ == "__main__":
       inc.markdown("###### 행정 안전부")
       inc.markdown("한국정보화진흥원 직접사업팀 인턴")
       years, inc = st.columns([0.4, 0.6])
-      years.markdown("###### 2021.04~")
+      years.markdown("###### 2021.04~2024.05")
       inc.markdown("###### ㈜튜링바이오") 
       inc.markdown("연구소 연구원")
       inc.markdown("연구소 선임 연구원")
