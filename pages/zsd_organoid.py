@@ -116,6 +116,7 @@ if __name__ == "__main__":
         - Zero-shot Detection 모델은 embedding layer가 상당히 무거운 문제로 실시간 처리에 이슈
         - 현재 경량 모델로 Knowledge Distillation 시도 중
         - Teacher : Google Owlv2 -> Student : ZSD-YOLO
+        - YOLO-World 적용 고려 중
 
         ## 사용 기술
         <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
