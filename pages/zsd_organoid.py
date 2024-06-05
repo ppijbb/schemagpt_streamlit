@@ -107,14 +107,15 @@ if __name__ == "__main__":
         
             일반적인 분석 방법이 정립되지 않은 실험에서 특정 오브젝트를 추적 관찰하는 문제의 어려움
             AI를 통한 실험 개선 목표로 개발
-            Google Owlv2 모델 사용 Zero-shot Detection
             Inference pipe line 을 통한 필요한 오브젝트 특정 및 추적 기능 개발
+            다양한 분야에 적용 가능한 모델로 확장 가능성
 
         ## 개발 내용
         - Zero-shot Detecting 모델을 적용시켜 영상/이미지에서 특정한 오브젝트 탐색
         - OpenCV Tracking 알고리즘 또는 모델을 통한 실시간 오브젝트 detecting
         - Zero-shot Detection 모델은 embedding layer가 상당히 무거운 문제로 실시간 처리에 이슈
         - 현재 경량 모델로 Knowledge Distillation 시도 중
+        - Teacher : Google Owlv2 -> Student : ZSD-YOLO
 
         ## 사용 기술
         <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
