@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 },
                 {
                     "role": "assistant",
-                    "content": "안녕하세요? 오늘 하루는 어떠셨나요?"
+                    "content": "안녕하세요. 오늘 하루는 어떠셨나요?"
                 }]
 
         for msg in st.session_state.messages2:
