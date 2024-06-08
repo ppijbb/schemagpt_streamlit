@@ -32,3 +32,6 @@ easyocr
 paddlepaddle
 paddleocr
 SpeechRecognition
+supervision
+inference-cpu
+
