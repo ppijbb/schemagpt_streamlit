@@ -59,7 +59,7 @@ if __name__ == "__main__":
             ## 프로젝트 소개
 
                 Schema therapy 기반 심리 상담 챗봇
-                RAG 적용 심리도식 기반 우울감의 원인 추론
+                RAG + ReAct 심리도식 분석으로 우울감의 원인 추론
                                
 
             ## 개발 내용
@@ -254,10 +254,13 @@ if __name__ == "__main__":
             with col2_chat_container.chat_message("assistant"):
                 cfg = RunnableConfig()
                 message_placeholder = st.empty()
-                cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
+                # cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), 
+                #                                              expand_new_thoughts=True)]
                 search_instruction = copy.deepcopy(st.session_state.messages2)
                 search_instruction[-1]["content"] += f"\n(심리도식 [{maladaptive_schema}])"
-                response = search_agent.invoke(search_instruction, cfg, chat_history=st.session_state.messages2)
+                response = search_agent.invoke(search_instruction, 
+                                               cfg, 
+                                               chat_history=st.session_state.messages2)
                 # st.write(response)
                 output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
                 full_msg = ""
