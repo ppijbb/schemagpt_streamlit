@@ -4,6 +4,9 @@ import asyncio
 from io import BytesIO
 
 from PIL import Image, ImageDraw
+import supervision as svg
+from inference.models import YOLOWorld
+
 import streamlit as st
 
 from streamlit_webrtc import webrtc_streamer, WebRtcMode

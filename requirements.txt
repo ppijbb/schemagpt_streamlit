@@ -7,6 +7,7 @@ streamlit-option-menu
 openai
 langchain
 langchain-openai
+librosa
 anthropic
 duckduckgo-search~=5.1.0
 chromadb==0.4.13
@@ -15,6 +16,7 @@ openpyxl
 opencv-python
 tensorflow==2.15.0
 torch
+tslearn
 sentence-transformers
 catboost
 lightgbm
