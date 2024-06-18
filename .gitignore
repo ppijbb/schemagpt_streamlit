@@ -1,3 +1,8 @@
+.devcontainer
+
 secrets.toml
+
 chromadb_oai
-__pycache__
+
+__pycache__*
+*/__pycache__/
