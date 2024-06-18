@@ -20,7 +20,7 @@ from langchain_text_splitters.sentence_transformers import SentenceTransformersT
 from langchain_community.vectorstores import Chroma
 
 import chromadb
-from chromadb.utils import embedding_function as ef
+from chromadb.utils import embedding_functions as ef
 
 
 def get_or_create_eventloop():
