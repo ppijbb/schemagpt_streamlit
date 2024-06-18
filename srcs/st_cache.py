@@ -93,7 +93,7 @@ def get_utterance_data(url="/"):
 
 @st.cache_resource
 def get_audio_data():
-    audio_vector_db = chromadb.PersistentClinet(path="./audio_chromadb_oai")
+    audio_vector_db = chromadb.PersistentClient(path="./audio_chromadb_oai")
     audio_vector_db.get_or_create_colllection(
         name="mfcc_dtw_collection",
         embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
