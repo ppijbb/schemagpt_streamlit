@@ -10,7 +10,7 @@ langchain-openai
 librosa
 anthropic
 duckduckgo-search~=5.1.0
-chromadb @ git+https://github.com/ppijbb/ppijbb/dtw_chroma.git
+chromadb @ git+https://github.com/ppijbb/dtw_chroma.git
 pysqlite3-binary
 openpyxl
 opencv-python
