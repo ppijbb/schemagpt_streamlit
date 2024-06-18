@@ -94,9 +94,10 @@ def get_utterance_data(url="/"):
 @st.cache_resource
 def get_audio_data():
     audio_vector_db = chromadb.PersistentClient(path="./audio_chromadb_oai")
-    audio_vector_db.get_or_create_colllection(
+    audio_vector_db.get_or_create_collection(
         name="mfcc_dtw_collection",
-        embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
+        embedding_function=ef.MFCCEmbeddingFunction(), # Custom Audio Embedding function
+        metadata={ "space": "dtw" }
     )
 
     return Chroma(client=audio_vector_db,
