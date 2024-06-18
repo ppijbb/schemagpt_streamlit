@@ -19,6 +19,9 @@ from langchain_community.document_loaders import DataFrameLoader
 from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
 from langchain_community.vectorstores import Chroma
 
+import chromadb
+from chromadb.utils import embedding_function as ef
+
 
 def get_or_create_eventloop():
     try:
@@ -83,12 +86,22 @@ def get_utterance_data(url="/"):
     documents = DataFrameLoader(data_frame=pd.read_excel("schema_utterance.xlsx"), 
                                 page_content_column="sentence").load()
     data = text_splitter.split_documents(documents)
-
-
     return Chroma.from_documents(# collection_name="schema_collection",
                                  persist_directory="./chromadb_oai",
                                  documents=data,
                                  embedding=embedding_function, ).as_retriever()
+
+@st.cache_resource
+def get_audio_data():
+    audio_vector_db = chromadb.PersistentClinet(path="./audio_chromadb_oai")
+    audio_vector_db.get_or_create_colllection(
+        name="mfcc_dtw_collection",
+        embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
+    )
+
+    return Chroma(client=audio_vector_db,
+                  embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
+                    ).as_retriever()
 
 
 @st.cache_resource
@@ -124,7 +137,6 @@ def add_static_js():
 
 @st.cache_resource
 def get_ocr():
-
     return {
         "easy": easyocr.Reader(["ko", "en"], gpu=False),
         "paddle": PaddleOCR(lang="korean",
