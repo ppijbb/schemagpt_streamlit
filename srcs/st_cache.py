@@ -101,7 +101,7 @@ def get_audio_data():
     def get_file_name(path:str)->str:
         return os.path.splitext(path.split("/")[-1])[0]
 
-    def get_audio_tag(self, path:str)->dict:
+    def get_audio_tag(path:str)->dict:
         return {
             k: "" if v is None else v
             for k, v in mediainfo(path).items()
