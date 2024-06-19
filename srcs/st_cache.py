@@ -118,9 +118,9 @@ def get_audio_data():
     base_path = f"{os.getcwd()}/pages/audio"
     audio_file_list = [f"{base_path}/{filename}" for filename in os.listdir(base_path)]
     audio_collection.add(
-        ids=[get_file_name(item) for item in file_list],
+        ids=[get_file_name(item) for item in audio_file_list],
         documents=audio_file_list,
-        metadatas=[get_audio_tag(item) for item in file_list]
+        metadatas=[get_audio_tag(item) for item in audio_file_list]
     )
 
     return Chroma(
