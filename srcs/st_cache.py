@@ -116,7 +116,7 @@ def get_audio_data():
         metadata={ "space": "dtw" }
     )
     base_path = f"{os.getcwd()}/pages/audio"
-    audio_file_list = [f"{base_path}/{filename}" for filename in os.listdir(base_path)]:
+    audio_file_list = [f"{base_path}/{filename}" for filename in os.listdir(base_path)]
     audio_collection.add(
         ids=[get_file_name(item) for item in file_list],
         documents=audio_file_list,
