@@ -1,13 +1,14 @@
+import os
+import pickle
+import asyncio
+
 import streamlit as st
 from tensorflow.keras.models import model_from_json
 import inspect
 import cv2
-import os
-import pickle
 import pandas as pd
 from xgboost import XGBClassifier
 from transformers import pipeline
-import asyncio
 import shap
 import easyocr
 import paddle
@@ -21,6 +22,9 @@ from langchain_community.vectorstores import Chroma
 
 import chromadb
 from chromadb.utils import embedding_functions as ef
+
+import pydub
+from pydub.utils import mediainfo
 
 
 def get_or_create_eventloop():
@@ -93,16 +97,37 @@ def get_utterance_data(url="/"):
 
 @st.cache_resource
 def get_audio_data():
+
+    def get_file_name(path:str)->str:
+        return os.path.splitext(path.split("/")[-1])[0]
+
+    def get_audio_tag(self, path:str)->dict:
+        return {
+            k: "" if v is None else v
+            for k, v in mediainfo(path).items()
+            if "pictures" not in k
+            and type(v) in [str, int, float, bool]
+        }
+
     audio_vector_db = chromadb.PersistentClient(path="./audio_chromadb_oai")
-    audio_vector_db.get_or_create_collection(
+    audio_collection = audio_vector_db.get_or_create_collection(
         name="mfcc_dtw_collection",
         embedding_function=ef.MFCCEmbeddingFunction(), # Custom Audio Embedding function
         metadata={ "space": "dtw" }
     )
+    base_path = f"{os.getcwd()}/pages/audio"
+    audio_file_list = [f"{base_path}/{filename}" for filename in os.listdir(base_path)]:
+    audio_collection.add(
+        ids=[get_file_name(item) for item in file_list],
+        documents=audio_file_list,
+        metadatas=[get_audio_tag(item) for item in file_list]
+    )
 
-    return Chroma(client=audio_vector_db,
-                  embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
-                    ).as_retriever()
+    return Chroma(
+        collection_name="mfcc_dtw_collection",
+        client=audio_vector_db,
+        embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
+        ).as_retriever()
 
 
 @st.cache_resource
