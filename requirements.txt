@@ -36,4 +36,4 @@ paddleocr
 SpeechRecognition
 supervision
 inference-cpu
-
+pydub
