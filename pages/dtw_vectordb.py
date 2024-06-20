@@ -147,11 +147,11 @@ if __name__ == "__main__":
                                         max_iterations=5,
                                         early_stopping_method="generate",
                                         return_intermediate_steps=True,
-                                        agent_kwargs={
+                                        # agent_kwargs={
                                             # "format_instructions": schema_therapy.format_instructions,
-                                            "system_message_prefix": schema_therapy.prefix_prompt,
+                                            # "system_message_prefix": schema_therapy.prefix_prompt,
                                             # "system_message_suffix": schema_therapy.suffix_prompt
-                                            }
+                                            # }
                                         # max_execution_time=15
                                         )
         # st.write(search_agent.agent.__dir__())
