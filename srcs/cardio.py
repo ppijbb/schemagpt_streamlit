@@ -4,6 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import streamlit as st
+import shap
 from srcs.st_cache import get_heq_data, get_scale_data
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
