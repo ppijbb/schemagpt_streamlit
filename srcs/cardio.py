@@ -41,31 +41,32 @@ def level(x):
     return result
 
 
-def make_grade(indexer, x):
+def make_grade(indexer, x, inverse=False):
     if x < 0:
         indexer = (np.array(indexer) * -1 + 13).tolist()
         indexer.sort()
         x += 13
         if indexer[0] > x:
-            return " 건강", x, indexer
+            # return " 건강", x, indexer
+            return " 건강한 수치입니다", x, indexer
         elif indexer[0] <= x and indexer[1] > x:
-            return " 일반", x, indexer
+            return " 일반적인 수치입니다", x, indexer
         elif indexer[1] <= x and indexer[2] > x:
-            return " 주의", x, indexer
+            return " 약간 낮은 수치입니다" if inverse else " 약간 높은 상태입니다", x, indexer
         elif indexer[2] <= x:
-            return " 관심필요", x, indexer
+            return " 다소 낮은 수치입니다" if inverse else " 다소 높은 수치입니다", x, indexer
     else:
         if indexer[0] > x:
-            return " 건강"
+            return " 건강한 수치입니다."
         elif indexer[0] <= x and indexer[1] > x:
-            return " 일반"
+            return " 일반적인 수치입니다"
         elif indexer[1] <= x and indexer[2] > x:
-            return " 주의"
+            return " 약간 낮은 수치입니다" if inverse else " 약간 높은 상태입니다" # " 주의"
         elif indexer[2] <= x:
-            return " 관심필요"
+            return  " 다소 낮은 수치입니다" if inverse else " 다소 높은 수치입니다" # " 관심필요"
 
 
-def make_gauge(user_level, risk_lv):
+def make_gauge(user_level, risk_lv,):
     return go.Indicator(
             mode="gauge+number", # "gauge+number+delta"
             value=3-np.argmax(user_level)+1,
@@ -147,7 +148,7 @@ def heq(args, st_layout):
             if directions[index - 1] > 0:
                 to_web += make_grade(value_index, value_grade)
             else:
-                mg_text, mg_value, mg_indexer = make_grade(value_index, -1 * value_grade)
+                mg_text, mg_value, mg_indexer = make_grade(value_index, -1 * value_grade, inverse=True)
                 to_web += mg_text
                 cont_branch[index - 12] = mg_indexer
             encoded = to_web
