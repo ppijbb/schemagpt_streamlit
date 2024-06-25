@@ -420,9 +420,20 @@ def scale_severity(args, st_layout):
     #         insidetextorientation='radial'
     #     ),
     # )
+    user_score = {k.split("_")[1] : v for k, v in args.items() if k != "user"}
+    critical_scores = np.array(list(user_score.values()))==3
+    over_mean_scores = np.array(list(user_score.values())) > np.array(list(result["other_mean"].values()))
+
+    user_critical_items = np.array(list(user_score.keys()))[critical_scores]
+    user_mean_items = np.array(list(user_score.keys()))[over_mean_scores]
+    if len(user_mean_items) > 0:
+        diff = np.array(list(user_score.values())) - np.array(list(result["other_mean"].values()))
+        diff_item = np.array(list(user_score.keys()))[np.argmax(diff)]
+    else:
+        diff_item = None
     
     polar = go.Figure()
-    for draw_data, title in zip([{k.split("_")[1] : v for k, v in args.items() if k != "user"}, result["other_mean"]],
+    for draw_data, title in zip([user_score, result["other_mean"]],
                                 ["사용자 데이터", "정상군 평균"],):
         polar.add_trace(
             go.Scatterpolargl(
@@ -444,7 +455,7 @@ def scale_severity(args, st_layout):
                                 label + ["일반"] * len(generals[1:]) +
                                 label + ["영양"] * len(nutritions[1:]) +
                                 label + ["패턴"] * len(patterns[1:]),
-                        values=[score,] +
+                        values=[score,] + 
                             [sum(gen_score)] + gen_score +
                             [sum(nut_score)] + nut_score +
                             [sum(pat_score)] + pat_score,
@@ -452,14 +463,25 @@ def scale_severity(args, st_layout):
                         insidetextorientation='radial',
                     ),
                   row=1, col=2)
-    print(type(pie))
+
     pie.update_layout(font={'color': "darkblue", 'family': "Arial"},
                       margin=dict(t=0, l=10, r=10, b=0))
+    
+    # Draw Report
+    
+    st_layout.markdown(f"""
+    # 결과 리포트
+    > 심각한 점수는 {",".join([s for s in user_critical_items]) + " 입니다." if len(user_critical_items) >0 else "없습니다."}
+
+    > 정상군에 비해 수치가 높은 항목은 {",".join([s for s in user_mean_items]) + " 입니다." if len(user_mean_items) >0 else "없습니다."}
+    
+    > 정상군과 가장 차이가 심한 항목은 {diff_item + " 입니다." if diff_item else "없습니다."}
+""")
     with st_layout.container(border=True):
         st.plotly_chart(pie, theme="streamlit", use_container_width=True,)
     # with st_layout.container(border=True):
     #     st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=400)
     with st_layout.container(border=True):
         st.plotly_chart(polar, theme="streamlit", use_container_width=True, height=400)
-    
+
     return result

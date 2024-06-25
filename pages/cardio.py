@@ -136,7 +136,7 @@ if __name__ == "__main__":
             st.title("🔎 문진 평가")
             st.write("영양, 일상 생활에서의 습관에서 심혈관 질환 위험성 평가")
 
-            with st.form("문진"):
+            with st.form("문진", border=False):
                 short_general_3 = st.radio(
                         label="자신의 건강은 어떻다고 생각하십니까?",
                         options=[0, 1, 2, 3],
@@ -275,7 +275,7 @@ if __name__ == "__main__":
         with tab2:
             st.title("🔎 세부 평가")
             st.write("종합 평가")
-            with st.form("세부 평가지"):
+            with st.form("세부 평가지", border=False):
                 row1 = st.columns([1, 1, 1, 1])
                 with row1[0]:
                     st.write("일반 정보")
