@@ -14,7 +14,7 @@ chromadb @ git+https://github.com/ppijbb/dtw_chroma.git
 pysqlite3-binary
 openpyxl
 opencv-python
-tensorflow==2.15.0
+tensorflow
 torch
 tslearn
 sentence-transformers
