@@ -108,6 +108,10 @@ if __name__ == "__main__":
       inc.markdown("###### ㈜튜링바이오") 
       inc.markdown("연구소 연구원")
       inc.markdown("연구소 선임 연구원")
+      years, inc = st.columns([0.4, 0.6])
+      years.markdown("###### 2024.06~")
+      inc.markdown("###### ㈜덴컴") 
+      inc.markdown("연구소 연구원")
 
       st.markdown("### 🏆 AWARDS")
       years, inc = st.columns([0.4, 0.6])
