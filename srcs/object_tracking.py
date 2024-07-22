@@ -177,7 +177,7 @@ def img_convert(img) -> np.array:
     return img
 
 
-@torch.no_grad()
+@torch.inference_mode()
 def detect_objects_in_image(image, labels, ):
     image = Image.fromarray(image)
     predictions = detector(image,

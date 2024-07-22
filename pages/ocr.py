@@ -55,7 +55,8 @@ def view(reader):
         selected_image = st.selectbox("image select",
                                       options=st.session_state.image_list, )
         st.image(image=f"pages/image/ocr/{selected_image}")
-    with torch.no_grad():
+    
+    with torch.inference_mode():
         image_path = f"pages/image/ocr/{selected_image}"
         img = Image.open(image_path)
         w, h = img.size

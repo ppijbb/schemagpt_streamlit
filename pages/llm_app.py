@@ -14,6 +14,7 @@ import json
 
 # sys.modules["streamlit.web.server.app_static_file_handler"].AppStaticFileHandler = AppStaticFileHandler
 
+import torch
 import pandas as pd
 import streamlit as st
 
@@ -211,8 +212,10 @@ if __name__ == "__main__":
                     "content": col2_prompt
                 })
             col2_chat_container.chat_message("user").write(col2_prompt)
-            searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
-            maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
+            with torch.inference_mode():
+                searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
+                maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
+            
             if not openai_api_key:
                 st.info("Please add your OpenAI API key to continue.")
                 st.stop()
