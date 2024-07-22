@@ -35,12 +35,12 @@ ionic-langchain
 ipython
 arxiv
 plotly
+pydub
+ray
 pytesseract
 easyocr
 paddlepaddle
 paddleocr
-SpeechRecognition
 supervision
+SpeechRecognition
 inference-cpu
-pydub
-ray
