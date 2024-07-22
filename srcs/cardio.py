@@ -8,7 +8,7 @@ import shap
 from srcs.st_cache import get_heq_data, get_scale_data
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import ray
 
 heq_data = get_heq_data()
 scale_data = get_scale_data()
@@ -118,6 +118,7 @@ def processed_v_to_int(value):
     v[0] = int(v[0])
     return v
 
+@ray.remote
 def heq(args, st_layout):
     # args[-1] = args[-1][0]
     # KS 모델 동작에 필요한 데이터 파일에서 읽어옴
@@ -335,6 +336,7 @@ def heq(args, st_layout):
     return result
 
 
+@ray.remote
 def scale_severity(args, st_layout):
     # 입력 데이터 처리
     CatC, CatM, coef, intercept, pca, D_mean, SCALER = scale_data

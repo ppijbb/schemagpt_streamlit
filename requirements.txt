@@ -44,3 +44,4 @@ paddleocr
 supervision
 SpeechRecognition
 inference-cpu
+python-bidi

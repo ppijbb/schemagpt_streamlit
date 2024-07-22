@@ -7,7 +7,9 @@ import streamlit.components.v1 as components
 from srcs.cardio import heq, scale_severity
 from srcs.st_style_md import hide_radio_value_md
 from srcs.st_cache import get_or_create_eventloop
+import ray
 
+ray.init()
 
 if "test" not in st.session_state:
     st.session_state.test = ['user',
@@ -270,7 +272,7 @@ if __name__ == "__main__":
                     with result_con:
                         _, con, _ = st.columns([0.1, 0.8, 0.1])
                         with con:
-                            result = scale_severity(form_data, st.container(border=False))
+                            result = ray.get(scale_severity.remote(form_data, st.container(border=False)))
 
         with tab2:
             st.title("🔎 세부 평가")
@@ -501,5 +503,5 @@ if __name__ == "__main__":
                     }
                     with result_con:
                         _, con, _ = st.columns([0.1, 0.8, 0.1])
-                        heq(form_data, con)
+                        ray.get(heq.remote(form_data, con))
 
