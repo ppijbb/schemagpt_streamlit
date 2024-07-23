@@ -20,6 +20,7 @@ opencv-python-headless~=4.8.0.76
 scikit-image~=0.24.0
 numpy~=1.26.2
 tensorflow~=2.17.0
+keras
 tornado~=6.4.1
 torch
 tslearn
@@ -45,3 +46,7 @@ supervision
 SpeechRecognition
 inference-cpu
 python-bidi
+tensorrt
+onnx
+onnxruntime
+openvino
