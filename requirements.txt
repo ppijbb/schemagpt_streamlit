@@ -37,7 +37,7 @@ ipython
 arxiv
 plotly
 pydub
-ray
+ray[all]
 pytesseract
 easyocr
 paddlepaddle
