@@ -15,7 +15,7 @@ from pages.rtc.config import RTC_CONFIGURATION
 from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, detect_objects_in_image, img_convert
 from srcs.object_tracking import MediaPlayer, get_media_player
-from srcs.st_style_md import hide_radio_value_md, colorize_multiselect_options
+from srcs.st_utils import hide_radio_value_md, colorize_multiselect_options
 
 
 loop = asyncio.new_event_loop()

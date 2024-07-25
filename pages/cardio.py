@@ -5,7 +5,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from srcs.cardio import heq, scale_severity
-from srcs.st_style_md import hide_radio_value_md
+from srcs.st_utils import hide_radio_value_md
 from srcs.st_cache import get_or_create_eventloop
 import ray
 

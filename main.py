@@ -10,7 +10,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
-from srcs.app_static_file_handler import AppStaticFileHandler
+from srcs.st_utils import AppStaticFileHandler
 
 sys.modules["streamlit.web.server.app_static_file_handler"].AppStaticFileHandler = AppStaticFileHandler
 

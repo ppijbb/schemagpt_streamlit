@@ -7,7 +7,7 @@ import numpy as np
 import shap
 
 from srcs.st_cache import get_or_create_eventloop, get_dep_scale_model
-from srcs.st_style_md import hide_radio_value_md
+from srcs.st_utils import hide_radio_value_md
 
 
 def view():
