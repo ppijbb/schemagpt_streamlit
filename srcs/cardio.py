@@ -118,7 +118,7 @@ def processed_v_to_int(value):
     v[0] = int(v[0])
     return v
 
-@ray.remote
+# @ray.remote
 def heq(args, st_layout):
     # args[-1] = args[-1][0]
     # KS 모델 동작에 필요한 데이터 파일에서 읽어옴
@@ -336,7 +336,7 @@ def heq(args, st_layout):
     return result
 
 
-@ray.remote
+# @ray.remote
 def scale_severity(args, st_layout):
     # 입력 데이터 처리
     CatC, CatM, coef, intercept, pca, D_mean, SCALER = scale_data

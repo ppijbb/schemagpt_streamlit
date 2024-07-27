@@ -50,4 +50,5 @@ tensorrt
 onnx
 onnxruntime
 openvino
+optimum[openvino]
 modin[all]
