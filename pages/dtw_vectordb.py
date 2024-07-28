@@ -99,6 +99,7 @@ if __name__ == "__main__":
     MFCC-DTW 음원 검색
     """
     chat_container = st.container()
+    st.file_uploader("검색하고 싶은 음악 스타일", type=["wav", "mp3"])
     if "messages" not in st.session_state:
         st.session_state["messages"] = [
             {
