@@ -5,7 +5,7 @@ from io import BytesIO
 
 from PIL import Image, ImageDraw
 import supervision as svg
-from inference.models import YOLOWorld
+# from inference.models import YOLOWorld
 
 import streamlit as st
 
