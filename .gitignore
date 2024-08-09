@@ -6,4 +6,5 @@ chromadb_oai
 *chromadb_oai
 
 __pycache__*
-*/__pycache__/
+*/__pycache__/*
+*.pyc
