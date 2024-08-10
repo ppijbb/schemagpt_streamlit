@@ -7,6 +7,10 @@ from srcs.rtc_call import VideoProcessor, AudioProcessor
 from pages.rtc.config import RTC_CONFIGURATION
 
 
+if 'room_id' not in st.session_state:
+    st.session_state.room_id = ""
+
+
 def show(key:str):
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]
@@ -105,7 +109,9 @@ if __name__ == "__main__":
     #         </style>
     #         """
     # st.markdown(hide_menu_style, unsafe_allow_html=True)
+    if st.button("create chat"):
+        st.session_state.room_id = string.punctuation
+
+    st.text_input("입장할 Room ID",key="room_id")
     if st.button("Start", key="start"):
-        key = string.punctuation
-        st.markdown(f"Room ID: {key}")
-        show(key=key)
+        show(key=st.session_state.room_id)

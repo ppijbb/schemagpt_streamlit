@@ -1,9 +1,12 @@
 import os
 import pickle
 import asyncio
+import json
 
 import streamlit as st
+import tensorflow as tf
 from tensorflow.keras.models import model_from_json
+import keras
 import inspect
 import cv2
 import pandas as pd
@@ -40,9 +43,27 @@ def get_or_create_eventloop():
 @st.cache_resource
 def get_facial_processors(path: str):
     # load model
-    model = model_from_json(open(f"{path}/pages/rtc/caer_face.json", "r").read())
-    # load weights
-    model.load_weights(f"{path}/pages/rtc/caer_face.h5")
+    try:
+        with open(f"{path}/pages/rtc/caer_face.json" , "r") as j:
+            # model = model_from_json(j.read())
+            # load weights
+            keras.saving.load_model(f"{path}/pages/rtc/caer_face.h5", by_name=True)
+
+    except TypeError:
+        INPUT_SHAPE = (224, 224, 3)
+        model = tf.keras.applications.MobileNetV3Small(input_shape=INPUT_SHAPE,
+                                                       include_top=False,
+                                                       weights="imagenet")
+        model = tf.keras.Sequential([
+            model,
+            tf.keras.layers.Conv2D(filters=32, kernel_size=3, activation="relu"),
+            tf.keras.layers.Dropout(rate=0.2),
+            tf.keras.layers.GlobalAveragePooling2D(),
+            tf.keras.layers.Dense(units=3, activation="softmax")
+        ])
+        model.load_weights(f"{path}/pages/rtc/caer_face.h5", by_name=True)
+
+        # model = load_model(f"{path}/pages/rtc/caer_face.h5")
 
     # mp_drawing = mp.solutions.drawing_utils
     # mp_drawing_styles = mp.solutions.drawing_styles
