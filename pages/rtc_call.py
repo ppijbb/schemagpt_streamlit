@@ -7,11 +7,11 @@ from srcs.rtc_call import VideoProcessor, AudioProcessor
 from pages.rtc.config import RTC_CONFIGURATION
 
 
-def show():
+def show(key:str):
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]
     webrtc_ctx = webrtc_streamer(
-        key=string.punctuation,
+        key=key,
         mode=WebRtcMode.SENDRECV,
         rtc_configuration=RTC_CONFIGURATION,
         media_stream_constraints={
@@ -51,11 +51,11 @@ def show():
 
 
 if __name__ == "__main__":
-    st.set_page_config(page_title="facial emotion recognition",
-                       page_icon="🫠",
+    st.set_page_config(page_title="RTC Multi call",
+                       page_icon="☎️",
                        layout="wide",
                        initial_sidebar_state="auto",)
-    st.title('😄😑😭 Facial Emotion Recognition')
+    st.title('😄😑😭 Stream Call')
     st.markdown('''
                 
         ## 프로젝트 소개
@@ -105,4 +105,7 @@ if __name__ == "__main__":
     #         </style>
     #         """
     # st.markdown(hide_menu_style, unsafe_allow_html=True)
-    show()
+    if st.button("Start", key="start"):
+        key = string.punctuation
+        st.markdown(f"Room ID: {key}")
+        show(key=key)
