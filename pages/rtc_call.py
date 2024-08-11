@@ -35,7 +35,7 @@ def show(key:str):
             },
             "audio": True
         },
-        video_processor_factory=VideoProcessor,
+        # video_processor_factory=VideoProcessor,
         audio_processor_factory=AudioProcessor,
         async_processing=True,
         desired_playing_state=True,
