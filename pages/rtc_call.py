@@ -1,17 +1,19 @@
-import string
+from typing import List
+import uuid
 
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, WebRtcMode
+from streamlit_webrtc import webrtc_streamer, create_mix_track, WebRtcMode, WebRtcStreamerContext
+from streamlit_server_state import server_state, server_state_lock
 
-from srcs.rtc_call import VideoProcessor, AudioProcessor
+from srcs.rtc_call import VideoProcessor, AudioProcessor, process_face
 from pages.rtc.config import RTC_CONFIGURATION
 
 
 if 'room_id' not in st.session_state:
-    st.session_state.room_id = ""
+    st.session_state.room_id = uuid.uuid4().hex
 
 
-def show(key:str):
+def show(key:str, track=None):
     # queries = st.experimental_get_query_params()
     # code = queries.get("code", None)[0]
     webrtc_ctx = webrtc_streamer(
@@ -36,9 +38,12 @@ def show(key:str):
             "audio": True
         },
         # video_processor_factory=VideoProcessor,
+        source_audio_track=track,
+        source_video_track=track,
+        video_processor_factory=None,
         audio_processor_factory=AudioProcessor,
         async_processing=True,
-        desired_playing_state=True,
+        desired_playing_state=None,
         video_html_attrs={
             "style": {
                 "width": "100%",
@@ -50,8 +55,39 @@ def show(key:str):
             "autoPlay": True
         },
     )
+
     if webrtc_ctx.state.signalling:
-        webrtc_ctx.video_processor.code = None
+        webrtc_ctx.audio_processor.code = None
+    
+    if webrtc_ctx.input_video_track:
+        mix_track.add_input_track(webrtc_ctx.input_video_track)
+
+    with server_state_lock["webrtc_contexts"]:
+        webrtc_contexts: List[WebRtcStreamerContext] = server_state["webrtc_contexts"]
+        self_is_playing = webrtc_ctx.state.playing
+        if self_is_playing and webrtc_ctx not in webrtc_contexts:
+            webrtc_contexts.append(webrtc_ctx)
+            server_state["webrtc_contexts"] = webrtc_contexts
+        elif not self_is_playing and webrtc_ctx in webrtc_contexts:
+            webrtc_contexts.remove(webrtc_ctx)
+            server_state["webrtc_contexts"] = webrtc_contexts
+
+    # Audio streams are transferred in SFU manner
+    # TODO: Create MCU to mix audio streams
+    for ctx in webrtc_contexts:
+        if ctx == webrtc_ctx or not ctx.state.playing:
+            continue
+        webrtc_streamer(
+            key=f"sound-{id(ctx)}",
+            mode=WebRtcMode.RECVONLY,
+            rtc_configuration={
+                "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+            },
+            media_stream_constraints={"video": False, "audio": True},
+            source_audio_track=ctx.input_audio_track,
+            desired_playing_state=ctx.state.playing,
+        )
+
 
 
 if __name__ == "__main__":
@@ -109,9 +145,50 @@ if __name__ == "__main__":
     #         </style>
     #         """
     # st.markdown(hide_menu_style, unsafe_allow_html=True)
-    if st.button("create chat"):
-        st.session_state.room_id = string.punctuation
+    with server_state_lock["rooms"]:
+        if "rooms" not in server_state:
+            server_state["rooms"] = []
 
-    st.text_input("입장할 Room ID",key="room_id")
-    if st.button("Start", key="start"):
-        show(key=st.session_state.room_id)
+    rooms = server_state["rooms"] + [st.session_state.room_id,]
+
+    room_list, room_setting = st.columns(2)
+    with room_list:
+        room = st.sidebar.radio(label="Select room", options=rooms, key="room_list")
+        if st.button("create new chat"):
+            st.session_state.room_id = uuid.uuid4().hex
+            rooms += [st.session_state.room_id]
+    with room_setting:
+        with st.sidebar.form("New room"):
+
+            def on_create():
+                new_room_name = st.session_state.new_room_name
+                with server_state_lock["rooms"]:
+                    server_state["rooms"] = server_state["rooms"] + [new_room_name]
+
+            st.text_input(label="Room name", key="new_room_name")
+            st.form_submit_button("Create a new room", on_click=on_create)
+
+        if not room:
+            st.stop()
+
+    room_key = f"room_{room}"
+    with server_state_lock[room_key]:
+        if room_key not in server_state:
+            server_state[room_key] = []
+
+    if room is not None:
+        st.session_state.room_id = room
+    st.text_input("입장할 Room ID", key="room_id")
+    
+    with server_state_lock["webrtc_contexts"]:
+        if "webrtc_contexts" not in server_state:
+            server_state["webrtc_contexts"] = []
+
+    with server_state_lock["mix_track"]:
+        if "mix_track" not in server_state:
+            server_state["mix_track"] = create_mix_track(
+                kind="video", mixer_callback=process_face, key="mix"
+            )
+
+    show(key=st.session_state.room_id,
+         track=server_state["mix_track"])
