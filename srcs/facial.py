@@ -68,7 +68,8 @@ def process_face(image):
                 img_pixels = _IMG.img_to_array(roi_gray)
                 img_pixels = np.expand_dims(img_pixels, axis=0)
                 img_pixels *= 0.8
-                predictions = model.serve(x=img_pixels, verbose=0)
+                # predictions = model.serve(x=img_pixels, verbose=0)
+                predictions = model.predict(x=img_pixels, verbose=0)
                 # find max indexed array
 
                 max_index = np.argmax(predictions[0])
