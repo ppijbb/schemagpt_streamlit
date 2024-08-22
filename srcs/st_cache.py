@@ -11,7 +11,7 @@ import inspect
 import cv2
 import pandas as pd
 from xgboost import XGBClassifier
-from transformers import pipeline, AutoTokenizer
+from transformers import pipeline, AutoTokenizer, AutoModelForImageSegmentation
 import shap
 import easyocr
 import paddle
@@ -92,6 +92,10 @@ def get_yolo_detector():
     checkpoint = "hustvl/yolos-small"
     return pipeline(model=checkpoint, task="object-detection")
 
+@st.cache_resource
+def get_birefnet():
+    model_id = "ZhengPeng7/BiRefNet"
+    return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
 
 @st.cache_resource
 def get_llm_tokenizer():
