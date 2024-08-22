@@ -94,14 +94,32 @@ def get_yolo_detector():
 
 
 @st.cache_resource
-def get_llama_tokenizer():
+def get_llm_tokenizer():
     # "devonho/detr-resnet-50_finetuned_cppe5"
-    tokenizer_list = [
-        "meta-llama/Meta-Llama-3.1-8B-Instruct",
-        "meta-llama/Meta-Llama-3-8B-Instruct",
-        "meta-llama/Llama-2-7b-hf",
-    ]
-    return [AutoTokenizer.from_pretrained(tokenizer) for tokenizer in tokenizer_list]
+    tokenizer_list = {
+        "llama3.1": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "llama3.1-minitron": "nvidia/Llama-3.1-Minitron-4B-Width-Base",
+        "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",        
+        "mistral-nemo": "mistralai/Mistral-Nemo-Instruct-2407",
+        "gemma2": "google/gemma-2-2b",
+        "qwen2": "Qwen/Qwen2-7B-Instruct",
+        "phi3.5-moe": "microsoft/Phi-3.5-MoE-instruct",
+        "falcon-mamba": "tiiuae/falcon-mamba-7b",
+        "solar": "upstage/SOLAR-10.7B-Instruct-v1.0",
+        "exaone-3.0": "LGAI-EXAONE/EXAONE-3.0-7.8B-Instruct",
+        "smollm-360m": "HuggingFaceTB/SmolLM-360M-Instruct",
+        "orionstar": "OrionStarAI/Orion-14B-Chat",
+        "[embedding]bge-m3": "BAAI/bge-m3",
+        "[embedding]labse": "sentence-transformers/LaBSE",
+        "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",
+    }
+    return { 
+        k: AutoTokenizer.from_pretrained(
+            pretrained_model_name_or_path=v, 
+            use_fast=True, 
+            trust_remote_code=True) 
+        for k, v in tokenizer_list.items() 
+    }
 
 
 @st.cache_resource

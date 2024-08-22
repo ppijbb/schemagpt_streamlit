@@ -1,4 +1,4 @@
-setuptools==69.5.1
+setuptools
 av
 streamlit
 streamlit-webrtc
@@ -25,6 +25,10 @@ keras
 tornado>=6.4.1
 torch
 tslearn
+sentencepiece
+transformers @git+https://github.com/huggingface/transformers
+acclerate
+trl
 sentence-transformers
 catboost
 lightgbm
@@ -51,5 +55,5 @@ tensorrt
 onnx
 onnxruntime
 openvino
-optimum[openvino]
+optimum[openvino, nncf]
 modin[all]
