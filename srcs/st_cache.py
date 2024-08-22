@@ -11,7 +11,7 @@ import inspect
 import cv2
 import pandas as pd
 from xgboost import XGBClassifier
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer
 import shap
 import easyocr
 import paddle
@@ -91,6 +91,17 @@ def get_yolo_detector():
     # "devonho/detr-resnet-50_finetuned_cppe5"
     checkpoint = "hustvl/yolos-small"
     return pipeline(model=checkpoint, task="object-detection")
+
+
+@st.cache_resource
+def get_llama_tokenizer():
+    # "devonho/detr-resnet-50_finetuned_cppe5"
+    tokenizer_list = [
+        "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "meta-llama/Meta-Llama-3-8B-Instruct",
+        "meta-llama/Llama-2-7b-hf",
+    ]
+    return [AutoTokenizer.from_pretrained(tokenizer) for tokenizer in tokenizer_list]
 
 
 @st.cache_resource
