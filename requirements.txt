@@ -24,6 +24,7 @@ tensorflow>=2.17.0
 keras
 tornado>=6.4.1
 torch
+tf-keras
 tslearn
 sentencepiece
 transformers @git+https://github.com/huggingface/transformers
