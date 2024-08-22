@@ -28,7 +28,7 @@ tf-keras
 tslearn
 sentencepiece
 transformers @git+https://github.com/huggingface/transformers
-acclerate
+accelerate
 trl
 sentence-transformers
 catboost
