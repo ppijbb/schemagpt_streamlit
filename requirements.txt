@@ -58,3 +58,4 @@ onnxruntime
 openvino
 optimum[openvino, nncf]
 modin[all]
+selenium
