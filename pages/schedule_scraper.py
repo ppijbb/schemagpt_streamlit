@@ -89,6 +89,8 @@ if __name__ == "__main__":
     options = Options()
     options.add_argument("--headless")  # Run Chrome in headless mode
     options.add_argument("--incognito")  # Enable incognito mode
+    options.add_argument('--disable-gpu') # Disable the GPU acceleration
+    options.add_argument('--log-level=3') # Disable the log
     driver = webdriver.Chrome(options=options)
 
     # Selenium web scraping
@@ -106,16 +108,16 @@ if __name__ == "__main__":
 
     timer = st.progress(0, "process element")
     for i, result in enumerate(search_box):
-        time.sleep(5)
+        # time.sleep(5)
         result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
-        time.sleep(5)
+        # time.sleep(5)
         element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
         for content in element:
-            time.sleep(5)
+            # time.sleep(5)
             schedule_title = content.find_element(By.CLASS_NAME, 'schedule-card-title')
-            time.sleep(5)
+            # time.sleep(5)
             schedule_date = content.find_element(By.CLASS_NAME, 'schedule-card-date')
-            time.sleep(5)
+            # time.sleep(5)
             schedule_artist = content.find_element(By.CLASS_NAME, 'schedule-card-artist') 
             try:
                 st.markdown(f"{schedule_artist.text} {schedule_date.text} {schedule_title.text}")
