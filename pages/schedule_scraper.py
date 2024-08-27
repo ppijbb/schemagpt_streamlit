@@ -60,7 +60,7 @@ if 'map' not in st.session_state:
         }
     )
 
-def get_month(date=datetime.datetime.now().strftime("%Y%m")):
+def get_month(date=(datetime.datetime.now() + datetime.timedelta(hours=9)).strftime("%Y%m")):
     year = int(date[:4])
     month = int(date[4:])
     return f"{year}{month:02d}"
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     
     options = Options()
     options.add_argument("--headless")  # Run Chrome in headless mode
+    options.add_argument("--incognito")  # Enable incognito mode
     driver = webdriver.Chrome(options=options)
 
     # Selenium web scraping
@@ -105,6 +106,7 @@ if __name__ == "__main__":
 
     timer = st.progress(0, "process element")
     for i, result in enumerate(search_box):
+        time.sleep(1)
         result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
         element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
         for content in element:
@@ -115,7 +117,6 @@ if __name__ == "__main__":
                 st.markdown(f"{schedule_artist.text} {schedule_date.text} {schedule_title.text}")
             except:
                 pass
-            time.sleep(1)
         timer.progress(i+1, "process element")
 
     # Close the browser
