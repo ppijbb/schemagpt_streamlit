@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     timer = st.progress(0, "process element")
     for i, result in enumerate(search_box):
-        time.sleep(1)
+        time.sleep(3)
         result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
         element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
         for content in element:
