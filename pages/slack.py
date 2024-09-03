@@ -6,6 +6,7 @@ from slack_bolt import App
 from slack_bolt.oauth.oauth_settings import OAuthSettings
 from slack_sdk.oauth.installation_store import FileInstallationStore
 from slack_sdk.oauth.state_store import FileOAuthStateStore
+from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 oauth_settings = OAuthSettings(
     client_id=st.secrets["SLACK_CLIENT_ID"],
@@ -17,12 +18,16 @@ oauth_settings = OAuthSettings(
 
 app = App(
     signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
+    token=os.environ["SLACK_BOT_TOKEN"],
     oauth_settings=oauth_settings
 )
+    
 
 
 if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
+    handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    handler.start()
 
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
