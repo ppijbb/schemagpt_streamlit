@@ -1,12 +1,17 @@
 import streamlit as st
 import socketio
+import asyncio
+
 from threading import Lock
 import os
 from slack_bolt import App
+from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.oauth.oauth_settings import OAuthSettings
 from slack_sdk.oauth.installation_store import FileInstallationStore
 from slack_sdk.oauth.state_store import FileOAuthStateStore
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+
 
 oauth_settings = OAuthSettings(
     client_id=st.secrets["SLACK_CLIENT_ID"],
@@ -17,17 +22,22 @@ oauth_settings = OAuthSettings(
     state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
 )
 
-app = App(
+app = AsyncApp(
     signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
     token=os.environ["SLACK_BOT_TOKEN"],
     oauth_settings=oauth_settings
 )
 
+async def sock():
+    handler = AsyncSocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    await handler.start_async()
+
 
 if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
-    handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
-    handler.start()
+    # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    # handler.start()
+    asyncio.run(sock())
 
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
