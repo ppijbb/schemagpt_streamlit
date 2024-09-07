@@ -12,8 +12,9 @@ oauth_settings = OAuthSettings(
     client_id=st.secrets["SLACK_CLIENT_ID"],
     client_secret=st.secrets["SLACK_CLIENT_SECRET"],
     scopes=["channels:read", "groups:read", "chat:write"],
+    user_scopes=["user:read"],
     installation_store=FileInstallationStore(base_dir="./data/installations"),
-    state_store=FileOAuthStateStore(expiration_seconds=600, base_dir="./data/states")
+    state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
 )
 
 app = App(
@@ -21,7 +22,6 @@ app = App(
     token=os.environ["SLACK_BOT_TOKEN"],
     oauth_settings=oauth_settings
 )
-    
 
 
 if 'sio' not in st.session_state:
