@@ -67,7 +67,7 @@ def on_text_update(data):
     st.session_state['current_text'] = data['text']
 
 # Display the current text
-st.text(st.session_state['current_text'])
+st.text("received text"+st.session_state['current_text'])
 
 if st.button('Disconnect'):
     st.session_state['sio'].disconnect()
