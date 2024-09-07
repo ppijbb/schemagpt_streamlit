@@ -43,13 +43,20 @@ if 'sio' not in st.session_state:
 
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
-
-
     
 @app.command("/hello-bolt")
 def hello(body, ack):
     ack(f"Hi <@{body['user_id']}>!")
     
+@app.event("app_mention")
+async def handle_mentions(event, client, say):  # async function
+    api_response = await client.reactions_add(
+        channel=event["channel"],
+        timestamp=event["ts"],
+        name="eyes",
+    )
+    await say("What's up?")
+
 @st.session_state.sio.on('text_update')
 def on_text_update(data, ack):
     print(data)
