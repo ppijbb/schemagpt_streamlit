@@ -7,13 +7,14 @@ import os
 from slack_bolt import App
 from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.oauth.oauth_settings import OAuthSettings
+from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
 from slack_sdk.oauth.installation_store import FileInstallationStore
 from slack_sdk.oauth.state_store import FileOAuthStateStore
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
 
-oauth_settings = OAuthSettings(
+oauth_settings = AsyncOAuthSettings(
     client_id=st.secrets["SLACK_CLIENT_ID"],
     client_secret=st.secrets["SLACK_CLIENT_SECRET"],
     scopes=["channels:read", "groups:read", "chat:write"],
