@@ -45,38 +45,43 @@ if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
 
 
-st.title('Slack Bot test ground')
-st.markdown('''            
-        ## 프로젝트 소개
-        
-            Slack Bot을 테스트하는 페이지
-            socket 통신으로 봇 동작
-            
-
-        ## 개발 내용
-        - 요청 처리하는 Slack bot
-
-        ## 사용 기술
-        <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-        <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-        ''', unsafe_allow_html=True)
     
-
+@app.command("/hello-bolt")
+def hello(body, ack):
+    ack(f"Hi <@{body['user_id']}>!")
+    
 @st.session_state.sio.on('text_update')
 def on_text_update(data, ack):
     print(data)
     st.session_state['current_text'] = data['text']
     ack(f"Hi <@{data['text']}>!")
 
-# Display the current text
-st.text("received text"+st.session_state['current_text'])
+if __name__ == "__main__":
+    st.title('Slack Bot test ground')
+    st.markdown('''            
+            ## 프로젝트 소개
+            
+                Slack Bot을 테스트하는 페이지
+                socket 통신으로 봇 동작
+                
 
-if st.button('Disconnect'):
-    st.session_state['sio'].disconnect()
-    st.write('Disconnected from server')
-st.markdown(
-    f"""
-<a href="https://slack.com/oauth/v2/authorize?client_id={st.secrets["SLACK_CLIENT_ID"]}&scope=chat:write,chat:write.customize&user_scope=chat:write"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
-<meta name="slack-app-id" content="A07LC0Q7324">
-""", unsafe_allow_html=True
-)
+            ## 개발 내용
+            - 요청 처리하는 Slack bot
+
+            ## 사용 기술
+            <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+            <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+            ''', unsafe_allow_html=True)
+
+    # Display the current text
+    st.text("received text"+st.session_state['current_text'])
+
+    if st.button('Disconnect'):
+        st.session_state['sio'].disconnect()
+        st.write('Disconnected from server')
+    st.markdown(
+        f"""
+    <a href="https://slack.com/oauth/v2/authorize?client_id={st.secrets["SLACK_CLIENT_ID"]}&scope=chat:write,chat:write.customize&user_scope=chat:write"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
+    <meta name="slack-app-id" content="A07LC0Q7324">
+    """, unsafe_allow_html=True
+    )
