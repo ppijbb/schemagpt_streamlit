@@ -63,9 +63,10 @@ st.markdown('''
     
 
 @st.session_state.sio.on('text_update')
-def on_text_update(data):
+def on_text_update(data, ack):
     print(data)
     st.session_state['current_text'] = data['text']
+    ack(f"Hi <@{data['text']}>!")
 
 # Display the current text
 st.text("received text"+st.session_state['current_text'])
