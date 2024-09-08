@@ -63,6 +63,7 @@ def on_text_update(data, ack):
     st.session_state['current_text'] = data['text']
     ack(f"Hi <@{data['text']}>!")
 
+
 if __name__ == "__main__":
     st.title('Slack Bot test ground')
     st.markdown('''            
