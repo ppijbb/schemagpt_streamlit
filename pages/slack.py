@@ -34,13 +34,6 @@ async def sock():
     handler = AsyncSocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     await handler.start_async()
 
-
-if 'sio' not in st.session_state:
-    st.session_state['sio'] = socketio.Client()
-    # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
-    # handler.start()
-    asyncio.run(sock())
-
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
     
@@ -48,17 +41,33 @@ if 'current_text' not in st.session_state:
 async def hello(body, ack):
     logging.warn(body["user_id"])
     ack(f"Hi <@{body['user_id']}>!")
-    
+
+@app.event({
+    "type": "message",
+    "subtype": "message_changed"
+})
+async def log_message_change(logger, event):
+    user, text = event["user"], event["text"]
+    logger.info(f"The user {user} changed the message to {text}")
+
 @app.event("app_mention")
 async def handle_mentions(event, client, message, say):  # async function
     logging.warn("message ", message)
     st.session_state['current_text'] = message
+    client
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
         name="eyes",
     )
     await say(text="What's up?", channel=event["channel"])
+
+
+if 'sio' not in st.session_state:
+    st.session_state['sio'] = socketio.Client()
+    # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    # handler.start()
+    asyncio.run(sock())
 
 
 if __name__ == "__main__":
