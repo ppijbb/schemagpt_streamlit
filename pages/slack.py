@@ -1,7 +1,7 @@
 import streamlit as st
 import socketio
 import asyncio
-
+import logging
 from threading import Lock
 import os
 from slack_bolt import App
@@ -46,22 +46,18 @@ if 'current_text' not in st.session_state:
     
 @app.command("/hello-bolt")
 def hello(body, ack):
+    logging.warn(body["user_id"])
     ack(f"Hi <@{body['user_id']}>!")
     
 @app.event("app_mention")
 async def handle_mentions(event, client, say):  # async function
+    logging.warn(event["channel"])
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
         name="eyes",
     )
     await say("What's up?")
-
-@st.session_state.sio.on('text_update')
-def on_text_update(data, ack):
-    print(data)
-    st.session_state['current_text'] = data['text']
-    ack(f"Hi <@{data['text']}>!")
 
 
 if __name__ == "__main__":
