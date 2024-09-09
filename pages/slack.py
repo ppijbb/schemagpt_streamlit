@@ -50,8 +50,8 @@ async def hello(body, ack):
     ack(f"Hi <@{body['user_id']}>!")
     
 @app.event("app_mention")
-async def handle_mentions(event, client, say):  # async function
-    logging.warn(event["channel"])
+async def handle_mentions(event, client, message, say):  # async function
+    logging.warn("message ", message)
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
