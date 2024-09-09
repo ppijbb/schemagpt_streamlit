@@ -52,12 +52,13 @@ async def hello(body, ack):
 @app.event("app_mention")
 async def handle_mentions(event, client, message, say):  # async function
     logging.warn("message ", message)
+    st.session_state['current_text'] = message
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
         name="eyes",
     )
-    await say("What's up?")
+    await say(text="What's up?", channel=event["channel"])
 
 
 if __name__ == "__main__":
