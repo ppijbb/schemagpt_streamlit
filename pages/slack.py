@@ -45,7 +45,7 @@ if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
     
 @app.command("/hello-bolt")
-def hello(body, ack):
+async def hello(body, ack):
     logging.warn(body["user_id"])
     ack(f"Hi <@{body['user_id']}>!")
     
