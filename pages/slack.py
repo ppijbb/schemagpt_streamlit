@@ -54,13 +54,16 @@ async def log_message_change(logger, event):
 async def handle_mentions(event, client, message, say):  # async function
     logging.warn("message ", message)
     st.session_state['current_text'] = message
-    client
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
         name="eyes",
     )
     await say(text="What's up?", channel=event["channel"])
+
+@app.message("hello")
+async def message_hello(message, say):
+    await say(f"Hey there <@{message['user']}>!")
 
 
 if 'sio' not in st.session_state:
