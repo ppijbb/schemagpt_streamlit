@@ -29,10 +29,12 @@ app = AsyncApp(
     token=os.environ["SLACK_BOT_TOKEN"],
     oauth_settings=oauth_settings
 )
+SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets['SLACK_BOT_TOKEN']}&channel=%s&text=%s"
+SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
 
 async def sock():
-    # app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
-    handler = AsyncSocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
+    handler = AsyncSocketModeHandler(app, os.environ["SLACK_BOT_TOKEN"])
     await handler.start_async()
 
 if 'current_text' not in st.session_state:
@@ -56,7 +58,7 @@ async def handle_mentions(event, client, message, say):  # async function
     logging.warn("message ", message)
     st.session_state['current_text'] = message
     result = requests.post("https://slack.com/api/chat.postMessage",
-        headers={"Authorization": "Bearer "+ os.environ["SLACK_BOT_TOKEN"]},
+        headers={"Authorization": "Bearer "+ os.environ["SLACK_APP_TOKEN"]},
         data={"channel": event["channel"],"text": "what's up"}
     )
     api_response = await client.reactions_add(
