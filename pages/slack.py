@@ -2,6 +2,7 @@ import streamlit as st
 import socketio
 import asyncio
 import logging
+import requests
 from threading import Lock
 import os
 from slack_bolt import App
@@ -54,6 +55,10 @@ async def log_message_change(logger, event):
 async def handle_mentions(event, client, message, say):  # async function
     logging.warn("message ", message)
     st.session_state['current_text'] = message
+    result = requests.post("https://slack.com/api/chat.postMessage",
+        headers={"Authorization": "Bearer "+ os.environ["SLACK_BOT_TOKEN"]},
+        data={"channel": event["channel"],"text": "what's up"}
+    )
     api_response = await client.reactions_add(
         channel=event["channel"],
         timestamp=event["ts"],
