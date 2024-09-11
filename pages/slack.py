@@ -31,7 +31,7 @@ app = AsyncApp(
 )
 
 async def sock():
-    app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
+    # app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
     handler = AsyncSocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     await handler.start_async()
 
