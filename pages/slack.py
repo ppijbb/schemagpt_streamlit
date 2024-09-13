@@ -52,10 +52,11 @@ async def hello(body, ack):
 async def log_message_change(logger, event):
     user, text = event["user"], event["text"]
     logger.info(f"The user {user} changed the message to {text}")
+    logging.warning(f"The user {user} changed the message to {text}")
 
 @app.event("app_mention")
 async def handle_mentions(event, client, message, say):  # async function
-    logging.warn("message ", message)
+    logging.warning("message ", message)
     st.session_state['current_text'] = message
     result = requests.post("https://slack.com/api/chat.postMessage",
         headers={"Authorization": "Bearer "+ os.environ["SLACK_APP_TOKEN"]},
