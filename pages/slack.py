@@ -15,19 +15,19 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
 
-oauth_settings = AsyncOAuthSettings(
-    client_id=st.secrets["SLACK_CLIENT_ID"],
-    client_secret=st.secrets["SLACK_CLIENT_SECRET"],
-    scopes=["channels:read", "groups:read", "chat:write"],
-    user_scopes=["user:read"],
-    installation_store=FileInstallationStore(base_dir="./data/installations"),
-    state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
-)
+# oauth_settings = AsyncOAuthSettings(
+#     client_id=st.secrets["SLACK_CLIENT_ID"],
+#     client_secret=st.secrets["SLACK_CLIENT_SECRET"],
+#     scopes=["channels:read", "groups:read", "chat:write"],
+#     user_scopes=["user:read"],
+#     installation_store=FileInstallationStore(base_dir="./data/installations"),
+#     state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
+# )
 
 app = AsyncApp(
     signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
     token=os.environ["SLACK_BOT_TOKEN"],
-    oauth_settings=oauth_settings
+    # oauth_settings=oauth_settings
 )
 SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets['SLACK_BOT_TOKEN']}&channel=%s&text=%s"
 SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
