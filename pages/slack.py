@@ -42,7 +42,7 @@ if 'current_text' not in st.session_state:
     
 @app.command("/hello-bolt")
 async def hello(body, ack):
-    logging.warn(body["user_id"])
+    logging.warning(body["user_id"])
     ack(f"Hi <@{body['user_id']}>!")
 
 @app.event({
