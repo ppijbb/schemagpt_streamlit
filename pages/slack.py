@@ -54,6 +54,7 @@ SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
 async def sock():
     app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
     handler = AsyncSocketModeHandler(app=app, app_token=os.environ["SLACK_APP_TOKEN"])
+    app.start()
     await handler.start_async()
     logging.warning("handler started")
 
