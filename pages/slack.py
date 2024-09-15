@@ -40,21 +40,18 @@ async def sock():
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
     
-@app.command("/hello-bolt")
+@app.command(command="/hello-bolt")
 async def hello(body, ack):
     logging.warning(body["user_id"])
     ack(f"Hi <@{body['user_id']}>!")
 
-@app.event({
-    "type": "message",
-    "subtype": "message_changed"
-})
+@app.event(event={"type": "message", "subtype": "message_changed"})
 async def log_message_change(logger, event):
     user, text = event["user"], event["text"]
     logger.info(f"The user {user} changed the message to {text}")
     logging.warning(f"The user {user} changed the message to {text}")
 
-@app.event("app_mention")
+@app.event(event="app_mention")
 async def handle_mentions(event, client, message, say):  # async function
     logging.warning("message ", message)
     st.session_state['current_text'] = message
@@ -69,7 +66,7 @@ async def handle_mentions(event, client, message, say):  # async function
     )
     await say(text="What's up?", channel=event["channel"])
 
-@app.message("hello")
+@app.message(keyword="hello")
 async def message_hello(message, say):
     await say(f"Hey there <@{message['user']}>!")
 
