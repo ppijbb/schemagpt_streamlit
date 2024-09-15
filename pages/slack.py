@@ -18,8 +18,27 @@ from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 oauth_settings = AsyncOAuthSettings(
     # client_id=st.secrets["SLACK_CLIENT_ID"],
     # client_secret=st.secrets["SLACK_CLIENT_SECRET"],
-    # scopes=["channels:read", "groups:read", "chat:write"],
-    user_scopes=["user:read"],
+    scopes=[
+        "channels:read", "channels:history", "channels:join", "channels:manage", 
+        "channels:write.invites", "channels:write.topic", 
+        "chat:write", "chat:write.customize", "chat:write.public",
+        "conversations.connect:manage", "conversations.connect:read",
+        "emoji:read", 
+        "commands",
+        "files:read", "files:write",
+        "calls:read", "calls:write",
+        "canvases:read", "canvases:write", 
+        "groups:read", "groups:history", "groups:write",
+        "groups:write.invites", "groups:write.topic",
+        "im:history", "im:read", "im:write", "im:write.topic",
+        "links:write", "links.embed:write",
+        "incoming-webhook",
+        "reaction:write",
+        "app_mentions:read", 
+        "bookmarks:read", "bookmarks:write",
+        "workflow.steps:execute",
+        ],
+    user_scopes=[],
     installation_store=FileInstallationStore(base_dir="./data/installations"),
     state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
 )
@@ -56,7 +75,7 @@ async def handle_mentions(event, client, message, say):  # async function
     logging.warning("message ", message)
     st.session_state['current_text'] = message
     result = requests.post("https://slack.com/api/chat.postMessage",
-        headers={"Authorization": "Bearer "+ os.environ["SLACK_APP_TOKEN"]},
+        headers={"Authorization": "Bearer " + os.environ["SLACK_APP_TOKEN"]},
         data={"channel": event["channel"],"text": "what's up"}
     )
     api_response = await client.reactions_add(
