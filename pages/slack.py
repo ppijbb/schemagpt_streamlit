@@ -52,7 +52,7 @@ SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets[
 SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
 
 async def sock():
-    app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
+    app.client.apps_connections_open(app_token=st.secrets["SLACK_APP_TOKEN"])
     handler = AsyncSocketModeHandler(app=app, app_token=st.secrets["SLACK_APP_TOKEN"])
     await handler.start_async()
     logging.warning("handler started")
@@ -76,7 +76,7 @@ async def handle_mentions(event, client, message, say):  # async function
     logging.warning("message ", message)
     st.session_state['current_text'] = message
     result = requests.post("https://slack.com/api/chat.postMessage",
-        headers={"Authorization": "Bearer " + os.environ["SLACK_APP_TOKEN"]},
+        headers={"Authorization": "Bearer " + st.secrets["SLACK_APP_TOKEN"]},
         data={"channel": event["channel"],"text": "what's up"}
     )
     api_response = await client.reactions_add(
