@@ -45,7 +45,7 @@ oauth_settings = AsyncOAuthSettings(
 
 app = AsyncApp(
     signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
-    token=os.environ["SLACK_BOT_TOKEN"],
+    token=st.secrets["SLACK_BOT_TOKEN"],
     # oauth_settings=oauth_settings
 )
 SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets['SLACK_BOT_TOKEN']}&channel=%s&text=%s"
@@ -53,8 +53,7 @@ SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
 
 async def sock():
     app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
-    handler = AsyncSocketModeHandler(app=app, app_token=os.environ["SLACK_APP_TOKEN"])
-    app.start()
+    handler = AsyncSocketModeHandler(app=app, app_token=st.secrets["SLACK_APP_TOKEN"])
     await handler.start_async()
     logging.warning("handler started")
 
@@ -96,6 +95,7 @@ if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
     # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     # handler.start()
+    app.start()
     asyncio.run(sock())
 
 
