@@ -95,11 +95,12 @@ if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
     # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     # handler.start()
-    app.start()
+    
     asyncio.run(sock())
 
 
 if __name__ == "__main__":
+    app.start()
     st.title('Slack Bot test ground')
     st.markdown('''            
             ## 프로젝트 소개
