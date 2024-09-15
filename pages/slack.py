@@ -16,8 +16,8 @@ from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
 
 oauth_settings = AsyncOAuthSettings(
-    # client_id=st.secrets["SLACK_CLIENT_ID"],
-    # client_secret=st.secrets["SLACK_CLIENT_SECRET"],
+    client_id=st.secrets["SLACK_CLIENT_ID"],
+    client_secret=st.secrets["SLACK_CLIENT_SECRET"],
     scopes=[
         "channels:read", "channels:history", "channels:join", "channels:manage", 
         "channels:write.invites", "channels:write.topic", 
@@ -93,9 +93,8 @@ async def message_hello(message, say):
 
 if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
-    # handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    # handler = SocketModeHandler(app, st.secrets["SLACK_APP_TOKEN"])
     # handler.start()
-    
     asyncio.run(sock())
 
 
