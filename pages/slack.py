@@ -52,9 +52,13 @@ SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets[
 SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
 
 async def sock():
+    logging.warning("app connection start")
     app.client.apps_connections_open(app_token=os.environ["SLACK_APP_TOKEN"])
-    handler = AsyncSocketModeHandler(app, os.environ["SLACK_BOT_TOKEN"])
+    logging.warning("client connection solved")
+    handler = AsyncSocketModeHandler(app=app, app_token=os.environ["SLACK_BOT_TOKEN"])
+    logging.warning("handler build solved")
     await handler.start_async()
+    logging.warning("handler started")
 
 if 'current_text' not in st.session_state:
     st.session_state['current_text'] = ''
