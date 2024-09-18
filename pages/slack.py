@@ -16,8 +16,8 @@ from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
 
 oauth_settings = AsyncOAuthSettings(
-    client_id=st.secrets["SLACK_CLIENT_ID"],
-    client_secret=st.secrets["SLACK_CLIENT_SECRET"],
+    # client_id=st.secrets["SLACK_CLIENT_ID"],
+    # client_secret=st.secrets["SLACK_CLIENT_SECRET"],
     scopes=[
         "channels:read", "channels:history", "channels:join", "channels:manage", 
         "channels:write.invites", "channels:write.topic", 
@@ -40,7 +40,7 @@ oauth_settings = AsyncOAuthSettings(
         ],
     user_scopes=[],
     # installation_store=FileInstallationStore(base_dir="./data/installations"),
-    state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
+    # state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
 )
 
 app = AsyncApp(
