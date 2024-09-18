@@ -39,7 +39,7 @@ oauth_settings = AsyncOAuthSettings(
         "workflow.steps:execute",
         ],
     user_scopes=[],
-    installation_store=FileInstallationStore(base_dir="./data/installations"),
+    # installation_store=FileInstallationStore(base_dir="./data/installations"),
     state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
 )
 
@@ -88,7 +88,7 @@ async def handle_mentions(event, client, message, say):  # async function
 
 @app.message(keyword="hello")
 async def message_hello(message, say):
-    await say(f"Hey there <@{message['user']}>!")
+    await say(text=f"Hey there <@{message['user']}>!")
 
 
 if 'sio' not in st.session_state:
