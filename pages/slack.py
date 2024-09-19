@@ -46,6 +46,7 @@ from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 app = AsyncApp(
     # signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
     token=st.secrets["SLACK_BOT_TOKEN"],
+    oauth_settings=None
     # oauth_settings=oauth_settings
 )
 SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets['SLACK_BOT_TOKEN']}&channel=%s&text=%s"
