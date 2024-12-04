@@ -11,6 +11,7 @@ import inspect
 import cv2
 import pandas as pd
 from xgboost import XGBClassifier
+from sklearn.ensemble import VotingClassifier, StackingClassifier
 from transformers import pipeline, AutoTokenizer, AutoModelForImageSegmentation
 import shap
 import easyocr
@@ -128,6 +129,26 @@ def get_llm_tokenizer():
         for k, v in tokenizer_list.items() 
     }
 
+@st.cache_resource
+def get_guard_model():
+    from optimum.intel import OVModelForSequenceClassification
+    from .text_ensemble import LMTextClassifier
+
+    device = "cpu"
+    model_name = "katanemolabs/Arch-Guard-cpu"
+    guard_model = OVModelForSequenceClassification.from_pretrained(
+        model_name, device_map=device, low_cpu_mem_usage=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+            model_name, trust_remote_code=True
+    )
+    
+    return VotingClassifier(
+        estimators=[
+            ('prompt guard', LMTextClassifier(model="meta-llama/Prompt-Guard-86M", label_classes=["BENIGN","INJECTION", "JAILBREAK"])), 
+            ('arch guard', LMTextClassifier(model=guard_model, tokenizer=tokenizer, label_classes=["BENIGN","INJECTION", "JAILBREAK"]))],
+        voting='soft'
+    )
 
 @st.cache_resource
 def get_utterance_data(url="/"):
@@ -186,24 +207,20 @@ def get_audio_data():
         embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
         ).as_retriever()
 
-
 @st.cache_resource
 def get_heq_data():
     return (pickle.load(open(f"{os.getcwd()}/pages/models/KSModel", 'rb')),
             pickle.load(open(f"{os.getcwd()}/pages/models/VotingEnsembleModel", 'rb')))
 
-
 @st.cache_resource
 def get_scale_data():
     return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
-
 
 @st.cache_resource
 def get_dep_scale_model():
     cgi_classifier = XGBClassifier(tree_method='gpu_hist')
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
-
 
 @st.cache_resource
 def add_static_js():
@@ -217,7 +234,6 @@ def add_static_js():
             js_data += f'<style>\n{f.read()}\n</style>\n'
     return js_data
 
-
 @st.cache_resource
 def get_ocr():
     return {
@@ -227,5 +243,3 @@ def get_ocr():
                             ocr_version="PP-OCRv4",
                             structure_version="PP-StructureV2")
     }
-
-

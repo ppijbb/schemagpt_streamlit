@@ -153,7 +153,7 @@ if __name__ == "__main__":
                 st.info("Please add your OpenAI API key to continue.")
                 st.stop()
 
-            llm = ChatOpenAI(model_name="gpt-3.5-turbo",
+            llm = ChatOpenAI(model_name="gpt-4o-mini",
                              openai_api_key=openai_api_key,
                              streaming=True)
             tools = [
@@ -220,7 +220,7 @@ if __name__ == "__main__":
                 st.info("Please add your OpenAI API key to continue.")
                 st.stop()
 
-            llm = ChatOpenAI(model_name="gpt-3.5-turbo",#"ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
+            llm = ChatOpenAI(model_name="gpt-4o-mini",#"ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
                              openai_api_key=openai_api_key,
                              streaming=True)
             tools = [DuckDuckGoSearchRun(
