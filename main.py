@@ -55,7 +55,7 @@ if __name__ == "__main__":
                     layout="wide",
                     initial_sidebar_state="auto",)
 
-    st.title('👋😄 Welcome!')
+    st.title('👋😄 Hello!')
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
 
@@ -72,14 +72,13 @@ if __name__ == "__main__":
 
       헬스케어, 디지털 바이오, 음성/오디오 데이터 분야의 경험을 넓히고 있는
       
-      데이터 분석, AI 엔지니어(ML/DL) 입니다.
+      데이터 사이언티스트, AI 엔지니어 입니다.
 
       데이터 분석, 모델 아키텍처, MLOps, LLM 서비스 등
 
       단순히 인공지능이 들어간 서비스가 아닌 도메인과 목적에 맞게 설계하고 연구합니다.
 
       상상만 하던 서비스를 만들어 내는 꿈을 가지고 개발하고 연구하고 있습니다.
-
       """)
 
     section1, section2 = st.columns(2)
@@ -130,6 +129,24 @@ if __name__ == "__main__":
       inc.markdown("한국정보인재개발원")
 
     with section2:
+      st.markdown("### 👨‍🔧 PROJECTS")
+      st.page_link("pages/cardio.py", label="🔗 심혈관계 질환자 180명 다중 오믹스 데이터 분석")
+      st.page_link("pages/dep_peptide.py", label="🔗 우울장애 218명 펩타이드 분석 및 바이오마커 후보 물질 추출")
+      st.page_link("pages/dep_scales.py", label="🔗 우울장애 의사진단 데이터, 자가진단 데이터 상관관계 분석")
+      st.page_link("pages/facial.py", label="🔗 실시간 발화, 안면 감정인식 기반 감성 분석 엔진 학습 및 온디바이스 추론")
+      st.page_link("pages/llm_app.py",label="🔗 NLP 기반 우울장애 중증도 평가 LLM 챗봇 서비스")
+      st.page_link("pages/sleep_challenge.py",label="🔗 분당서울대학교병원 수면 인공지능 경진대회")
+      st.page_link("pages/icu_challenge.py",label="🔗 분당서울대학교병원 COVID-19 중환자 데이터톤")
+      st.page_link("pages/zsd_organoid.py",label="🔗 실시간 zero-shot 이미지 detection 서비스")
+      st.page_link("pages/dtw_vectordb.py",label="🔗 음원 MFCC vectorDB")
+      st.page_link("pages/llama_tokenizing.py",label="🔗 오픈소스 및 ChatGPT LLM 토큰 계산기")
+      st.page_link("pages/chat_guard.py",label="🔗 LLM 챗봇 서비스를 위한 Prompt Guard")
+      st.page_link("pages/shop_search.py",label="🔗 [side project] 애견 관련 기업 정보 수집 기능")
+      st.page_link("pages/ocr.py",label="🔗 [side project] 공연 포스터 OCR 데이터 수집 기능")
+      st.page_link("pages/concert_search.py",label="🔗 [side project] 실시간 공연 정보 수집 및 공연 정보 자동 검색 기능")
+      st.page_link("pages/rtc_call.py",label="🔗 [side project] WebRTC 기반 다인원 음성 채팅")
+      st.page_link("pages/slack.py",label="🔗 [side project] SlackBot 만들기")
+
       st.markdown("### 📚 SKILLS")
       st.markdown('''
   <div style="font-family:'Roboto'; font-size: 16px; font-weight: 400; color: black; font-weight: bold;">
