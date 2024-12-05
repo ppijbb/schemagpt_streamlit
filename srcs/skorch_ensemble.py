@@ -1,9 +1,12 @@
 from typing import Union, List
 import torch
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.ensemble import VotingClassifier
 from transformers import pipeline, PreTrainedModel
+from transformers.pipelines import Pipeline
 from skorch import NeuralNetBinaryClassifier
-from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.pipeline import FeatureUnion
+from sklearn.pipeline import Pipeline as sklearn_pipeline
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split
@@ -109,10 +112,60 @@ class ImageModel(BaseEstimator):
         return self.model.fit(X, y)
     
     import numpy as np
+    
 
+class CustomVotingClassifier(VotingClassifier):
+
+    def __init__(
+        self,
+        estimators,
+        *,
+        voting="hard",
+        weights=None,
+        n_jobs=None,
+        flatten_transform=True,
+        verbose=False,
+        **kwargs,
+    ):
+        super().__init__(
+            estimators=estimators, 
+            voting=voting, 
+            weights=weights, 
+            n_jobs=n_jobs, 
+            flatten_transform=flatten_transform, 
+            verbose=verbose)
+
+    def predict(self, X):
+        """Predict class labels for X.
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        maj : array-like of shape (n_samples,)
+            Predicted class labels.
+        """
+        # check_is_fitted(self)
+        if self.voting == "soft":
+            maj = np.argmax(self.predict_proba(X), axis=1)
+
+        else:  # 'hard' voting
+            predictions = self._predict(X)
+            maj = np.apply_along_axis(
+                lambda x: np.argmax(np.bincount(x, weights=self._weights_not_none)),
+                axis=1,
+                arr=predictions,
+            )
+
+        maj = self.le_.inverse_transform(maj)
+
+        return maj
 
 class LMTextClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, model: Union[str, PreTrainedModel], label_classes: List, **kwargs):
+    def __init__(self, model: Union[str, PreTrainedModel, Pipeline], label_classes: List, device:str, **kwargs):
         """
         Transformers 파이프라인을 Scikit-learn 분류기로 래핑.
 
@@ -120,11 +173,22 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
             model_path: 모델의 경로 또는 이름 (Transformers 파이프라인).
             kwargs: 파이프라인 초기화에 필요한 추가 인자.
         """
-        self.pipeline = pipeline(task="text-classification", model=model, **kwargs)
-        self.classes_ = label_classes  # 클래스 레이블 (fit 메서드에서 설정)
+        if isinstance(model, Pipeline):
+            self.model = model
+        else:
+            self.model = pipeline(task="text-classification", model=model, device=device, **kwargs)
+        self.label_classes = label_classes  # 클래스 레이블 (fit 메서드에서 설정)
+        self._is_fitted = True
+        self.device = device
+
+    def __sklearn_is_fitted__(self):
+        """
+        Check fitted status and return a Boolean value.
+        """
+        return hasattr(self, "_is_fitted") and self._is_fitted
 
     @torch.inference_mode
-    def fit(self, X, y):
+    def fit(self, X=None, y=None):
         """
         분류기 학습 (실제 학습은 필요 없음).
 
@@ -133,12 +197,11 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
             y: 학습 레이블 (사용되지 않음).
         """
         # 파이프라인을 사용하여 클래스 레이블 설정
-        first_result = self.pipeline(X[0])
-        self.classes_ = [label_dict['label'] for label_dict in first_result]
+        self.classes_ = self.label_classes
         return self
 
     @torch.inference_mode
-    def predict_proba(self, X):
+    def predict_proba(self, X: List[str]):
         """
         입력 텍스트에 대한 클래스별 확률 예측.
 
@@ -148,12 +211,13 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
         Returns:
             각 샘플에 대한 클래스별 확률 (numpy 배열).
         """
-        return np.array([
-            [label_dict['score'] for label_dict in self.pipeline(text)] for text in X
-        ])
+        result = []
+        for label_dict in self.model(X, return_all_scores=True):
+            result += [[result['score'] for result in label_dict]]
+        return np.array(result)
 
     @torch.inference_mode
-    def predict(self, X):
+    def predict(self, X: List[str]):
         """
         입력 텍스트에 대한 클래스 예측.
 
@@ -164,4 +228,4 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
             각 샘플에 대한 예측 클래스 레이블 (numpy 배열).
         """
         probs = self.predict_proba(X)
-        return np.array([self.classes_[np.argmax(prob)] for prob in probs])
+        return np.array([self.label_classes[np.argmax(prob)] for prob in probs])

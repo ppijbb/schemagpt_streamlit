@@ -21,9 +21,10 @@ import streamlit as st
 from langchain.callbacks.manager import CallbackManager
 from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import SystemMessage
-from langchain.retrievers.web_research import WebResearchRetriever
-from langchain.agents import initialize_agent, load_tools
-from langchain.agents import AgentType, ConversationalChatAgent, AgentExecutor, Tool
+from langchain_community.retrievers.web_research import WebResearchRetriever
+from langchain_community.agent_toolkits.load_tools import load_tools
+from langchain.agents import initialize_agent
+from langchain.agents import StructuredChatAgent, ConversationalChatAgent, AgentExecutor, ReActTextWorldAgent
 from langchain.agents.loading import AGENT_TO_CLASS, load_agent
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
@@ -39,7 +40,7 @@ from langchain_community.chat_message_histories import StreamlitChatMessageHisto
 
 from langchain_openai import ChatOpenAI
 from ionic_langchain.tool import IonicTool
-
+import langgraph
 from srcs import schema_therapy
 from srcs.st_cache import get_guard_model
 from srcs.langchain_llm import DDG_LLM
@@ -66,8 +67,8 @@ if __name__ == "__main__":
                                
 
             ## 개발 내용
-            - 챗봇 동작이외의 기능 제한
-            - 
+            - 챗봇이 지정한 동작 이외의 기능 제한
+            - 프롬프트 해킹 방어 및 부적절한 응답, 요청 검수
             
             ### NLP
             - 오픈소스 Guard 모델 적용하여 요청 텍스트 검증
@@ -85,10 +86,10 @@ if __name__ == "__main__":
             <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
             <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
             <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white"> 
-            <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=black">
             <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=black"> 
             ''', unsafe_allow_html=True)
-    st.image("pages/image/llm_app/architecture.jpg")
+
+    # st.image("pages/image/llm_app/architecture.jpg")
 
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
@@ -106,12 +107,14 @@ if __name__ == "__main__":
         #     "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/2_Chat_with_search.py)"
         #     "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
     
+    
+    chat_histories = st.container()
     chat_section = st.container()
     msgs = StreamlitChatMessageHistory()
     memory = ConversationBufferMemory(chat_memory=msgs,
-                                    return_messages=True,
-                                    memory_key="chat_history",
-                                    output_key="output")
+                                      return_messages=True,
+                                      memory_key="chat_history",
+                                      output_key="output")
     if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
         msgs.clear()
         msgs.add_message(SystemMessage(content="프롬프트 공격을 방어해보세요."))
@@ -120,7 +123,7 @@ if __name__ == "__main__":
     avatars = {"human": "user", "ai": "assistant", "system": "system"}
     for idx, msg in enumerate(msgs.messages):
         if msg.type != "system":
-            with st.container().chat_message(avatars[msg.type]):
+            with chat_histories.chat_message(avatars[msg.type]):
                 # Render intermediate steps if any were saved
                 for step in st.session_state.steps.get(str(idx), []):
                     if step[0].tool == "_Exception":
@@ -131,12 +134,13 @@ if __name__ == "__main__":
                 st.write(msg.content)
 
     if prompt := chat_section.chat_input(placeholder="프롬프트 침해 시도하기", key=chat_section):
-        chat_section.chat_message("user").write(prompt)
+        chat_histories.chat_message("user").write(prompt)
 
         # if not openai_api_key:
         #     st.info("Please add your OpenAI API key to continue.")
         #     st.stop()
-
+        print(guard.predict([prompt]))
+        
         llm = DDG_LLM()
         tools = [
             DuckDuckGoSearchRun(
@@ -152,7 +156,7 @@ if __name__ == "__main__":
             IonicTool().tool()
             ] + load_tools(["arxiv"],)
         chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
-                                                                tools=tools)
+                                                            tools=tools)
         executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
                                                       tools=tools,
                                                       memory=memory,
@@ -161,7 +165,7 @@ if __name__ == "__main__":
                                                       return_intermediate_steps=True,
                                                       handle_parsing_errors=True,)
         cfg = RunnableConfig()
-        cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)]
-        response = executor.invoke(prompt, cfg)
+        cfg["callbacks"] = [StreamlitCallbackHandler(chat_histories, expand_new_thoughts=True)]
+        response = executor.invoke(prompt, cfg, stop=["</s>"])
         st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
-        chat_section.chat_message("assistant").write(response["output"])
+        chat_histories.chat_message("assistant").write(response["output"])

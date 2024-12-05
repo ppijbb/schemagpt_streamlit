@@ -132,23 +132,36 @@ def get_llm_tokenizer():
 @st.cache_resource
 def get_guard_model():
     from optimum.intel import OVModelForSequenceClassification
-    from .text_ensemble import LMTextClassifier
-
+    from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
+    
+    label_classes = ["BENIGN", "INJECTION", "JAILBREAK"]
     device = "cpu"
     model_name = "katanemolabs/Arch-Guard-cpu"
     guard_model = OVModelForSequenceClassification.from_pretrained(
-        model_name, device_map=device, low_cpu_mem_usage=True
+        model_name, device_map=device, low_cpu_mem_usage=True, load_in_4bit=True, trust_remote_code=True
     )
     tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True
     )
-    
-    return VotingClassifier(
+    classifier = CustomVotingClassifier(
         estimators=[
-            ('prompt guard', LMTextClassifier(model="meta-llama/Prompt-Guard-86M", label_classes=["BENIGN","INJECTION", "JAILBREAK"])), 
-            ('arch guard', LMTextClassifier(model=guard_model, tokenizer=tokenizer, label_classes=["BENIGN","INJECTION", "JAILBREAK"]))],
+            ('prompt guard', LMTextClassifier(
+                model="meta-llama/Prompt-Guard-86M",
+                device='cpu',
+                label_classes=label_classes)),
+            ('prompt2 guard', LMTextClassifier(
+                model="meta-llama/Prompt-Guard-86M",
+                device='cpu',
+                label_classes=label_classes)), 
+            # ('arch guard', LMTextClassifier(
+            #     model=guard_model, tokenizer=tokenizer,
+            #     device='cpu',
+            #     label_classes=label_classes))
+            ],
         voting='soft'
-    )
+    ).fit(X=label_classes, y=label_classes)
+    classifier._is_fitted = True
+    return classifier
 
 @st.cache_resource
 def get_utterance_data(url="/"):

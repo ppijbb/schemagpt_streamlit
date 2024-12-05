@@ -8,6 +8,7 @@ streamlit-shap
 streamlit-option-menu
 openai
 langchain
+langgraph
 langchain-openai
 librosa>=0.10.2
 anthropic
