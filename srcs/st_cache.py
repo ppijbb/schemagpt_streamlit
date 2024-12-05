@@ -11,7 +11,6 @@ import inspect
 import cv2
 import pandas as pd
 from xgboost import XGBClassifier
-from sklearn.ensemble import VotingClassifier, StackingClassifier
 from transformers import pipeline, AutoTokenizer, AutoModelForImageSegmentation
 import shap
 import easyocr
@@ -145,14 +144,18 @@ def get_guard_model():
     )
     classifier = CustomVotingClassifier(
         estimators=[
-            ('prompt guard', LMTextClassifier(
+            ('prompt guard1', LMTextClassifier(
                 model="meta-llama/Prompt-Guard-86M",
                 device='cpu',
                 label_classes=label_classes)),
-            ('prompt2 guard', LMTextClassifier(
-                model="meta-llama/Prompt-Guard-86M",
+            ('prompt guard2', LMTextClassifier(
+                model="katanemo/Arch-Guard",
                 device='cpu',
-                label_classes=label_classes)), 
+                label_classes=label_classes)),
+            ('prompt guard3', LMTextClassifier(
+                model="Niansuh/Prompt-Guard-86M",
+                device='cpu',
+                label_classes=label_classes)),
             # ('arch guard', LMTextClassifier(
             #     model=guard_model, tokenizer=tokenizer,
             #     device='cpu',
@@ -160,7 +163,6 @@ def get_guard_model():
             ],
         voting='soft'
     ).fit(X=label_classes, y=label_classes)
-    classifier._is_fitted = True
     return classifier
 
 @st.cache_resource

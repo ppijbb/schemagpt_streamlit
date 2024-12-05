@@ -129,17 +129,17 @@ if __name__ == "__main__":
                     if step[0].tool == "_Exception":
                         continue
                     with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
-                        st.write(step[0].log)
-                        st.write(step[1])
-                st.write(msg.content)
+                        st.markdown(step[0].log)
+                        st.markdown(step[1])
+                st.markdown(msg.content)
 
     if prompt := chat_section.chat_input(placeholder="프롬프트 침해 시도하기", key=chat_section):
-        chat_histories.chat_message("user").write(prompt)
+        chat_histories.chat_message("user").markdown(prompt)
 
         # if not openai_api_key:
         #     st.info("Please add your OpenAI API key to continue.")
         #     st.stop()
-        print(guard.predict([prompt]))
+        prompt_threat = guard.predict([prompt])[0]
         
         llm = DDG_LLM()
         tools = [
@@ -156,7 +156,7 @@ if __name__ == "__main__":
             IonicTool().tool()
             ] + load_tools(["arxiv"],)
         chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
-                                                            tools=tools)
+                                                                tools=tools)
         executor = AgentExecutor.from_agent_and_tools(agent=chat_agent,
                                                       tools=tools,
                                                       memory=memory,
@@ -166,6 +166,9 @@ if __name__ == "__main__":
                                                       handle_parsing_errors=True,)
         cfg = RunnableConfig()
         cfg["callbacks"] = [StreamlitCallbackHandler(chat_histories, expand_new_thoughts=True)]
-        response = executor.invoke(prompt, cfg, stop=["</s>"])
-        st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
-        chat_histories.chat_message("assistant").write(response["output"])
+        try:
+            response = executor.invoke(prompt, cfg, stop=["</s>"])
+            st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
+            chat_histories.chat_message("assistant").markdown(f"(프롬프트 침해 수준 {prompt_threat})\n\n" + response["output"])
+        except:
+            st.toast("An error occurred. Please try again.")

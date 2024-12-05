@@ -1,7 +1,7 @@
 from typing import Union, List
 import torch
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import VotingClassifier, StackingClassifier, BaggingClassifier
 from transformers import pipeline, PreTrainedModel
 from transformers.pipelines import Pipeline
 from skorch import NeuralNetBinaryClassifier
@@ -116,24 +116,24 @@ class ImageModel(BaseEstimator):
 
 class CustomVotingClassifier(VotingClassifier):
 
-    def __init__(
-        self,
-        estimators,
-        *,
-        voting="hard",
-        weights=None,
-        n_jobs=None,
-        flatten_transform=True,
-        verbose=False,
-        **kwargs,
-    ):
-        super().__init__(
-            estimators=estimators, 
-            voting=voting, 
-            weights=weights, 
-            n_jobs=n_jobs, 
-            flatten_transform=flatten_transform, 
-            verbose=verbose)
+    # def __init__(
+    #     self,
+    #     estimators,
+    #     *,
+    #     voting="hard",
+    #     weights=None,
+    #     n_jobs=None,
+    #     flatten_transform=True,
+    #     verbose=False,
+    #     **kwargs,
+    # ):
+    #     super().__init__(
+    #         estimators=estimators, 
+    #         voting=voting, 
+    #         weights=weights, 
+    #         n_jobs=n_jobs, 
+    #         flatten_transform=flatten_transform, 
+    #         verbose=verbose)
 
     def predict(self, X):
         """Predict class labels for X.
@@ -153,7 +153,10 @@ class CustomVotingClassifier(VotingClassifier):
             maj = np.argmax(self.predict_proba(X), axis=1)
 
         else:  # 'hard' voting
-            predictions = self._predict(X)
+            predictions = self._predict(X).tolist()
+            print(predictions)
+            for i, prediction in enumerate(predictions): # Text label to index
+                predictions[i] = np.array([np.where(self.classes_==yhat)[0] for yhat in prediction])
             maj = np.apply_along_axis(
                 lambda x: np.argmax(np.bincount(x, weights=self._weights_not_none)),
                 axis=1,
@@ -213,7 +216,7 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
         """
         result = []
         for label_dict in self.model(X, return_all_scores=True):
-            result += [[result['score'] for result in label_dict]]
+            result += [[data['score'] for data in label_dict]]
         return np.array(result)
 
     @torch.inference_mode
