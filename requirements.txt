@@ -64,3 +64,4 @@ selenium
 python-socketio
 slack-bolt
 setuptools>=74.1.1
+qdrant-client
