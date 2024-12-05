@@ -129,37 +129,55 @@ def get_llm_tokenizer():
     }
 
 @st.cache_resource
+def get_prompt_guards():
+    from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
+    label_classes = ["BENIGN", "INJECTION", "JAILBREAK"]
+    return [
+        ('prompt guard1', LMTextClassifier(
+            model="meta-llama/Prompt-Guard-86M",
+            device='cpu',
+            label_classes=label_classes)),
+        # ('prompt guard2', LMTextClassifier(
+        #     model="katanemo/Arch-Guard",
+        #     device='cpu',
+        #     label_classes=label_classes)),
+        # ('prompt guard3', LMTextClassifier(
+        #     model="Niansuh/Prompt-Guard-86M",
+        #     device='cpu',
+        #     label_classes=label_classes))
+        ]
+
+@st.cache_resource
 def get_guard_model():
     from optimum.intel import OVModelForSequenceClassification
     from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
     
+    class DiserializedOVModelForSequenceClassification(OVModelForSequenceClassification):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.compiled_model = self
+        
+        def __deepcopy__(self, memo):
+            # Skip deepcopy for compiled_model
+            copied_obj = self.compiled_model
+            memo[id(self)] = copied_obj
+            return copied_obj
+    
     label_classes = ["BENIGN", "INJECTION", "JAILBREAK"]
     device = "cpu"
     model_name = "katanemolabs/Arch-Guard-cpu"
-    guard_model = OVModelForSequenceClassification.from_pretrained(
+    guard_model = DiserializedOVModelForSequenceClassification.from_pretrained(
         model_name, device_map=device, low_cpu_mem_usage=True, load_in_4bit=True, trust_remote_code=True
     )
     tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True
     )
     classifier = CustomVotingClassifier(
-        estimators=[
-            ('prompt guard1', LMTextClassifier(
-                model="meta-llama/Prompt-Guard-86M",
+        estimators=get_prompt_guards()+[
+            ('arch guard', LMTextClassifier(
+                model=guard_model, tokenizer=tokenizer,
                 device='cpu',
-                label_classes=label_classes)),
-            ('prompt guard2', LMTextClassifier(
-                model="katanemo/Arch-Guard",
-                device='cpu',
-                label_classes=label_classes)),
-            ('prompt guard3', LMTextClassifier(
-                model="Niansuh/Prompt-Guard-86M",
-                device='cpu',
-                label_classes=label_classes)),
-            # ('arch guard', LMTextClassifier(
-            #     model=guard_model, tokenizer=tokenizer,
-            #     device='cpu',
-            #     label_classes=label_classes))
+                label_classes=label_classes))
             ],
         voting='soft'
     ).fit(X=label_classes, y=label_classes)

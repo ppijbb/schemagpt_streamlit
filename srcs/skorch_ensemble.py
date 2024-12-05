@@ -116,25 +116,6 @@ class ImageModel(BaseEstimator):
 
 class CustomVotingClassifier(VotingClassifier):
 
-    # def __init__(
-    #     self,
-    #     estimators,
-    #     *,
-    #     voting="hard",
-    #     weights=None,
-    #     n_jobs=None,
-    #     flatten_transform=True,
-    #     verbose=False,
-    #     **kwargs,
-    # ):
-    #     super().__init__(
-    #         estimators=estimators, 
-    #         voting=voting, 
-    #         weights=weights, 
-    #         n_jobs=n_jobs, 
-    #         flatten_transform=flatten_transform, 
-    #         verbose=verbose)
-
     def predict(self, X):
         """Predict class labels for X.
 
@@ -168,7 +149,12 @@ class CustomVotingClassifier(VotingClassifier):
         return maj
 
 class LMTextClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, model: Union[str, PreTrainedModel, Pipeline], label_classes: List, device:str, **kwargs):
+    def __init__(
+        self, 
+        model: Union[str, PreTrainedModel, Pipeline], 
+        label_classes: List, 
+        device:str, **kwargs
+        ):
         """
         Transformers 파이프라인을 Scikit-learn 분류기로 래핑.
 
@@ -189,7 +175,16 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
         Check fitted status and return a Boolean value.
         """
         return hasattr(self, "_is_fitted") and self._is_fitted
-
+    
+    def process_time_wrapper(func: callable):
+        import time
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = func(*args, **kwargs)
+            print(f"Processing time: {time.time() - start}")
+            return result
+        return wrapper
+    
     @torch.inference_mode
     def fit(self, X=None, y=None):
         """
@@ -203,6 +198,7 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
         self.classes_ = self.label_classes
         return self
 
+    @process_time_wrapper
     @torch.inference_mode
     def predict_proba(self, X: List[str]):
         """
