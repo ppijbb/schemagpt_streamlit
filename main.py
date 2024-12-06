@@ -139,6 +139,7 @@ if __name__ == "__main__":
       st.page_link("pages/icu_challenge.py",label="🔗 분당서울대학교병원 COVID-19 중환자 데이터톤")
       st.page_link("pages/zsd_organoid.py",label="🔗 실시간 zero-shot 이미지 detection 서비스")
       st.page_link("pages/dtw_vectordb.py",label="🔗 음원 MFCC vectorDB")
+      st.page_link("pages/qdrant_vdb.py",label="🔗 Advanced RAG 챗봇 서비스")
       st.page_link("pages/llm_tokenizing.py",label="🔗 오픈소스 및 ChatGPT LLM 토큰 계산기")
       st.page_link("pages/chat_guard.py",label="🔗 LLM 챗봇 서비스를 위한 Prompt Guard")
       st.page_link("pages/shop_search.py",label="🔗 [toy project] 애견 관련 기업 정보 수집 기능")

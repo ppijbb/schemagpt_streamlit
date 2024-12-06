@@ -4,6 +4,7 @@ import asyncio
 import json
 
 import streamlit as st
+import torch
 import tensorflow as tf
 from tensorflow.keras.models import model_from_json
 import keras
@@ -21,10 +22,16 @@ from langchain_community.embeddings.sentence_transformer import SentenceTransfor
 from langchain_community.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma, Qdrant
 
 import chromadb
 from chromadb.utils import embedding_functions as ef
+from qdrant_client import QdrantClient
+from qdrant_client.http import models
+
+
+from srcs.langchain_llm import DDG_LLM
+
 
 import pydub
 from pydub.utils import mediainfo
@@ -39,7 +46,14 @@ def get_or_create_eventloop():
             asyncio.set_event_loop(loop)
             return asyncio.get_event_loop()
 
+# --------------------------------------  Local LLM  ------------------------------------------
+# Initialize LLM
+@st.cache_resource
+def get_llm():
+    return DDG_LLM()
+# ------------------------------------------------------------------------------------------------
 
+# --------------------------------------   Vision Model ------------------------------------------
 @st.cache_resource
 def get_facial_processors(path: str):
     # load model
@@ -78,13 +92,11 @@ def get_facial_processors(path: str):
     cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
     return model, cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
 
-
 @st.cache_resource
 def get_zsc_detector():
     # "Thomasboosinger/owlv2-base-patch16-ensemble"  #
     checkpoint = "google/owlvit-base-patch32"
     return pipeline(model=checkpoint, task="zero-shot-object-detection")
-
 
 @st.cache_resource
 def get_yolo_detector():
@@ -96,7 +108,9 @@ def get_yolo_detector():
 def get_birefnet():
     model_id = "ZhengPeng7/BiRefNet"
     return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
+# ------------------------------------------------------------------------------------------------
 
+# --------------------------------------   LLM Tokenizer ------------------------------------------
 @st.cache_resource
 def get_llm_tokenizer():
     # "devonho/detr-resnet-50_finetuned_cppe5"
@@ -127,7 +141,9 @@ def get_llm_tokenizer():
             trust_remote_code=True) 
         for k, v in tokenizer_list.items() 
     }
+# ------------------------------------------------------------------------------------------------
 
+# --------------------------------------  Prompt Guard  ------------------------------------------
 @st.cache_resource
 def get_prompt_guards():
     from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
@@ -182,7 +198,9 @@ def get_guard_model():
         voting='soft'
     ).fit(X=label_classes, y=label_classes)
     return classifier
+# ------------------------------------------------------------------------------------------------
 
+# ---------------------------------    Vector Store     ------------------------------------------
 @st.cache_resource
 def get_utterance_data(url="/"):
     model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
@@ -241,6 +259,13 @@ def get_audio_data():
         ).as_retriever()
 
 @st.cache_resource
+def init_vectorstore():
+    from srcs.qdrant_vdb import VectorStore
+    return VectorStore()
+# ------------------------------------------------------------------------------------------------
+
+# -------------------------------------   CGI Model ------------------------------------------
+@st.cache_resource
 def get_heq_data():
     return (pickle.load(open(f"{os.getcwd()}/pages/models/KSModel", 'rb')),
             pickle.load(open(f"{os.getcwd()}/pages/models/VotingEnsembleModel", 'rb')))
@@ -267,6 +292,9 @@ def add_static_js():
             js_data += f'<style>\n{f.read()}\n</style>\n'
     return js_data
 
+# ------------------------------------------------------------------------------------------------
+
+# -------------------------------------   OCR Model  ---------------------------------------------
 @st.cache_resource
 def get_ocr():
     return {
@@ -276,3 +304,4 @@ def get_ocr():
                             ocr_version="PP-OCRv4",
                             structure_version="PP-StructureV2")
     }
+# ------------------------------------------------------------------------------------------------
