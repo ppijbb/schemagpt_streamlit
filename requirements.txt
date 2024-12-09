@@ -5,6 +5,7 @@ streamlit-webrtc
 streamlit_server_state
 streamlit-pdf-viewer
 streamlit-shap
+streamlit-mermaid
 streamlit-option-menu
 openai
 langchain
