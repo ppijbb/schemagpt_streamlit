@@ -143,8 +143,9 @@ class VectorStore:
 def generate_queries(question: str) -> List[str]:
     llm = get_llm()
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "Generate 3 different versions of the given question to retrieve relevant context. Make them diverse."),
-        ("user", "{question}")
+            # Start of Selection
+            ("system", "제공된 질문에 대해 관련 컨텍스트를 검색하기 위해 3가지 다른 버전의 질문을 생성하세요. 다양하게 만드세요."),
+            ("user", "{question}")
     ])
     chain = prompt | llm | LineListOutputParser()
     return chain.invoke({"question": question})
@@ -179,10 +180,10 @@ def get_adaptive_retriever(vectorstore):
 def get_rag_chain(vectorstore: VectorStore):
     retriever = get_adaptive_retriever(vectorstore.vectorstore)
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """Answer the question based on the provided context. 
-        If the context doesn't contain relevant information, say 'I don't have enough information to answer that.'
-        Use a professional and helpful tone."""),
-        ("user", "Context: {context}\n\nQuestion: {question}")
+        ("system", """제공된 Context를 기반으로 질문에 답변해주세요.
+        만약 Context에 관련 정보가 없다면 '처리할 수 없는 질문입니다.'라고 답변해주세요.
+        전문적이고 도움이 되는 톤으로 답변해주세요."""),
+        ("user", "Context: {context}\n\n질문: {question}")
     ])
     chain = (
         RunnableParallel({
