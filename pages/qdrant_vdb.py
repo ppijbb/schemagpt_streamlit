@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import uuid
+import traceback
 
 from srcs.qdrant_vdb import get_rag_chain
 from srcs.st_cache import init_vectorstore, get_or_create_eventloop
@@ -9,17 +10,19 @@ from srcs.st_cache import init_vectorstore, get_or_create_eventloop
 import json
 from pyvis.network import Network
 import streamlit.components.v1 as components
+from srcs.st_utils import draw_mermaid
+import streamlit_mermaid as stmd
 
 get_or_create_eventloop()
 
 
 st.set_page_config(
-    page_title="Qdrant Vector DB Demo",
+    page_title="Qdrant Vector DB",
     page_icon="🔍",
     layout="wide"
 )
 
-st.title('🔍 Qdrant Vector Database Demo')
+st.title('🔍 Qdrant Vector Database')
 
 st.markdown('''
 ## 프로젝트 소개
@@ -44,9 +47,12 @@ insert_section, info_section = st.columns(2)
 with insert_section:
     # 데이터 입력 섹션
     st.header("텍스트 데이터 입력")
-    text_input = st.text_area("텍스트 입력", height=100, 
+    text_input = st.text_area(
+        label="텍스트 입력",
+        height=100,
         help="저장하고 싶은 텍스트를 입력하세요. 이 텍스트는 벡터로 변환되어 저장됩니다.")
-    metadata = st.text_input("메타데이터 (선택사항)", 
+    metadata = st.text_input(
+        label="메타데이터 (선택사항)",
         help="텍스트에 대한 추가 정보를 입력하세요 (예: 제목, 카테고리 등)")
 
 if st.button("텍스트 추가"):
@@ -105,83 +111,57 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 이전 메시지 표시
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+chat_section, graph_section = st.columns([0.7, 0.3])
 
-# 사용자 입력 처리
-if prompt := st.chat_input("질문을 입력하세요"):
+with chat_section:
+    # 이전 메시지 표시
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    # 사용자 메시지 표시
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    # 사용자 입력 처리
+    if prompt := st.chat_input("질문을 입력하세요"):
 
-    # 어시스턴트 응답 생성
-    with st.chat_message("assistant"):
-        message_placeholder = st.empty()
+        # 사용자 메시지 표시
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-        try:
-            # RAG 체인 실행
-            
-            response = chain.invoke({"question": prompt})
-            # 응답 표시
-            message_placeholder.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            
-            # LangGraph 시각화
-            if hasattr(chain, 'get_graph'):  # LangGraph 결과가 있는 경우
-                st.subheader("🔍 검색 및 추론 과정")
-                
-                # 그래프 생성
-                net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="black")
-                
-                # 노드와 엣지 추가
-                graph_data = chain.get_graph()
-                
-                # 노드 추가
-                for node in graph_data['nodes']:
-                    net.add_node(
-                        node['id'], 
-                        label=node['label'],
-                        title=node.get('description', ''),
-                        color=node.get('color', '#97c2fc')
-                    )
-                
-                # 엣지 추가
-                for edge in graph_data['edges']:
-                    net.add_edge(
-                        edge['from'],
-                        edge['to'],
-                        title=edge.get('label', ''),
-                        arrows='to'
-                    )
-                
-                # HTML 파일로 저장
-                net.save_graph("temp_graph.html")
-                
-                # Streamlit에 표시
-                with open("temp_graph.html", 'r', encoding='utf-8') as f:
-                    html_string = f.read()
-                
-                components.html(html_string, height=600)
-                
-                # 상세 정보 표시
-                if 'process_details' in graph_data:
-                    with st.expander("📊 상세 처리 과정"):
-                        for step in graph_data['process_details']:
-                            st.markdown(f"**{step['step']}**")
-                            st.markdown(step['description'])
-                            if 'data' in step:
-                                st.json(step['data'])
-            
-        except Exception as e:
-            st.error(f"Error generating response: {str(e)}")
+        # 어시스턴트 응답 생성
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
 
-# 채팅 초기화 버튼
-if st.button("채팅 초기화"):
-    st.session_state.messages = []
-    st.experimental_rerun()
+            try:
+                # RAG 체인 실행
+                response = chain.invoke({"question": prompt})
+                # 응답 표시
+                message_placeholder.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                
+            except Exception as e:
+                print(traceback.format_exc())
+                st.error(f"Error generating response: {str(e)}")
 
+    # 채팅 초기화 버튼
+    if st.button("채팅 초기화"):
+        st.session_state.messages = []
+        st.experimental_rerun()
 
+with graph_section:
+    # LangGraph 시각화
+    if hasattr(chain, 'get_graph'):  # LangGraph 결과가 있는 경우
+        st.subheader("🔍 검색 및 추론 과정")
+        # 노드와 엣지 추가
+        graph_data = chain.get_graph()
+        # st.image(graph_data.draw_mermaid_png())
+        stmd.st_mermaid(graph_data.draw_mermaid(), width="100%", height="800px")
+        # draw_mermaid(graph_data.draw_mermaid())
+        # 상세 정보 표시
+        if hasattr(graph_data, 'process_details'):
+            with st.expander("📊 상세 처리 과정"):
+                for step in graph_data.process_details:
+                    st.markdown(f"**{step['step']}**")
+                    st.markdown(step['description'])
+                    if 'data' in step:
+                        st.json(step['data'])
+                    

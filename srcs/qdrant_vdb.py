@@ -35,7 +35,8 @@ class VectorStore:
         return Qdrant(
             client=self.client,
             collection_name=self.collection_name,
-            embeddings=self.embeddings
+            embeddings=self.embeddings,
+            
         )
 
     def _init_client(self):
@@ -70,15 +71,21 @@ class VectorStore:
 
         try:
             vector = self.embeddings.embed_query(text)
+            metadata = {
+                "_id": uuid.uuid4().hex
+            }
+            if metadata:
+                metadata.update(metadata)
             self.client.upsert(
                 collection_name=self.collection_name,
                 points=[
                     models.PointStruct(
-                        id=uuid.uuid4().int & (1<<32)-1,
+                        id=uuid.uuid4().hex ,
                         vector=vector,
                         payload={
-                            "text": text,
-                            "metadata": metadata if metadata else "No metadata"
+                            # "text": text,
+                            "page_content": text,
+                            "metadata": metadata
                         }
                     )
                 ]
