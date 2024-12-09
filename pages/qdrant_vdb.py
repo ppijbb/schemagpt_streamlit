@@ -115,20 +115,21 @@ chat_section, graph_section = st.columns([0.7, 0.3])
 
 with chat_section:
     # 이전 메시지 표시
+    chat_history = st.container()
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
     # 사용자 입력 처리
-    if prompt := st.chat_input("질문을 입력하세요"):
+    if prompt := st.chat_input("질문을 입력하세요(최대 300자)", max_chars=300):
 
         # 사용자 메시지 표시
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
+        with chat_history.chat_message("user"):
             st.markdown(prompt)
 
         # 어시스턴트 응답 생성
-        with st.chat_message("assistant"):
+        with chat_history.chat_message("assistant"):
             message_placeholder = st.empty()
 
             try:
@@ -137,7 +138,7 @@ with chat_section:
                 # 응답 표시
                 message_placeholder.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                
+
             except Exception as e:
                 print(traceback.format_exc())
                 st.error(f"Error generating response: {str(e)}")

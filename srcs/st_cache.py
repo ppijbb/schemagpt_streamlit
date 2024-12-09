@@ -129,7 +129,7 @@ def get_llm_tokenizer():
         "orionstar": "OrionStarAI/Orion-14B-Chat",
         "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
         "[experimental]gpt-4o": "Xenova/gpt-4o",
-        "[experimental]openai-embedding-ada": "Xenova/text-embedding-ada-002",
+        # "[experimental]openai-embedding-ada": "Xenova/text-embedding-ada-002",
         "[embedding]bge-m3": "BAAI/bge-m3",
         "[embedding]labse": "sentence-transformers/LaBSE",
         "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",

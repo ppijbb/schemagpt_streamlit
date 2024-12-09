@@ -180,10 +180,10 @@ def get_adaptive_retriever(vectorstore):
 def get_rag_chain(vectorstore: VectorStore):
     retriever = get_adaptive_retriever(vectorstore.vectorstore)
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """제공된 Context를 기반으로 질문에 답변해주세요.
-        만약 Context에 관련 정보가 없다면 '처리할 수 없는 질문입니다.'라고 답변해주세요.
-        전문적이고 도움이 되는 톤으로 답변해주세요."""),
-        ("user", "Context: {context}\n\n질문: {question}")
+        ("system", "제공된 Context를 기반으로 질문에 답변해주세요. "
+                   "만약 Context에 관련 정보가 없다면 '처리할 수 없는 내용입니다.'라고 답변하며 간단한 호응만 해주세요. "
+                   "전문적이고 도움이 되는 톤으로 답변해주세요."),
+        ("user", "처리 가능한 테스크: QA, 일상대화\n\nContext: {context}\n\n질문: {question}")
     ])
     chain = (
         RunnableParallel({
