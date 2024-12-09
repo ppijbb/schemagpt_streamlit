@@ -6,13 +6,11 @@ import torch
 from langchain.vectorstores import Qdrant
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chat_models import ChatOpenAI
+from langchain.schema import Document
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.retrievers import MultiQueryRetriever
 from langchain.retrievers.multi_query import LineListOutputParser
-from langchain.retrievers import EnsembleRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers import MultiQueryRetriever, EnsembleRetriever, ContextualCompressionRetriever, BM25Retriever
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain.schema import StrOutputParser
 from operator import itemgetter
@@ -151,30 +149,61 @@ def generate_queries(question: str) -> List[str]:
     return chain.invoke({"question": question})
 
 def get_adaptive_retriever(vectorstore):
-    # Base retriever
-    base_retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+    # Base vector retriever
+    vector_retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5})
     
     # Multi-query retriever
     multi_query_retriever = MultiQueryRetriever.from_llm(
-        retriever=base_retriever,
+        retriever=vector_retriever,
         llm=get_llm(),
         parser_key="lines"
     )
 
-    # Compression/Reranking retriever
+    # BM25 retriever 초기화
+    # vectorstore에서 모든 문서 가져오기
+    all_docs = []
+    try:
+        results = vectorstore.client.scroll(
+            collection_name=vectorstore.collection_name,
+            limit=1000  # 적절한 수로 조정
+        )[0]
+        for result in results:
+            if result.payload.get("page_content"):  # 유효한 문서만 추가
+                all_docs.append(
+                    Document(
+                        page_content=result.payload.get("page_content", ""),
+                        metadata=result.payload.get("metadata", {})
+                    )
+                )
+    except Exception as e:
+        st.warning(f"BM25 초기화 중 오류 발생: {e}")
+        all_docs = []
+
+    # 문서가 있을 때만 BM25와 Ensemble 사용
+    if all_docs:
+        # BM25 retriever 설정
+        bm25_retriever = BM25Retriever.from_documents(all_docs)
+        bm25_retriever.k = 5  # 검색 결과 수 설정
+
+        # Ensemble retriever (Vector + BM25)
+        ensemble_retriever = EnsembleRetriever(
+            retrievers=[multi_query_retriever, bm25_retriever],
+            weights=[0.7, 0.3]  # 벡터 검색에 더 높은 가중치
+        )
+        base_retriever = ensemble_retriever
+    else:
+        # 문서가 없으면 multi-query retriever만 사용
+        st.info("데이터베이스가 비어있어 벡터 검색만 수행합니다.")
+        base_retriever = multi_query_retriever
+
+    # Compression/Reranking retriever 적용
     compressor = LLMChainExtractor.from_llm(get_llm())
-    compression_retriever = ContextualCompressionRetriever(
+    final_retriever = ContextualCompressionRetriever(
         base_compressor=compressor,
         base_retriever=base_retriever
     )
-
-    # Ensemble retriever
-    ensemble_retriever = EnsembleRetriever(
-        retrievers=[multi_query_retriever, compression_retriever],
-        weights=[0.5, 0.5]
-    )
     
-    return ensemble_retriever
+    return final_retriever
 
 # Initialize RAG chain
 def get_rag_chain(vectorstore: VectorStore):
