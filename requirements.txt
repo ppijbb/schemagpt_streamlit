@@ -42,7 +42,7 @@ shap
 scikit-learn
 wikipedia
 xmltodict
-ionic-langchain>=0.2.3
+# ionic-langchain>=0.2.3
 ipython
 arxiv
 plotly

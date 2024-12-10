@@ -23,7 +23,7 @@ from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSea
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
-from ionic_langchain.tool import IonicTool
+# from ionic_langchain.tool import IonicTool
 from langchain_community.llms.fake import FakeStreamingListLLM
 
 from srcs.st_cache import get_or_create_eventloop
@@ -171,7 +171,8 @@ if __name__ == "__main__":
                  WikipediaQueryRun(
                      api_wrapper=WikipediaAPIWrapper()),
                  PubmedQueryRun(),
-                 IonicTool().tool()] + load_tools(["arxiv"],)
+                #  IonicTool().tool()
+                 ] + load_tools(["arxiv"],)
         
         if query := st.chat_input(placeholder="검색",):        
             payload.update({

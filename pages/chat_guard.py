@@ -39,7 +39,7 @@ from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSea
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
-from ionic_langchain.tool import IonicTool
+# from ionic_langchain.tool import IonicTool
 import langgraph
 from srcs import schema_therapy
 from srcs.st_cache import get_guard_model
@@ -153,7 +153,7 @@ if __name__ == "__main__":
                 api_wrapper=WikipediaAPIWrapper()),
             PubmedQueryRun(
                 api_wrapper=PubMedAPIWrapper()),
-            IonicTool().tool()
+            # IonicTool().tool()
             ] + load_tools(["arxiv"],)
         chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm,
                                                                 tools=tools)

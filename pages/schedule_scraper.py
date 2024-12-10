@@ -23,7 +23,6 @@ from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSea
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
-from ionic_langchain.tool import IonicTool
 from langchain_community.llms.fake import FakeStreamingListLLM
 
 from srcs.st_cache import get_or_create_eventloop

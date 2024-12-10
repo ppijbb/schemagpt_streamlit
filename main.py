@@ -38,7 +38,6 @@ from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSea
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 from langchain_openai import ChatOpenAI
-from ionic_langchain.tool import IonicTool
 
 from srcs import schema_therapy
 from srcs.st_cache import get_utterance_data, get_or_create_eventloop
