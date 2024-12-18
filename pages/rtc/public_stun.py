@@ -508,6 +508,7 @@ public_stun_server_list = [
     # "stun:stun.teliax.com:3478",
     # "stun:stun.ringvoz.com:3478",
     # "stun:stun.geesthacht.de:3478",
+    "stun:global.stun.twilio.com:3478",
     "stun:stun.l.google.com:19302",
     "stun:stun1.l.google.com:19302",
     "stun:stun2.l.google.com:19302",
