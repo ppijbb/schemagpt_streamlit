@@ -47,7 +47,7 @@ class VectorStore:
         )
 
     def _get_embedding_dimensions(self):
-        return self.embeddings.client.get_sentence_embedding_dimension()
+        return self.embeddings._client.get_sentence_embedding_dimension()
 
     def _ensure_collection(self):
         """컬렉션이 없으면 생성"""
