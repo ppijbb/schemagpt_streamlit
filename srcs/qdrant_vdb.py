@@ -73,7 +73,7 @@ class VectorStore:
                 "_id": uuid.uuid4().hex
             }
             if metadata:
-                metadata.update(metadata)
+                _metadata.update(metadata)
             self.client.upsert(
                 collection_name=self.collection_name,
                 points=[
@@ -83,7 +83,7 @@ class VectorStore:
                         payload={
                             # "text": text,
                             "page_content": text,
-                            "metadata": metadata
+                            "metadata": _metadata
                         }
                     )
                 ]
@@ -104,7 +104,7 @@ class VectorStore:
             )
             return [
                 {
-                    "text": result.payload["text"],
+                    "text": result.payload["page_content"],
                     "metadata": result.payload["metadata"],
                     "score": result.score
                 }
