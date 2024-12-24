@@ -68,3 +68,4 @@ slack-bolt
 setuptools>=74.1.1
 qdrant-client
 pyvis
+rank_bm25
