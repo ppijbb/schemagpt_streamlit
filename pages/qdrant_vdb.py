@@ -8,6 +8,7 @@ from srcs.st_cache import init_vectorstore, get_or_create_eventloop
 
 # LangGraph 시각화를 위한 import 추가
 import json
+import pandas as pd
 from pyvis.network import Network
 import streamlit.components.v1 as components
 from srcs.st_utils import draw_mermaid
@@ -51,13 +52,14 @@ with insert_section:
         label="텍스트 입력",
         height=100,
         help="저장하고 싶은 텍스트를 입력하세요. 이 텍스트는 벡터로 변환되어 저장됩니다.")
-    metadata = st.text_input(
-        label="메타데이터 (선택사항)",
-        help="텍스트에 대한 추가 정보를 입력하세요 (예: 제목, 카테고리 등)")
+    df = pd.DataFrame(None, columns=("key", "value"))
+    st.markdown("메타데이터 입력")
+    metadata_input = st.data_editor(df, num_rows="dynamic", use_container_width=True)
 
 if st.button("텍스트 추가"):
     # 텍스트를 벡터로 변환
-    if vector_store.add_text(text_input.strip(), metadata):
+    metadata = {row['key']: row['value'] for index, row in metadata_input.iterrows()}
+    if vector_store.add_text(text=text_input.strip(), metadata=metadata):
         st.success("텍스트가 성공적으로 추가되었습니다!")
     else:
         st.error("텍스트를 입력해주세요!")
