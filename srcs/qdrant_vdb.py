@@ -7,11 +7,15 @@ from langchain.vectorstores import Qdrant
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import Document
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain.memory import ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate
 from langchain.retrievers.multi_query import LineListOutputParser
 from langchain.retrievers.document_compressors import LLMChainExtractor
 from langchain.retrievers import MultiQueryRetriever, EnsembleRetriever, ContextualCompressionRetriever, BM25Retriever
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda, RunnableSerializable
+
 from langchain.schema import StrOutputParser
 from operator import itemgetter
 from typing import List, Tuple, Dict, Optional, Any
@@ -69,7 +73,7 @@ class VectorStore:
 
         try:
             vector = self.embeddings.embed_query(text)
-            metadata = {
+            _metadata = {
                 "_id": uuid.uuid4().hex
             }
             if metadata:
@@ -206,24 +210,47 @@ def get_adaptive_retriever(vectorstore):
     return final_retriever
 
 # Initialize RAG chain
-def get_rag_chain(vectorstore: VectorStore):
+def get_rag_chain(
+    vectorstore: VectorStore, 
+    system_prompt: str, 
+    memory: ConversationBufferMemory
+    )-> RunnableSerializable:
+
+    def _process_context(step_output):
+        result = []
+        for doc in step_output['context']:
+            source_data = doc.page_content.strip()
+            metadata_text = "\n".join([f"{k}:{v}" for k, v in doc.metadata.items()])
+            result.append(f"{source_data}\n{metadata_text}")
+        return "\n".join(result)
+    
     retriever = get_adaptive_retriever(vectorstore.vectorstore)
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "제공된 Context를 기반으로 질문에 답변해주세요. "
-                   "만약 Context에 관련 정보가 없다면 '처리할 수 없는 내용입니다.'라고 답변하며 간단한 호응만 해주세요. "
-                   "전문적이고 도움이 되는 톤으로 답변해주세요."),
-        ("user", "처리 가능한 테스크: QA, 일상대화\n\nContext: {context}\n\n질문: {question}")
-    ])
+    
+    # Start of Selection
     chain = (
         RunnableParallel({
             "context": itemgetter("question") | retriever,
-            "question": itemgetter("question")
+            "question": itemgetter("question"),
+            "history": RunnablePassthrough.assign(
+                history=RunnableLambda(memory.load_memory_variables)
+                        | itemgetter(memory.memory_key)
+                ) 
+                | itemgetter("history")
         })
         | {
-            "context": lambda x: "\n".join([doc.page_content for doc in x["context"]]),
-            "question": itemgetter("question")
+            "context": _process_context,
+            "question": itemgetter("question"),
+            "history": RunnablePassthrough.assign(
+                history=RunnableLambda(memory.load_memory_variables)
+                        | itemgetter(memory.memory_key)
+                )
+                | itemgetter("history")
         }
-        | prompt
+        | ChatPromptTemplate.from_messages([
+                SystemMessage(content=system_prompt),
+                MessagesPlaceholder("history"),
+                HumanMessage(content="{question}\n\nContext:\n{context}"),
+            ])
         | get_llm()
         | StrOutputParser()
     )

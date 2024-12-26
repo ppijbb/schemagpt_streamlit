@@ -2,17 +2,20 @@ import streamlit as st
 import numpy as np
 import uuid
 import traceback
-
-from srcs.qdrant_vdb import get_rag_chain
-from srcs.st_cache import init_vectorstore, get_or_create_eventloop
-
-# LangGraph 시각화를 위한 import 추가
 import json
 import pandas as pd
 from pyvis.network import Network
 import streamlit.components.v1 as components
-from srcs.st_utils import draw_mermaid
 import streamlit_mermaid as stmd
+
+from langchain.memory import ConversationBufferMemory
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+
+from srcs.qdrant_vdb import get_rag_chain
+from srcs.st_cache import init_vectorstore, get_or_create_eventloop
+from srcs.st_utils import draw_mermaid
+# LangGraph 시각화를 위한 import 추가
 
 get_or_create_eventloop()
 
@@ -41,8 +44,18 @@ st.markdown('''
 <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 ''', unsafe_allow_html=True)
 
+msgs = StreamlitChatMessageHistory()
+memory = ConversationBufferMemory(
+    chat_memory=msgs,
+    return_messages=True,
+    memory_key="history",
+    output_key="output")
+avatars = {"human": "user", "ai": "assistant", "system": "system"}
 vector_store = init_vectorstore()
-chain = get_rag_chain(vector_store)
+chain = get_rag_chain(
+    vector_store, 
+    system_prompt=st.session_state.system_prompt, 
+    memory=memory)
 
 insert_section, info_section = st.columns(2)
 with insert_section:
@@ -117,16 +130,26 @@ chat_section, graph_section = st.columns([0.7, 0.3])
 
 with chat_section:
     # 이전 메시지 표시
+    st.session_state.steps = {}
+
     chat_history = st.container()
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    for idx, msg in enumerate(msgs.messages):
+        if msg.type != "system":
+            with chat_history.chat_message(avatars[msg.type]):
+                # Render intermediate steps if any were saved
+                for step in st.session_state.steps.get(str(idx), []):
+                    if step[0].tool == "_Exception":
+                        continue
+                    with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
+                        st.markdown(step[0].log)
+                        st.markdown(step[1])
+                st.markdown(msg.content)
 
     # 사용자 입력 처리
     if prompt := st.chat_input("질문을 입력하세요(최대 300자)", max_chars=300):
 
         # 사용자 메시지 표시
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        msgs.add_message(HumanMessage(content=prompt))
         with chat_history.chat_message("user"):
             st.markdown(prompt)
 
@@ -139,7 +162,7 @@ with chat_section:
                 response = chain.invoke({"question": prompt})
                 # 응답 표시
                 message_placeholder.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
+                msgs.add_message(AIMessage(content=response))
 
             except Exception as e:
                 print(traceback.format_exc())
@@ -147,8 +170,8 @@ with chat_section:
 
     # 채팅 초기화 버튼
     if st.button("채팅 초기화"):
-        st.session_state.messages = []
-        st.experimental_rerun()
+        msgs.clear()
+        st.rerun()
 
 with graph_section:
     # LangGraph 시각화

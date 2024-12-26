@@ -12,6 +12,7 @@ langchain>=0.3.10
 langchain-community>=0.3.10
 langgraph
 langchain-openai
+langchain-qdrant
 librosa>=0.10.2
 anthropic
 duckduckgo-search>=5.1.0
