@@ -4,6 +4,7 @@ secrets.toml
 
 chromadb_oai
 *chromadb_oai
+qdrant_storage
 
 __pycache__*
 */__pycache__/*

@@ -17,6 +17,9 @@ from srcs.st_cache import init_vectorstore, get_or_create_eventloop
 from srcs.st_utils import draw_mermaid
 # LangGraph 시각화를 위한 import 추가
 
+if 'system_prompt' not in st.session_state:
+    st.session_state.system_prompt = "You are a Qdrant Vector Database RAG Agent."
+
 get_or_create_eventloop()
 
 
