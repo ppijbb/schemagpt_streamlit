@@ -14,8 +14,7 @@ if 'room_id' not in st.session_state:
 
 
 def show(key:str, track=None):
-    # queries = st.experimental_get_query_params()
-    # code = queries.get("code", None)[0]
+    # When needed: queries = st.query_params; code = queries.get("code", [None])[0]
     webrtc_ctx = webrtc_streamer(
         key=key,
         mode=WebRtcMode.SENDRECV,

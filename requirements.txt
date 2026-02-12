@@ -1,7 +1,8 @@
-setuptools
+# Generated from pyproject.toml for pip. Prefer: uv sync (see README)
+setuptools>=74.1.1
 av
-streamlit
-streamlit-webrtc
+streamlit>=1.52
+streamlit-webrtc>=0.64
 streamlit_server_state
 streamlit-pdf-viewer
 streamlit-shap
@@ -13,10 +14,12 @@ langchain-community>=0.3.10
 langgraph
 langchain-openai
 langchain-qdrant
+langchain-huggingface
 librosa>=0.10.2
 anthropic
 duckduckgo-search>=5.1.0
 chromadb @ git+https://github.com/ppijbb/dtw_chroma.git
+transformers @ git+https://github.com/huggingface/transformers.git
 pysqlite3-binary
 openpyxl
 opencv-python>=4.8.0.76
@@ -32,7 +35,6 @@ torch
 tf-keras
 tslearn
 sentencepiece
-transformers @git+https://github.com/huggingface/transformers
 accelerate
 trl
 sentence-transformers
@@ -43,7 +45,6 @@ shap
 scikit-learn
 wikipedia
 xmltodict
-# ionic-langchain>=0.2.3
 ipython
 arxiv
 plotly
@@ -61,12 +62,11 @@ tensorrt
 onnx
 onnxruntime
 openvino
-optimum[openvino, nncf]
+optimum[openvino,nncf]
 modin[all]
 selenium
 python-socketio
 slack-bolt
-setuptools>=74.1.1
 qdrant-client
 pyvis
 rank_bm25

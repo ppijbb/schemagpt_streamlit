@@ -35,10 +35,12 @@ def agent_action(state):
     return {"messages": [response]}
 
 def execute_tool(state):
-    tool_request = state['messages'][-1]
+    # Expects last message to be dict with tool_name, tool_arguments (custom format).
+    # For standard ReAct with tool_calls, use create_search_agent from agent_common.
+    tool_request = state["messages"][-1]
     action = {
         "tool": tool_request.get("tool_name"),
-        "input": json.loads(tool_request.get("tool_arguments"))
+        "input": json.loads(tool_request.get("tool_arguments", "{}"))
     }
     tool_response = tool_executor.invoke(action)
     return {"messages": [{"type": "tool", "content": str(tool_response)}]}
@@ -67,34 +69,32 @@ workflow.add_edge("execute_tool", "agent_action")
 # 컴파일
 app = workflow.compile()
 
-
-os.environ["NEO4J_URI"] = "bolt://localhost:7687"
-os.environ["NEO4J_USERNAME"] = "neo4j"
-os.environ["NEO4J_PASSWORD"] = "password"
-
-from langchain_neo4j import Neo4jGraph
-
-graph = Neo4jGraph()
-
-# Import movie information
-
-movies_query = """
-LOAD CSV WITH HEADERS FROM 
-'https://raw.githubusercontent.com/tomasonjo/blog-datasets/main/movies/movies_small.csv'
-AS row
-MERGE (m:Movie {id:row.movieId})
-SET m.released = date(row.released),
-    m.title = row.title,
-    m.imdbRating = toFloat(row.imdbRating)
-FOREACH (director in split(row.director, '|') | 
-    MERGE (p:Person {name:trim(director)})
-    MERGE (p)-[:DIRECTED]->(m))
-FOREACH (actor in split(row.actors, '|') | 
-    MERGE (p:Person {name:trim(actor)})
-    MERGE (p)-[:ACTED_IN]->(m))
-FOREACH (genre in split(row.genres, '|') | 
-    MERGE (g:Genre {name:trim(genre)})
-    MERGE (m)-[:IN_GENRE]->(g))
-"""
-
-graph.query(movies_query)
+# Neo4j: optional; enable with USE_NEO4J=1 and install langchain-neo4j (e.g. uv sync --extra neo4j)
+if os.environ.get("USE_NEO4J"):
+    os.environ.setdefault("NEO4J_URI", "bolt://localhost:7687")
+    os.environ.setdefault("NEO4J_USERNAME", "neo4j")
+    os.environ.setdefault("NEO4J_PASSWORD", "password")
+    try:
+        from langchain_neo4j import Neo4jGraph
+        graph = Neo4jGraph()
+        movies_query = """
+        LOAD CSV WITH HEADERS FROM 
+        'https://raw.githubusercontent.com/tomasonjo/blog-datasets/main/movies/movies_small.csv'
+        AS row
+        MERGE (m:Movie {id:row.movieId})
+        SET m.released = date(row.released),
+            m.title = row.title,
+            m.imdbRating = toFloat(row.imdbRating)
+        FOREACH (director in split(row.director, '|') | 
+            MERGE (p:Person {name:trim(director)})
+            MERGE (p)-[:DIRECTED]->(m))
+        FOREACH (actor in split(row.actors, '|') | 
+            MERGE (p:Person {name:trim(actor)})
+            MERGE (p)-[:ACTED_IN]->(m))
+        FOREACH (genre in split(row.genres, '|') | 
+            MERGE (g:Genre {name:trim(genre)})
+            MERGE (m)-[:IN_GENRE]->(g))
+        """
+        graph.query(movies_query)
+    except ImportError:
+        pass

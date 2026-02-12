@@ -1,0 +1,89 @@
+[project]
+name = "schemagpt-streamlit"
+version = "0.1.0"
+description = "Streamlit resume and demo apps (healthcare, LLM, RAG, etc.)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "setuptools>=74.1.1",
+    "av",
+    "streamlit>=1.52",
+    "streamlit-webrtc>=0.64",
+    "streamlit_server_state",
+    "streamlit-pdf-viewer",
+    "streamlit-shap",
+    "streamlit-mermaid",
+    "streamlit-option-menu",
+    "openai",
+    "langchain>=0.3.10",
+    "langchain-community>=0.3.10",
+    "langgraph",
+    "langchain-openai",
+    "langchain-qdrant",
+    "langchain-huggingface",
+    "librosa>=0.10.2",
+    "anthropic",
+    "duckduckgo-search>=5.1.0",
+    "chromadb",
+    "transformers",
+    "pysqlite3-binary",
+    "openpyxl",
+    "opencv-python>=4.8.0.76",
+    "opencv-contrib-python>=4.8.0.76",
+    "opencv-python-headless>=4.8.0.76",
+    "scikit-image>=0.24.0",
+    "skorch",
+    "numpy>=1.26.2",
+    "tensorflow>=2.17.0",
+    "keras",
+    "tornado>=6.4.1",
+    "torch",
+    "tf-keras",
+    "tslearn",
+    "sentencepiece",
+    "accelerate",
+    "trl",
+    "sentence-transformers",
+    "catboost",
+    "lightgbm",
+    "xgboost",
+    "shap",
+    "scikit-learn",
+    "wikipedia",
+    "xmltodict",
+    "ipython",
+    "arxiv",
+    "plotly",
+    "pydub",
+    "ray[all]",
+    "pytesseract",
+    "easyocr",
+    "paddlepaddle",
+    "paddleocr",
+    "supervision",
+    "SpeechRecognition",
+    "inference-cpu",
+    "python-bidi",
+    "tensorrt",
+    "onnx",
+    "onnxruntime",
+    "openvino",
+    "optimum[openvino,nncf]",
+    "modin[all]",
+    "selenium",
+    "python-socketio",
+    "slack-bolt",
+    "qdrant-client",
+    "pyvis",
+    "rank_bm25",
+]
+
+[project.optional-dependencies]
+neo4j = ["langchain-neo4j"]
+
+[tool.uv.sources]
+chromadb = { git = "https://github.com/ppijbb/dtw_chroma.git" }
+transformers = { git = "https://github.com/huggingface/transformers.git" }
+
+[tool.uv]
+extra-index-url = []

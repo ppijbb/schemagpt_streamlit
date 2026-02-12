@@ -8,8 +8,7 @@ from pages.rtc.config import RTC_CONFIGURATION
 
 
 def show():
-    # queries = st.experimental_get_query_params()
-    # code = queries.get("code", None)[0]
+    # When needed: queries = st.query_params; code = queries.get("code", [None])[0]
     webrtc_ctx = webrtc_streamer(
         key=string.punctuation,
         mode=WebRtcMode.SENDRECV,

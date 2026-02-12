@@ -18,8 +18,8 @@ import easyocr
 import paddle
 from paddleocr import PaddleOCR, draw_ocr # main OCR dependencies
 
-from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_community.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
 from langchain_community.vectorstores import Chroma, Qdrant
@@ -39,12 +39,11 @@ from pydub.utils import mediainfo
 
 def get_or_create_eventloop():
     try:
-        return asyncio.get_event_loop()
-    except RuntimeError as ex:
-        if "There is no current event loop in thread" in str(ex):
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return asyncio.get_event_loop()
+        return asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
 
 # --------------------------------------  Local LLM  ------------------------------------------
 # Initialize LLM

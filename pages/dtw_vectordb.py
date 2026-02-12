@@ -1,44 +1,15 @@
-# __import__('pysqlite3')
-import os
 import asyncio
-import sys
 import copy
-import signal
-import time
-import json
-# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-# os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "1"
-# os.environ["TOKENIZERS_PARALLELISM"] = "0"
-
-# from srcs.app_static_file_handler import AppStaticFileHandler
-
-# sys.modules["streamlit.web.server.app_static_file_handler"].AppStaticFileHandler = AppStaticFileHandler
-
-import pandas as pd
 import streamlit as st
 
-from langchain.callbacks.manager import CallbackManager
-from langchain_core.runnables import RunnableConfig
-from langchain_core.messages import SystemMessage
-from langchain.retrievers.web_research import WebResearchRetriever
-from langchain.agents import initialize_agent, load_tools
-from langchain.agents import AgentType, ConversationalChatAgent, AgentExecutor, Tool
-from langchain.agents.loading import AGENT_TO_CLASS, load_agent
-from langchain.memory import ConversationBufferMemory
-from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
-
-from langchain_community.callbacks import StreamlitCallbackHandler
-from langchain_community.tools import DuckDuckGoSearchRun, BingSearchRun, WikipediaQueryRun
-from langchain_community.tools.pubmed.tool import PubmedQueryRun
-from langchain_community.utilities import (DuckDuckGoSearchAPIWrapper, GoogleSearchAPIWrapper, BingSearchAPIWrapper,
-                                           SerpAPIWrapper, WikipediaAPIWrapper, PubMedAPIWrapper)
-
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-
 from langchain_openai import ChatOpenAI
-# from ionic_langchain.tool import IonicTool
 
-from srcs.st_cache import get_audio_data, get_or_create_eventloop
+from srcs.graph.agent_common import (
+    build_search_tools,
+    create_search_agent,
+    invoke_agent,
+)
+from srcs.st_cache import get_audio_data
 
 
 loop = asyncio.new_event_loop()
@@ -125,59 +96,14 @@ if __name__ == "__main__":
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
-        llm = ChatOpenAI(model_name="gpt-3.5-turbo",#"ft:gpt-3.5-turbo-0125:turingbio::93waZXFw",
-                         openai_api_key=openai_api_key,
-                         streaming=True)
-        tools = [DuckDuckGoSearchRun(
-                    api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
-                                                           region="kr-kr",
-                                                           max_results=20)),
-                 DuckDuckGoSearchRun(
-                    api_wrapper=DuckDuckGoSearchAPIWrapper(time="d",
-                                                           region="en-en",
-                                                           max_results=20)),
-                 WikipediaQueryRun(
-                    api_wrapper=WikipediaAPIWrapper()),
-                 PubmedQueryRun(),
-                #  IonicTool().tool()
-                 ] + load_tools(["arxiv"],)
-        search_agent = initialize_agent(tools=tools,
-                                        llm=llm,
-                                        agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                        # agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-                                        handle_parsing_errors=True,
-                                        max_iterations=5,
-                                        early_stopping_method="generate",
-                                        return_intermediate_steps=True,
-                                        # agent_kwargs={
-                                            # "format_instructions": schema_therapy.format_instructions,
-                                            # "system_message_prefix": schema_therapy.prefix_prompt,
-                                            # "system_message_suffix": schema_therapy.suffix_prompt
-                                            # }
-                                        # max_execution_time=15
-                                        )
-        # st.write(search_agent.agent.__dir__())
-        # st.write(AGENT_TO_CLASS[AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION])
-        # st.write(search_agent.agent.tool_run_logging_kwargs())
-        with chat_container.chat_message("assistant"):
-            cfg = RunnableConfig()
-            message_placeholder = st.empty()
-            # cfg["callbacks"] = [StreamlitCallbackHandler(st.container(), 
-            #                                              expand_new_thoughts=True)]
-            search_instruction = copy.deepcopy(st.session_state.messages)
-            search_instruction[-1]["content"] += f"\n(최신 발매 음악 추천)"
-            response = search_agent.invoke(search_instruction, 
-                                           cfg, 
-                                           chat_history=st.session_state.messages)
-            # st.write(response)
-            output = json.loads(response["output"])["action_input"] if "{" in response["output"]  else response["output"]
-            full_msg = ""
-            for o in output:
-                full_msg += o
-                message_placeholder.markdown(f'{full_msg}▌')
-            message_placeholder.markdown(full_msg)
-            st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": output
-                    })
+        llm = ChatOpenAI(model="gpt-3.5-turbo", openai_api_key=openai_api_key, temperature=0)
+        tools = build_search_tools(include_arxiv=True, ddg_max_results=20, ddg_time="d")
+        agent = create_search_agent(llm, tools)
+        search_instruction = copy.deepcopy(st.session_state.messages)
+        search_instruction[-1]["content"] += "\n(최신 발매 음악 추천)"
+        try:
+            response_text = invoke_agent(agent, search_instruction)
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
+            chat_container.chat_message("assistant").write(response_text)
+        except Exception as e:
+            st.toast(f"An error occurred: {e}")

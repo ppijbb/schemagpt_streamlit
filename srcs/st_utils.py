@@ -121,7 +121,7 @@ def draw_mermaid(code: str) -> None:
 #         """,
         f"""
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
         <div class="mermaid-container" style="overflow-y: auto; max-height: 750px;">
             <div class="mermaid">
                 {code}

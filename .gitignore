@@ -9,3 +9,5 @@ qdrant_storage
 __pycache__*
 */__pycache__/*
 *.pyc
+*.lk
+.venv
