@@ -1,40 +1,25 @@
-import os
-import pickle
+"""
+공통 캐시/리소스. 무거운 라이브러리는 사용하는 함수 내부에서만 import (lazy).
+Streamlit Cloud 등에서 get_heq_data/get_scale_data만 쓰는 페이지가 transformers 로드로 실패하지 않도록 함.
+"""
 import asyncio
 import json
+import os
+import pickle
 
 import streamlit as st
-import torch
-import tensorflow as tf
-from tensorflow.keras.models import model_from_json
-import keras
-import inspect
-import cv2
-import pandas as pd
-from xgboost import XGBClassifier
-from transformers import pipeline, AutoTokenizer, AutoModelForImageSegmentation
-import shap
-import easyocr
-import paddle
-from paddleocr import PaddleOCR, draw_ocr # main OCR dependencies
-
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.document_loaders import DataFrameLoader
-from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
-from langchain_community.vectorstores import Chroma, Qdrant
-
-import chromadb
-from chromadb.utils import embedding_functions as ef
-from qdrant_client import QdrantClient
-from qdrant_client.http import models
-
 
 from srcs.langchain_llm import DDG_LLM
 
 
-import pydub
-from pydub.utils import mediainfo
+def _transformers_pipeline():
+    """transformers pipeline은 버전/환경에 따라 상단 export가 없을 수 있어 lazy + fallback."""
+    try:
+        from transformers import pipeline as _pipeline
+        return _pipeline
+    except ImportError:
+        from transformers.pipelines import pipeline as _pipeline
+        return _pipeline
 
 
 def get_or_create_eventloop():
@@ -55,56 +40,45 @@ def get_llm():
 # --------------------------------------   Vision Model ------------------------------------------
 @st.cache_resource
 def get_facial_processors(path: str):
-    # load model
+    import inspect
+    import tensorflow as tf
+    import cv2
     try:
-        with open(f"{path}/pages/rtc/caer_face.json" , "r") as j:
-            # model = model_from_json(j.read())
-            # load weights
-            keras.saving.load_model(f"{path}/pages/rtc/caer_face.h5", by_name=True)
-
-    except TypeError:
+        import keras
+        model = keras.saving.load_model(f"{path}/pages/rtc/caer_face.h5", by_name=True)
+    except (TypeError, Exception):
         INPUT_SHAPE = (224, 224, 3)
-        model = tf.keras.applications.MobileNetV3Small(input_shape=INPUT_SHAPE,
-                                                       include_top=False,
-                                                       weights="imagenet")
+        model = tf.keras.applications.MobileNetV3Small(
+            input_shape=INPUT_SHAPE,
+            include_top=False,
+            weights="imagenet",
+        )
         model = tf.keras.Sequential([
             model,
             tf.keras.layers.Conv2D(filters=32, kernel_size=3, activation="relu"),
             tf.keras.layers.Dropout(rate=0.2),
             tf.keras.layers.GlobalAveragePooling2D(),
-            tf.keras.layers.Dense(units=3, activation="softmax")
+            tf.keras.layers.Dense(units=3, activation="softmax"),
         ])
         model.load_weights(f"{path}/pages/rtc/caer_face.h5", by_name=True)
-
-        # model = load_model(f"{path}/pages/rtc/caer_face.h5")
-
-    # mp_drawing = mp.solutions.drawing_utils
-    # mp_drawing_styles = mp.solutions.drawing_styles
-    # mp_hands = mp.solutions.hands
-    # hands = mp_hands.Hands(
-    #     model_complexity=0,
-    #     min_detection_confidence=0.5,
-    #     min_tracking_confidence=0.5
-    # )
-
-    # face detection
     cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
     return model, cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
 
 @st.cache_resource
 def get_zsc_detector():
-    # "Thomasboosinger/owlv2-base-patch16-ensemble"  #
+    pipeline = _transformers_pipeline()
     checkpoint = "google/owlvit-base-patch32"
     return pipeline(model=checkpoint, task="zero-shot-object-detection")
 
 @st.cache_resource
 def get_yolo_detector():
-    # "devonho/detr-resnet-50_finetuned_cppe5"
+    pipeline = _transformers_pipeline()
     checkpoint = "hustvl/yolos-small"
     return pipeline(model=checkpoint, task="object-detection")
 
 @st.cache_resource
 def get_birefnet():
+    from transformers import AutoModelForImageSegmentation
     model_id = "ZhengPeng7/BiRefNet"
     return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
 # ------------------------------------------------------------------------------------------------
@@ -112,11 +86,11 @@ def get_birefnet():
 # --------------------------------------   LLM Tokenizer ------------------------------------------
 @st.cache_resource
 def get_llm_tokenizer():
-    # "devonho/detr-resnet-50_finetuned_cppe5"
+    from transformers import AutoTokenizer
     tokenizer_list = {
         "llama3.1": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "llama3.1-minitron": "nvidia/Llama-3.1-Minitron-4B-Width-Base",
-        "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",        
+        "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
         "mistral-nemo": "mistralai/Mistral-Nemo-Instruct-2407",
         "gemma2": "google/gemma-2-2b",
         "qwen2": "Qwen/Qwen2-7B-Instruct",
@@ -128,17 +102,17 @@ def get_llm_tokenizer():
         "orionstar": "OrionStarAI/Orion-14B-Chat",
         "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
         "[experimental]gpt-4o": "Xenova/gpt-4o",
-        # "[experimental]openai-embedding-ada": "Xenova/text-embedding-ada-002",
         "[embedding]bge-m3": "BAAI/bge-m3",
         "[embedding]labse": "sentence-transformers/LaBSE",
         "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",
     }
-    return { 
+    return {
         k: AutoTokenizer.from_pretrained(
-            pretrained_model_name_or_path=v, 
-            use_fast=True, 
-            trust_remote_code=True) 
-        for k, v in tokenizer_list.items() 
+            pretrained_model_name_or_path=v,
+            use_fast=True,
+            trust_remote_code=True,
+        )
+        for k, v in tokenizer_list.items()
     }
 # ------------------------------------------------------------------------------------------------
 
@@ -164,9 +138,10 @@ def get_prompt_guards():
 
 @st.cache_resource
 def get_guard_model():
+    from transformers import AutoTokenizer
     from optimum.intel import OVModelForSequenceClassification
     from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
-    
+
     class DiserializedOVModelForSequenceClassification(OVModelForSequenceClassification):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -202,60 +177,72 @@ def get_guard_model():
 # ---------------------------------    Vector Store     ------------------------------------------
 @st.cache_resource
 def get_utterance_data(url="/"):
+    import pandas as pd
+    from langchain_community.document_loaders import DataFrameLoader
+    from langchain_community.embeddings import OpenAIEmbeddings
+    from langchain_community.vectorstores import Chroma
+    from langchain_huggingface import HuggingFaceEmbeddings
+    from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
+
     model_name = "snunlp/KR-SBERT-V40K-klueNLI-augSTS"
     try:
-        # embedding_function = SentenceTransformerEmbeddings(model_name="snunlp/KR-SBERT-V40K-klueNLI-augSTS")
-        embedding_function = HuggingFaceEmbeddings(model_name=model_name,
-                                                   model_kwargs={'device': 'cpu'},
-                                                   encode_kwargs={'normalize_embeddings': False})
+        embedding_function = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": False},
+        )
     except Exception as e:
         print(e)
         embedding_function = OpenAIEmbeddings()
-    
-    text_splitter = SentenceTransformersTokenTextSplitter(chunk_size=1000, 
-                                                          chunk_overlap=0, 
-                                                          model_name=model_name)
-    documents = DataFrameLoader(data_frame=pd.read_excel("schema_utterance.xlsx"), 
-                                page_content_column="sentence").load()
+    text_splitter = SentenceTransformersTokenTextSplitter(
+        chunk_size=1000, chunk_overlap=0, model_name=model_name
+    )
+    documents = DataFrameLoader(
+        data_frame=pd.read_excel("schema_utterance.xlsx"),
+        page_content_column="sentence",
+    ).load()
     data = text_splitter.split_documents(documents)
-    return Chroma.from_documents(# collection_name="schema_collection",
-                                 persist_directory="./chromadb_oai",
-                                 documents=data,
-                                 embedding=embedding_function, ).as_retriever()
+    return Chroma.from_documents(
+        persist_directory="./chromadb_oai",
+        documents=data,
+        embedding=embedding_function,
+    ).as_retriever()
 
 @st.cache_resource
 def get_audio_data():
+    import chromadb
+    from chromadb.utils import embedding_functions as ef
+    from langchain_community.vectorstores import Chroma
+    from pydub.utils import mediainfo
 
-    def get_file_name(path:str)->str:
+    def get_file_name(path: str) -> str:
         return os.path.splitext(path.split("/")[-1])[0]
 
-    def get_audio_tag(path:str)->dict:
+    def get_audio_tag(path: str) -> dict:
         return {
             k: "" if v is None else v
             for k, v in mediainfo(path).items()
-            if "pictures" not in k
-            and type(v) in [str, int, float, bool]
+            if "pictures" not in k and type(v) in [str, int, float, bool]
         }
 
     audio_vector_db = chromadb.PersistentClient(path="./audio_chromadb_oai")
     audio_collection = audio_vector_db.get_or_create_collection(
         name="mfcc_dtw_collection",
-        embedding_function=ef.MFCCEmbeddingFunction(), # Custom Audio Embedding function
-        metadata={ "space": "dtw" }
+        embedding_function=ef.MFCCEmbeddingFunction(),
+        metadata={"space": "dtw"},
     )
     base_path = f"{os.getcwd()}/pages/audio"
     audio_file_list = [f"{base_path}/{filename}" for filename in os.listdir(base_path)]
     audio_collection.add(
         ids=[get_file_name(item) for item in audio_file_list],
         documents=audio_file_list,
-        metadatas=[get_audio_tag(item) for item in audio_file_list]
+        metadatas=[get_audio_tag(item) for item in audio_file_list],
     )
-
     return Chroma(
         collection_name="mfcc_dtw_collection",
         client=audio_vector_db,
-        embedding_function=ef.MFCCEmbeddingFunction() # Custom Audio Embedding function
-        ).as_retriever()
+        embedding_function=ef.MFCCEmbeddingFunction(),
+    ).as_retriever()
 
 @st.cache_resource
 def init_vectorstore():
@@ -275,7 +262,9 @@ def get_scale_data():
 
 @st.cache_resource
 def get_dep_scale_model():
-    cgi_classifier = XGBClassifier(tree_method='gpu_hist')
+    import shap
+    from xgboost import XGBClassifier
+    cgi_classifier = XGBClassifier(tree_method="gpu_hist")
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
 
@@ -296,11 +285,15 @@ def add_static_js():
 # -------------------------------------   OCR Model  ---------------------------------------------
 @st.cache_resource
 def get_ocr():
+    import easyocr
+    from paddleocr import PaddleOCR
     return {
         "easy": easyocr.Reader(["ko", "en"], gpu=False),
-        "paddle": PaddleOCR(lang="korean",
-                            show_log=False,
-                            ocr_version="PP-OCRv4",
-                            structure_version="PP-StructureV2")
+        "paddle": PaddleOCR(
+            lang="korean",
+            show_log=False,
+            ocr_version="PP-OCRv4",
+            structure_version="PP-StructureV2",
+        ),
     }
 # ------------------------------------------------------------------------------------------------
