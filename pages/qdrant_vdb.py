@@ -1,196 +1,130 @@
+"""
+Advanced RAG 챗봇 서비스 (Qdrant Vector DB).
+Streamlit Cloud 호환: in-memory Qdrant, CPU 임베딩, st.secrets API 키.
+"""
+import asyncio
+import os
+
 import streamlit as st
-import numpy as np
-import uuid
-import traceback
-import json
-import pandas as pd
-from pyvis.network import Network
-import streamlit.components.v1 as components
-import streamlit_mermaid as stmd
+from langchain_core.messages import HumanMessage
 
-from langchain.memory import ConversationBufferMemory
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+from srcs.qdrant_vdb import VectorStore, get_rag_chain
+from srcs.st_cache import init_vectorstore
 
-from srcs.qdrant_vdb import get_rag_chain
-from srcs.st_cache import init_vectorstore, get_or_create_eventloop
-from srcs.st_utils import draw_mermaid
-# LangGraph 시각화를 위한 import 추가
+# Streamlit Cloud: 이벤트 루프 설정
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
-if 'system_prompt' not in st.session_state:
-    st.session_state.system_prompt = "You are a Qdrant Vector Database RAG Agent."
+if __name__ == "__main__":
+    st.set_page_config(
+        page_title="Advanced RAG (Qdrant)",
+        page_icon="🔗",
+        layout="wide",
+        initial_sidebar_state="auto",
+    )
 
-get_or_create_eventloop()
+    st.title("🔗 Advanced RAG 챗봇 서비스")
+    st.caption("Qdrant in-memory + Multi-Query + BM25 Ensemble + Contextual Compression")
 
+    # Streamlit Cloud: API 키는 secrets 또는 환경변수 사용 (하드코딩 금지)
+    with st.sidebar:
+        try:
+            api_key = st.secrets.get("OPENAI_API_KEY", "")
+        except Exception:
+            api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            api_key = st.text_input(
+                "OpenAI API Key (DDG 챗 사용 시 필요)",
+                key="qdrant_openai_key",
+                type="password",
+            )
+        if api_key:
+            os.environ["OPENAI_API_KEY"] = api_key
+        st.markdown("[Get an OpenAI API key](https://platform.openai.com/account/api-keys)")
 
-st.set_page_config(
-    page_title="Qdrant Vector DB",
-    page_icon="🔍",
-    layout="wide"
-)
+    # VectorStore는 메모리 내부 (:memory:) — Cloud 재시작 시 초기화됨
+    try:
+        vectorstore: VectorStore = init_vectorstore()
+    except Exception as e:
+        st.error(f"VectorStore 초기화 실패: {e}")
+        st.stop()
 
-st.title('🔍 Qdrant Vector Database')
+    tab_add, tab_search, tab_rag = st.tabs(["📄 문서 추가", "🔍 유사도 검색", "💬 RAG 챗봇"])
 
-st.markdown('''
-## 프로젝트 소개
+    with tab_add:
+        st.subheader("문서 추가")
+        doc_text = st.text_area("저장할 텍스트", height=120, key="qdrant_add_text")
+        if st.button("저장", key="qdrant_add_btn"):
+            if doc_text and doc_text.strip():
+                if vectorstore.add_text(doc_text.strip()):
+                    st.success("저장되었습니다.")
+                else:
+                    st.error("저장에 실패했습니다.")
+            else:
+                st.warning("텍스트를 입력하세요.")
 
-    Qdrant Vector Database 테스트 페이지
-    벡터 데이터베이스의 기본적인 CRUD 작업 테스트
+    with tab_search:
+        st.subheader("유사도 검색")
+        query = st.text_input("검색 쿼리", key="qdrant_search_query")
+        limit = st.slider("결과 수", 1, 20, 5, key="qdrant_search_limit")
+        if st.button("검색", key="qdrant_search_btn") and query:
+            results = vectorstore.search(query, limit=limit)
+            if results:
+                for i, r in enumerate(results, 1):
+                    with st.expander(f"#{i} (score: {r.get('score', 0):.4f})"):
+                        st.write(r.get("text", ""))
+                        if r.get("metadata"):
+                            st.caption(str(r["metadata"]))
+            else:
+                st.info("결과가 없습니다.")
 
-## 개발 내용
-- 벡터 데이터 생성 및 저장
-- 벡터 검색
-- 컬렉션 관리
+    with tab_rag:
+        st.subheader("RAG 챗봇")
+        system_prompt = st.text_area(
+            "시스템 프롬프트",
+            value="당신은 주어진 Context를 바탕으로만 답변하는 어시스턴트입니다. Context에 없는 내용은 추측하지 마세요.",
+            height=80,
+            key="qdrant_rag_system",
+        )
 
-## 사용 기술
-<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-''', unsafe_allow_html=True)
+        if "qdrant_rag_memory" not in st.session_state:
+            from langchain.memory import ConversationBufferMemory
+            st.session_state["qdrant_rag_memory"] = ConversationBufferMemory(
+                return_messages=True,
+                memory_key="history",
+            )
 
-msgs = StreamlitChatMessageHistory()
-memory = ConversationBufferMemory(
-    chat_memory=msgs,
-    return_messages=True,
-    memory_key="history",
-    output_key="output")
-avatars = {"human": "user", "ai": "assistant", "system": "system"}
-vector_store = init_vectorstore()
-chain = get_rag_chain(
-    vector_store, 
-    system_prompt=st.session_state.system_prompt, 
-    memory=memory)
+        memory = st.session_state["qdrant_rag_memory"]
+        if st.sidebar.button("대화 초기화", key="qdrant_rag_clear"):
+            memory.clear()
+            st.session_state.pop("qdrant_rag_memory", None)
+            from langchain.memory import ConversationBufferMemory
+            st.session_state["qdrant_rag_memory"] = ConversationBufferMemory(
+                return_messages=True,
+                memory_key="history",
+            )
+            st.rerun()
 
-insert_section, info_section = st.columns(2)
-with insert_section:
-    # 데이터 입력 섹션
-    st.header("텍스트 데이터 입력")
-    text_input = st.text_area(
-        label="텍스트 입력",
-        height=100,
-        help="저장하고 싶은 텍스트를 입력하세요. 이 텍스트는 벡터로 변환되어 저장됩니다.")
-    df = pd.DataFrame(None, columns=("key", "value"))
-    st.markdown("메타데이터 입력")
-    metadata_input = st.data_editor(df, num_rows="dynamic", use_container_width=True)
+        chat_container = st.container()
+        with chat_container:
+            history = memory.load_memory_variables({}).get("history", [])
+            for msg in history:
+                role = "user" if isinstance(msg, HumanMessage) else "assistant"
+                with st.chat_message(role):
+                    st.write(msg.content if hasattr(msg, "content") else str(msg))
 
-if st.button("텍스트 추가"):
-    # 텍스트를 벡터로 변환
-    metadata = {row['key']: row['value'] for index, row in metadata_input.iterrows()}
-    if vector_store.add_text(text=text_input.strip(), metadata=metadata):
-        st.success("텍스트가 성공적으로 추가되었습니다!")
-    else:
-        st.error("텍스트를 입력해주세요!")
-search_section, result_section = st.columns(2)
-with search_section:
-    # 검색 섹션
-    st.header("텍스트 검색")
-    search_text = st.text_input(
-        label="검색할 텍스트를 입력하세요",
-        help="찾고자 하는 텍스트와 의미적으로 유사한 데이터를 검색합니다.")
-with result_section:
-    st.subheader("검색 결과")
-
-if st.button("검색"):
-    if search_text.strip():
-        # 검색 텍스트를 벡터로 변환
-        search_results = vector_store.search(search_text)
-        if search_results:
-            for result in search_results:
-                with result_section:
-                    with st.expander(f"유사도: {result['score']:.4f}"):
-                        st.write("📝 텍스트:")
-                        st.write(result["text"])
-                        st.write("ℹ️ 메타데이터:")
-                        st.write(result["metadata"])
-        else:
-            result_section.info("검색 결과가 없습니다.")
-    else:
-        result_section.error("검색할 텍스트를 입력해주세요!")
-        
-with info_section:
-    # 컬렉션 정보 표시
-    st.header("컬렉션 정보")
-    collection_info = vector_store.get_collection_info()
-    del collection_info["config"]
-    st.json(collection_info)
-
-# 컬렉션 정보 표시 섹션 아래에 다음 코드를 추가
-st.header("💬 RAG 채팅 테스트")
-st.markdown("""
-이 섹션에서는 Qdrant 벡터 데이터베이스를 활용한 RAG(Retrieval-Augmented Generation) 채팅을 테스트할 수 있습니다.
-""")
-
-# 사이드바에 OpenAI API 키 입력
-# with st.sidebar:
-#     openai_api_key = st.text_input("OpenAI API Key", type="password")
-#     if not openai_api_key:
-#         st.warning("Please enter your OpenAI API key to test the chat functionality.")
-
-# 채팅 인터페이스
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-chat_section, graph_section = st.columns([0.7, 0.3])
-
-with chat_section:
-    # 이전 메시지 표시
-    st.session_state.steps = {}
-
-    chat_history = st.container()
-    for idx, msg in enumerate(msgs.messages):
-        if msg.type != "system":
-            with chat_history.chat_message(avatars[msg.type]):
-                # Render intermediate steps if any were saved
-                for step in st.session_state.steps.get(str(idx), []):
-                    if step[0].tool == "_Exception":
-                        continue
-                    with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
-                        st.markdown(step[0].log)
-                        st.markdown(step[1])
-                st.markdown(msg.content)
-
-    # 사용자 입력 처리
-    if prompt := st.chat_input("질문을 입력하세요(최대 300자)", max_chars=300):
-
-        # 사용자 메시지 표시
-        msgs.add_message(HumanMessage(content=prompt))
-        with chat_history.chat_message("user"):
-            st.markdown(prompt)
-
-        # 어시스턴트 응답 생성
-        with chat_history.chat_message("assistant"):
-            message_placeholder = st.empty()
-
+        if prompt := st.chat_input("RAG 질문 입력"):
+            with st.chat_message("user"):
+                st.write(prompt)
             try:
-                # RAG 체인 실행
+                chain = get_rag_chain(vectorstore, system_prompt.strip(), memory)
                 response = chain.invoke({"question": prompt})
-                # 응답 표시
-                message_placeholder.markdown(response)
-                msgs.add_message(AIMessage(content=response))
-
+                memory.save_context({"input": prompt}, {"output": response})
+                with st.chat_message("assistant"):
+                    st.write(response)
+                st.rerun()
             except Exception as e:
-                print(traceback.format_exc())
-                st.error(f"Error generating response: {str(e)}")
-
-    # 채팅 초기화 버튼
-    if st.button("채팅 초기화"):
-        msgs.clear()
-        st.rerun()
-
-with graph_section:
-    # LangGraph 시각화
-    if hasattr(chain, 'get_graph'):  # LangGraph 결과가 있는 경우
-        st.subheader("🔍 검색 및 추론 과정")
-        # 노드와 엣지 추가
-        graph_data = chain.get_graph()
-        # st.image(graph_data.draw_mermaid_png())
-        stmd.st_mermaid(graph_data.draw_mermaid(), width="100%", height="800px")
-        # draw_mermaid(graph_data.draw_mermaid())
-        # 상세 정보 표시
-        if hasattr(graph_data, 'process_details'):
-            with st.expander("📊 상세 처리 과정"):
-                for step in graph_data.process_details:
-                    st.markdown(f"**{step['step']}**")
-                    st.markdown(step['description'])
-                    if 'data' in step:
-                        st.json(step['data'])
-                    
+                st.error(f"오류: {e}")

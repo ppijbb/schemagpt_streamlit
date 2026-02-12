@@ -1,26 +1,34 @@
+import os
+import uuid
+from operator import itemgetter
+from typing import Any, Dict, List, Optional
+
 import streamlit as st
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-import uuid
-import torch
-from langchain.vectorstores import Qdrant
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import Document
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+from langchain_community.retrievers import BM25Retriever
+from langchain_community.vectorstores import Qdrant
+from langchain_core.documents import Document
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import (
+    RunnableLambda,
+    RunnableParallel,
+    RunnablePassthrough,
+    RunnableSerializable,
+)
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import ChatPromptTemplate
-from langchain.retrievers.multi_query import LineListOutputParser
+from langchain.retrievers import (
+    ContextualCompressionRetriever,
+    EnsembleRetriever,
+    MultiQueryRetriever,
+)
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from langchain.retrievers import MultiQueryRetriever, EnsembleRetriever, ContextualCompressionRetriever, BM25Retriever
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda, RunnableSerializable
+from langchain.retrievers.multi_query import LineListOutputParser
 
-from langchain.schema import StrOutputParser
-from operator import itemgetter
-from typing import List, Tuple, Dict, Optional, Any
-
-from srcs.langchain_llm import DDG_LLM
 from srcs.st_cache import get_llm
 
         
@@ -45,9 +53,21 @@ class VectorStore:
         return QdrantClient(":memory:")  # 메모리에서 실행 (테스트용)
 
     def _get_embeddings(self):
+        # Streamlit Cloud has no GPU; use CPU. Prefer env for model (lighter model on Cloud).
+        device = os.environ.get("QDRANT_EMBED_DEVICE", "cpu")
+        if device == "auto":
+            try:
+                import torch
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+            except Exception:
+                device = "cpu"
+        model_name = os.environ.get(
+            "QDRANT_EMBED_MODEL",
+            "BAAI/bge-m3",
+        )
         return HuggingFaceEmbeddings(
-            model_name="BAAI/bge-m3",
-            model_kwargs={'device': 'cuda' if torch.cuda.is_available() else 'cpu'}
+            model_name=model_name,
+            model_kwargs={"device": device},
         )
 
     def _get_embedding_dimensions(self):
