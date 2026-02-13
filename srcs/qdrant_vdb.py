@@ -71,7 +71,8 @@ class VectorStore:
         )
 
     def _get_embedding_dimensions(self):
-        return self.embeddings.client.get_sentence_embedding_dimension()
+        # HuggingFaceEmbeddings has no .client; get dimension from one embedding
+        return len(self.embeddings.embed_query(" "))
 
     def _ensure_collection(self):
         """컬렉션이 없으면 생성"""
