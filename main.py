@@ -59,7 +59,12 @@ if __name__ == "__main__":
       years.markdown("###### 2014.03~2021.02")
       inc.markdown("###### 가천대학교")
       inc.markdown("글로벌 캠퍼스 컴퓨터공학과")
-
+      
+      years, inc = st.columns([0.4, 0.6])
+      years.markdown("###### 2025.03~ 재학 중")
+      inc.markdown("###### 성균관대학교")
+      inc.markdown("데이터사이언스융합학과 석사과정")
+      
       st.markdown("### 💻 WORK EXPERIENCE")
       years, inc = st.columns([0.4, 0.6])
       years.markdown("###### 2020.02~2020.06")
