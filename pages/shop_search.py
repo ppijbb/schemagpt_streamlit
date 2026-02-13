@@ -37,17 +37,22 @@ if 'map' not in st.session_state:
     )
 
 
+MAP_MAX_ROWS = 500
+
+
 def add_pin_in_map(lat: float, lon: float, size: float, color: float):
     st.session_state.map = pd.concat([
         st.session_state.map,
         pd.DataFrame({
-            "lat": lat, 
-            "lon": lon, 
+            "lat": lat,
+            "lon": lon,
             "size": size,
             "height": np.random.randn(1),
             "color": color
         })
-    ], ignore_index=True).drop_duplicates(subset=["lat", "lon"], keep='last')
+    ], ignore_index=True).drop_duplicates(subset=["lat", "lon"], keep="last")
+    if len(st.session_state.map) > MAP_MAX_ROWS:
+        st.session_state.map = st.session_state.map.tail(MAP_MAX_ROWS).reset_index(drop=True)
 
 
 headers = {

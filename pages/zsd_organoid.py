@@ -75,6 +75,12 @@ def onchange_image():
     if st.session_state.original_image is not None:
         del st.session_state["original_image"]
     st.session_state.original_image = None
+    if st.session_state.vod_stream is not None:
+        try:
+            st.session_state.vod_stream.close()
+        except Exception:
+            pass
+        st.session_state.vod_stream = None
     colorize_multiselect_options()
 
 

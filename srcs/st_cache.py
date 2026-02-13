@@ -38,7 +38,7 @@ def get_llm():
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   Vision Model ------------------------------------------
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_facial_processors(path: str):
     import inspect
     import tensorflow as tf
@@ -64,19 +64,19 @@ def get_facial_processors(path: str):
     cv_path = "/".join(inspect.getfile(cv2).split("/")[:-1])
     return model, cv2.CascadeClassifier(f"{cv_path}/data/haarcascade_frontalface_default.xml")
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_zsc_detector():
     pipeline = _transformers_pipeline()
     checkpoint = "google/owlvit-base-patch32"
     return pipeline(model=checkpoint, task="zero-shot-object-detection")
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_yolo_detector():
     pipeline = _transformers_pipeline()
     checkpoint = "hustvl/yolos-small"
     return pipeline(model=checkpoint, task="object-detection")
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_birefnet():
     from transformers import AutoModelForImageSegmentation
     model_id = "ZhengPeng7/BiRefNet"
@@ -84,40 +84,48 @@ def get_birefnet():
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   LLM Tokenizer ------------------------------------------
-@st.cache_resource
-def get_llm_tokenizer():
+_TOKENIZER_MODEL_PATHS = {
+    "llama3.1": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "llama3.1-minitron": "nvidia/Llama-3.1-Minitron-4B-Width-Base",
+    "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "mistral-nemo": "mistralai/Mistral-Nemo-Instruct-2407",
+    "gemma2": "google/gemma-2-2b",
+    "qwen2": "Qwen/Qwen2-7B-Instruct",
+    "phi3.5-moe": "microsoft/Phi-3.5-MoE-instruct",
+    "falcon-mamba": "tiiuae/falcon-mamba-7b",
+    "solar": "upstage/SOLAR-10.7B-Instruct-v1.0",
+    "exaone-3.0": "LGAI-EXAONE/EXAONE-3.0-7.8B-Instruct",
+    "smollm-360m": "HuggingFaceTB/SmolLM-360M-Instruct",
+    "orionstar": "OrionStarAI/Orion-14B-Chat",
+    "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
+    "[experimental]gpt-4o": "Xenova/gpt-4o",
+    "[embedding]bge-m3": "BAAI/bge-m3",
+    "[embedding]labse": "sentence-transformers/LaBSE",
+    "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",
+}
+
+
+def get_tokenizer_model_ids():
+    """Return list of model ids for tokenizer selection (no heavy load)."""
+    return list(_TOKENIZER_MODEL_PATHS.keys())
+
+
+@st.cache_resource(max_entries=5)
+def get_llm_tokenizer(model_id: str):
+    """Load a single tokenizer by model_id; cache at most 5 models."""
     from transformers import AutoTokenizer
-    tokenizer_list = {
-        "llama3.1": "meta-llama/Meta-Llama-3.1-8B-Instruct",
-        "llama3.1-minitron": "nvidia/Llama-3.1-Minitron-4B-Width-Base",
-        "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
-        "mistral-nemo": "mistralai/Mistral-Nemo-Instruct-2407",
-        "gemma2": "google/gemma-2-2b",
-        "qwen2": "Qwen/Qwen2-7B-Instruct",
-        "phi3.5-moe": "microsoft/Phi-3.5-MoE-instruct",
-        "falcon-mamba": "tiiuae/falcon-mamba-7b",
-        "solar": "upstage/SOLAR-10.7B-Instruct-v1.0",
-        "exaone-3.0": "LGAI-EXAONE/EXAONE-3.0-7.8B-Instruct",
-        "smollm-360m": "HuggingFaceTB/SmolLM-360M-Instruct",
-        "orionstar": "OrionStarAI/Orion-14B-Chat",
-        "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
-        "[experimental]gpt-4o": "Xenova/gpt-4o",
-        "[embedding]bge-m3": "BAAI/bge-m3",
-        "[embedding]labse": "sentence-transformers/LaBSE",
-        "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",
-    }
-    return {
-        k: AutoTokenizer.from_pretrained(
-            pretrained_model_name_or_path=v,
-            use_fast=True,
-            trust_remote_code=True,
-        )
-        for k, v in tokenizer_list.items()
-    }
+    path = _TOKENIZER_MODEL_PATHS.get(model_id)
+    if not path:
+        raise ValueError(f"Unknown model_id: {model_id}")
+    return AutoTokenizer.from_pretrained(
+        pretrained_model_name_or_path=path,
+        use_fast=True,
+        trust_remote_code=True,
+    )
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------  Prompt Guard  ------------------------------------------
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_prompt_guards():
     from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
     label_classes = ["BENIGN", "INJECTION", "JAILBREAK"]
@@ -136,7 +144,7 @@ def get_prompt_guards():
         #     label_classes=label_classes))
         ]
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_guard_model():
     from transformers import AutoTokenizer
     from optimum.intel import OVModelForSequenceClassification
@@ -175,7 +183,7 @@ def get_guard_model():
 # ------------------------------------------------------------------------------------------------
 
 # ---------------------------------    Vector Store     ------------------------------------------
-@st.cache_resource
+@st.cache_resource(ttl=3600)
 def get_utterance_data(url="/"):
     import pandas as pd
     from langchain_community.document_loaders import DataFrameLoader
@@ -208,7 +216,7 @@ def get_utterance_data(url="/"):
         embedding=embedding_function,
     ).as_retriever()
 
-@st.cache_resource
+@st.cache_resource(ttl=3600)
 def get_audio_data():
     import chromadb
     from chromadb.utils import embedding_functions as ef
@@ -260,7 +268,7 @@ def get_heq_data():
 def get_scale_data():
     return pickle.load(open(os.getcwd()+"/pages/models/16Model", 'rb'))
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_dep_scale_model():
     import shap
     from xgboost import XGBClassifier
@@ -283,7 +291,7 @@ def add_static_js():
 # ------------------------------------------------------------------------------------------------
 
 # -------------------------------------   OCR Model  ---------------------------------------------
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def get_ocr():
     import easyocr
     from paddleocr import PaddleOCR

@@ -8,7 +8,7 @@ import os
 import streamlit as st
 from langchain_core.messages import HumanMessage
 
-from srcs.qdrant_vdb import VectorStore, get_rag_chain
+from srcs.qdrant_vdb import VectorStore, get_adaptive_retriever, get_rag_chain
 from srcs.st_cache import init_vectorstore
 
 # Streamlit Cloud: 이벤트 루프 설정
@@ -60,6 +60,7 @@ if __name__ == "__main__":
         if st.button("저장", key="qdrant_add_btn"):
             if doc_text and doc_text.strip():
                 if vectorstore.add_text(doc_text.strip()):
+                    st.session_state.pop("qdrant_adaptive_retriever", None)
                     st.success("저장되었습니다.")
                 else:
                     st.error("저장에 실패했습니다.")
@@ -91,20 +92,22 @@ if __name__ == "__main__":
         )
 
         if "qdrant_rag_memory" not in st.session_state:
-            from langchain.memory import ConversationBufferMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferMemory(
+            from langchain.memory import ConversationBufferWindowMemory
+            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
                 return_messages=True,
                 memory_key="history",
+                k=10,
             )
 
         memory = st.session_state["qdrant_rag_memory"]
         if st.sidebar.button("대화 초기화", key="qdrant_rag_clear"):
             memory.clear()
             st.session_state.pop("qdrant_rag_memory", None)
-            from langchain.memory import ConversationBufferMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferMemory(
+            from langchain.memory import ConversationBufferWindowMemory
+            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
                 return_messages=True,
                 memory_key="history",
+                k=10,
             )
             st.rerun()
 
@@ -116,11 +119,19 @@ if __name__ == "__main__":
                 with st.chat_message(role):
                     st.write(msg.content if hasattr(msg, "content") else str(msg))
 
+        if "qdrant_adaptive_retriever" not in st.session_state:
+            st.session_state["qdrant_adaptive_retriever"] = get_adaptive_retriever(
+                vectorstore.vectorstore
+            )
+        retriever = st.session_state["qdrant_adaptive_retriever"]
+
         if prompt := st.chat_input("RAG 질문 입력"):
             with st.chat_message("user"):
                 st.write(prompt)
             try:
-                chain = get_rag_chain(vectorstore, system_prompt.strip(), memory)
+                chain = get_rag_chain(
+                    vectorstore, system_prompt.strip(), memory, retriever=retriever
+                )
                 response = chain.invoke({"question": prompt})
                 memory.save_context({"input": prompt}, {"output": response})
                 with st.chat_message("assistant"):

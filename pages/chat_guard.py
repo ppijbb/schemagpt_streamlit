@@ -58,6 +58,8 @@ if __name__ == "__main__":
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
 
+    CHAT_MAX_MESSAGES = 21
+
     chat_histories = st.container()
     chat_section = st.container()
     msgs = StreamlitChatMessageHistory()
@@ -79,11 +81,19 @@ if __name__ == "__main__":
         llm = DDG_LLM()
         tools = build_search_tools(include_arxiv=True, ddg_max_results=10)
         agent = create_search_agent(llm, tools)
-        history = list(msgs.messages) + [HumanMessage(content=prompt)]
+        history = list(msgs.messages)[-(CHAT_MAX_MESSAGES - 1) :] + [HumanMessage(content=prompt)]
         try:
             response_text = invoke_agent(agent, history)
             msgs.add_user_message(prompt)
             msgs.add_ai_message(f"(프롬프트 침해 수준 {prompt_threat})\n\n" + response_text)
+            if len(msgs.messages) > CHAT_MAX_MESSAGES:
+                system_msgs = [m for m in msgs.messages if getattr(m, "type", None) == "system"]
+                rest = [
+                    m
+                    for m in msgs.messages
+                    if getattr(m, "type", None) != "system"
+                ][-(CHAT_MAX_MESSAGES - len(system_msgs)) :]
+                msgs.messages = system_msgs + rest
             chat_histories.chat_message("assistant").markdown(f"(프롬프트 침해 수준 {prompt_threat})\n\n" + response_text)
         except Exception as e:
             st.toast(f"An error occurred: {e}")

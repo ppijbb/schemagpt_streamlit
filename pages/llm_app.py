@@ -81,6 +81,8 @@ if __name__ == "__main__":
             "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/2_Chat_with_search.py)"
             "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 
+    CHAT_MAX_MESSAGES = 21
+
     st.title("Langchain Version")
     col1, col2 = st.columns(2)
 
@@ -107,11 +109,21 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=openai_api_key, temperature=0)
             tools = build_search_tools(include_arxiv=True, ddg_max_results=10)
             agent = create_search_agent(llm, tools)
-            history = list(msgs.messages) + [HumanMessage(content=prompt)]
+            history = list(msgs.messages)[-(CHAT_MAX_MESSAGES - 1) :] + [
+                HumanMessage(content=prompt)
+            ]
             try:
                 response_text = invoke_agent(agent, history)
                 msgs.add_user_message(prompt)
                 msgs.add_ai_message(response_text)
+                if len(msgs.messages) > CHAT_MAX_MESSAGES:
+                    system_msgs = [m for m in msgs.messages if getattr(m, "type", None) == "system"]
+                    rest = [
+                        m
+                        for m in msgs.messages
+                        if getattr(m, "type", None) != "system"
+                    ][-(CHAT_MAX_MESSAGES - len(system_msgs)) :]
+                    msgs.messages = system_msgs + rest
                 col1_chat_container.chat_message("assistant").write(response_text)
             except Exception as e:
                 st.toast(f"An error occurred: {e}")
@@ -153,6 +165,16 @@ if __name__ == "__main__":
             try:
                 response_text = invoke_agent(agent, search_instruction)
                 st.session_state.messages2.append({"role": "assistant", "content": response_text})
+                if len(st.session_state.messages2) > CHAT_MAX_MESSAGES:
+                    system_msg = next(
+                        (m for m in st.session_state.messages2 if m["role"] == "system"), None
+                    )
+                    rest = [
+                        m
+                        for m in st.session_state.messages2
+                        if m["role"] != "system"
+                    ][-(CHAT_MAX_MESSAGES - 1) :]
+                    st.session_state.messages2 = ([system_msg] if system_msg else []) + rest
                 col2_chat_container.chat_message("assistant").write(response_text)
             except Exception as e:
                 st.toast(f"An error occurred: {e}")

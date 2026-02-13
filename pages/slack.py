@@ -72,10 +72,21 @@ async def log_message_change(logger, event):
     logger.info(f"The user {user} changed the message to {text}")
     logging.warning(f"The user {user} changed the message to {text}")
 
+CURRENT_TEXT_MAX_LEN = 10000
+
+
 @app.event(event="app_mention")
 async def handle_mentions(event, client, message, say):  # async function
     logging.warning("message ", message)
-    st.session_state['current_text'] = message
+    if isinstance(message, str):
+        text = message
+    elif isinstance(message, dict):
+        text = message.get("text", str(message))
+    else:
+        text = str(message)
+    st.session_state["current_text"] = (
+        text[:CURRENT_TEXT_MAX_LEN] if len(text) > CURRENT_TEXT_MAX_LEN else text
+    )
     result = requests.post("https://slack.com/api/chat.postMessage",
         headers={"Authorization": "Bearer " + st.secrets["SLACK_APP_TOKEN"]},
         data={"channel": event["channel"],"text": "what's up"}
@@ -120,9 +131,11 @@ if __name__ == "__main__":
     # Display the current text
     st.text("received text"+st.session_state['current_text'])
 
-    if st.button('Disconnect'):
-        st.session_state['sio'].disconnect()
-        st.write('Disconnected from server')
+    if st.button("Disconnect"):
+        if st.session_state.get("sio") is not None:
+            st.session_state["sio"].disconnect()
+            st.session_state.pop("sio", None)
+        st.write("Disconnected from server")
     st.markdown(
         f"""
     <a href="https://slack.com/oauth/v2/authorize?client_id={st.secrets["SLACK_CLIENT_ID"]}&scope=chat:write,chat:write.customize&user_scope=chat:write"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>

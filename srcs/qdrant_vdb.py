@@ -184,12 +184,12 @@ def get_adaptive_retriever(vectorstore):
     )
 
     # BM25 retriever 초기화
-    # vectorstore에서 모든 문서 가져오기
+    scroll_limit = int(os.environ.get("QDRANT_BM25_SCROLL_LIMIT", "200"))
     all_docs = []
     try:
         results = vectorstore.client.scroll(
             collection_name=vectorstore.collection_name,
-            limit=1000  # 적절한 수로 조정
+            limit=scroll_limit,
         )[0]
         for result in results:
             if result.payload.get("page_content"):  # 유효한 문서만 추가
@@ -231,20 +231,21 @@ def get_adaptive_retriever(vectorstore):
 
 # Initialize RAG chain
 def get_rag_chain(
-    vectorstore: VectorStore, 
-    system_prompt: str, 
-    memory: ConversationBufferMemory
-    )-> RunnableSerializable:
-
+    vectorstore: VectorStore,
+    system_prompt: str,
+    memory: ConversationBufferMemory,
+    retriever=None,
+) -> RunnableSerializable:
     def _process_context(step_output):
         result = []
-        for doc in step_output['context']:
+        for doc in step_output["context"]:
             source_data = doc.page_content.strip()
             metadata_text = "\n".join([f"{k}:{v}" for k, v in doc.metadata.items()])
             result.append(f"{source_data}\n{metadata_text}")
         return "\n".join(result)
-    
-    retriever = get_adaptive_retriever(vectorstore.vectorstore)
+
+    if retriever is None:
+        retriever = get_adaptive_retriever(vectorstore.vectorstore)
     
     # Start of Selection
     chain = (
