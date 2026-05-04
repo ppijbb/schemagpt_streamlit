@@ -2,21 +2,15 @@
 Advanced RAG 챗봇 서비스 (Qdrant Vector DB).
 Streamlit Cloud 호환: in-memory Qdrant, CPU 임베딩, st.secrets API 키.
 """
-import asyncio
 import os
 
 import streamlit as st
 from langchain_core.messages import HumanMessage
 
 from srcs.qdrant_vdb import VectorStore, get_adaptive_retriever, get_rag_chain
-from srcs.st_cache import init_vectorstore
+from srcs.st_cache import init_vectorstore, get_or_create_eventloop
 
-# Streamlit Cloud: 이벤트 루프 설정
-try:
-    asyncio.get_running_loop()
-except RuntimeError:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 if __name__ == "__main__":
     st.set_page_config(
@@ -91,24 +85,24 @@ if __name__ == "__main__":
             key="qdrant_rag_system",
         )
 
-        if "qdrant_rag_memory" not in st.session_state:
+        def _make_memory():
+            from langchain_community.chat_message_histories import ChatMessageHistory
             from langchain.memory import ConversationBufferWindowMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
+            return ConversationBufferWindowMemory(
+                chat_memory=ChatMessageHistory(),
                 return_messages=True,
                 memory_key="history",
                 k=10,
             )
 
+        if "qdrant_rag_memory" not in st.session_state:
+            st.session_state["qdrant_rag_memory"] = _make_memory()
+
         memory = st.session_state["qdrant_rag_memory"]
         if st.sidebar.button("대화 초기화", key="qdrant_rag_clear"):
             memory.clear()
             st.session_state.pop("qdrant_rag_memory", None)
-            from langchain.memory import ConversationBufferWindowMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
-                return_messages=True,
-                memory_key="history",
-                k=10,
-            )
+            st.session_state["qdrant_rag_memory"] = _make_memory()
             st.rerun()
 
         chat_container = st.container()

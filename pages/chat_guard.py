@@ -1,4 +1,3 @@
-import asyncio
 import streamlit as st
 
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -9,11 +8,10 @@ from srcs.graph.agent_common import (
     create_search_agent,
     invoke_agent,
 )
-from srcs.st_cache import get_guard_model
+from srcs.st_cache import get_guard_model, get_or_create_eventloop
 from srcs.langchain_llm import DDG_LLM
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 
 if __name__ == "__main__":

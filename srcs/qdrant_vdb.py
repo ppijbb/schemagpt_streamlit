@@ -20,6 +20,7 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain.memory import ConversationBufferMemory
 from langchain.retrievers import (
     ContextualCompressionRetriever,

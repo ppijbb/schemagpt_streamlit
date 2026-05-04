@@ -1,4 +1,3 @@
-import asyncio
 import requests
 import json
 import numpy as np
@@ -14,9 +13,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from srcs.st_cache import get_or_create_eventloop
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 
 open_api_url = "http://apis.data.go.kr/B553077/api/open/sdsc2"

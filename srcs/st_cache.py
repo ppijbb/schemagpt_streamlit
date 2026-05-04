@@ -80,26 +80,48 @@ def get_yolo_detector():
 def get_birefnet():
     from transformers import AutoModelForImageSegmentation
     model_id = "ZhengPeng7/BiRefNet"
-    return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
+    return AutoModelForImageSegmentation.from_pretrained(model_id, trust_remote_code=True)
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   LLM Tokenizer ------------------------------------------
 _TOKENIZER_MODEL_PATHS = {
+    # Llama series
+    "llama3.3-70b": "meta-llama/Llama-3.3-70B-Instruct",
+    "llama3.2-3b": "meta-llama/Llama-3.2-3B-Instruct",
     "llama3.1": "meta-llama/Meta-Llama-3.1-8B-Instruct",
     "llama3.1-minitron": "nvidia/Llama-3.1-Minitron-4B-Width-Base",
     "llama3": "meta-llama/Meta-Llama-3-8B-Instruct",
+    # Mistral / Mixtral
+    "mistral-small-3.1": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
     "mistral-nemo": "mistralai/Mistral-Nemo-Instruct-2407",
+    # Google Gemma
+    "gemma3-12b": "google/gemma-3-12b-it",
     "gemma2": "google/gemma-2-2b",
+    # Qwen
+    "qwen2.5-7b": "Qwen/Qwen2.5-7B-Instruct",
+    "qwen2.5-14b": "Qwen/Qwen2.5-14B-Instruct",
     "qwen2": "Qwen/Qwen2-7B-Instruct",
+    # Microsoft Phi
+    "phi4": "microsoft/phi-4",
     "phi3.5-moe": "microsoft/Phi-3.5-MoE-instruct",
-    "falcon-mamba": "tiiuae/falcon-mamba-7b",
-    "solar": "upstage/SOLAR-10.7B-Instruct-v1.0",
+    # DeepSeek
+    "deepseek-r1-distill-qwen-7b": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+    "deepseek-r1-distill-llama-8b": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+    # Korean models
+    "exaone-3.5": "LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct",
     "exaone-3.0": "LGAI-EXAONE/EXAONE-3.0-7.8B-Instruct",
+    "solar": "upstage/SOLAR-10.7B-Instruct-v1.0",
+    # Others
+    "smollm2-360m": "HuggingFaceTB/SmolLM2-360M-Instruct",
     "smollm-360m": "HuggingFaceTB/SmolLM-360M-Instruct",
+    "falcon-mamba": "tiiuae/falcon-mamba-7b",
     "orionstar": "OrionStarAI/Orion-14B-Chat",
-    "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
+    # Experimental (tiktoken-based)
     "[experimental]gpt-4o": "Xenova/gpt-4o",
+    "[experimental]gpt-3.5-turbo": "Xenova/gpt-3.5-turbo",
+    # Embedding models
     "[embedding]bge-m3": "BAAI/bge-m3",
+    "[embedding]gte-qwen2-7b": "Alibaba-NLP/gte-Qwen2-7B-instruct",
     "[embedding]labse": "sentence-transformers/LaBSE",
     "[embedding]all-minilm-l6-v2": "sentence-transformers/all-MiniLM-L6-v2",
 }
@@ -271,8 +293,10 @@ def get_scale_data():
 @st.cache_resource(max_entries=1)
 def get_dep_scale_model():
     import shap
+    import torch
     from xgboost import XGBClassifier
-    cgi_classifier = XGBClassifier(tree_method="gpu_hist")
+    tree_method = "gpu_hist" if torch.cuda.is_available() else "hist"
+    cgi_classifier = XGBClassifier(tree_method=tree_method)
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
 

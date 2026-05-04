@@ -1,4 +1,3 @@
-import asyncio
 import copy
 import streamlit as st
 
@@ -9,11 +8,9 @@ from srcs.graph.agent_common import (
     create_search_agent,
     invoke_agent,
 )
-from srcs.st_cache import get_audio_data
+from srcs.st_cache import get_audio_data, get_or_create_eventloop
 
-
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 
 if __name__ == "__main__":

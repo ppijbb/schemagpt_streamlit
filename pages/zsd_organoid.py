@@ -1,6 +1,5 @@
 import av
 import string
-import asyncio
 from io import BytesIO
 
 from PIL import Image, ImageDraw
@@ -16,10 +15,9 @@ from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, detect_objects_in_image, img_convert
 from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_utils import hide_radio_value_md, colorize_multiselect_options
+from srcs.st_cache import get_or_create_eventloop
 
-
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 if 'zsd_labels' not in st.session_state:
     st.session_state.zsd_labels = ["a water bottle", "car", "bicycle", "a handsome guy", "green fruit"]

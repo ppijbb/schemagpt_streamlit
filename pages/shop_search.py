@@ -1,4 +1,3 @@
-import asyncio
 import requests
 import json
 import numpy as np
@@ -10,10 +9,9 @@ from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, WikipediaAPIWrapper
+from srcs.st_cache import get_or_create_eventloop
 
-
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 
 open_api_url = "http://apis.data.go.kr/B553077/api/open/sdsc2"

@@ -1,4 +1,3 @@
-import asyncio
 import copy
 import streamlit as st
 import torch
@@ -13,10 +12,9 @@ from srcs.graph.agent_common import (
     create_search_agent,
     invoke_agent,
 )
-from srcs.st_cache import get_utterance_data
+from srcs.st_cache import get_utterance_data, get_or_create_eventloop
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+get_or_create_eventloop()
 
 
 if __name__ == "__main__":
@@ -146,7 +144,7 @@ if __name__ == "__main__":
             st.session_state.messages2.append({"role": "user", "content": col2_prompt})
             col2_chat_container.chat_message("user").write(col2_prompt)
             with torch.inference_mode():
-                searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
+                searched_result = vector_db.invoke(col2_prompt)[0]
                 maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
 
             if not openai_api_key:
