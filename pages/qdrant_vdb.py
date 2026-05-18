@@ -91,24 +91,27 @@ if __name__ == "__main__":
             key="qdrant_rag_system",
         )
 
+        def _make_memory():
+            try:
+                from langchain.memory import ConversationBufferWindowMemory
+                return ConversationBufferWindowMemory(
+                    return_messages=True, memory_key="history", k=10
+                )
+            except ImportError:
+                from langchain_community.memory.in_memory import InMemoryChatMessageHistory
+                from langchain.memory import ConversationBufferMemory
+                return ConversationBufferMemory(
+                    return_messages=True, memory_key="history"
+                )
+
         if "qdrant_rag_memory" not in st.session_state:
-            from langchain.memory import ConversationBufferWindowMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
-                return_messages=True,
-                memory_key="history",
-                k=10,
-            )
+            st.session_state["qdrant_rag_memory"] = _make_memory()
 
         memory = st.session_state["qdrant_rag_memory"]
         if st.sidebar.button("대화 초기화", key="qdrant_rag_clear"):
             memory.clear()
             st.session_state.pop("qdrant_rag_memory", None)
-            from langchain.memory import ConversationBufferWindowMemory
-            st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
-                return_messages=True,
-                memory_key="history",
-                k=10,
-            )
+            st.session_state["qdrant_rag_memory"] = _make_memory()
             st.rerun()
 
         chat_container = st.container()

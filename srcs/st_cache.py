@@ -187,7 +187,6 @@ def get_guard_model():
 def get_utterance_data(url="/"):
     import pandas as pd
     from langchain_community.document_loaders import DataFrameLoader
-    from langchain_community.embeddings import OpenAIEmbeddings
     from langchain_community.vectorstores import Chroma
     from langchain_huggingface import HuggingFaceEmbeddings
     from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
@@ -201,6 +200,10 @@ def get_utterance_data(url="/"):
         )
     except Exception as e:
         print(e)
+        try:
+            from langchain_openai import OpenAIEmbeddings
+        except ImportError:
+            from langchain_community.embeddings import OpenAIEmbeddings
         embedding_function = OpenAIEmbeddings()
     text_splitter = SentenceTransformersTokenTextSplitter(
         chunk_size=1000, chunk_overlap=0, model_name=model_name

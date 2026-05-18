@@ -3,9 +3,8 @@ enableStaticServing = true
 headless = true
 
 [theme]
-primaryColor="#F63366"
-backgroundColor="#FFFFFF"
-secondaryBackgroundColor="#F0F2F6"
-textColor="#262730"
-font="sans serif"
-
+primaryColor    = "#e94560"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8f9fc"
+textColor       = "#1a1a2e"
+font            = "sans serif"
