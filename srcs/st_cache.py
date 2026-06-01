@@ -187,7 +187,7 @@ def get_guard_model():
 def get_utterance_data(url="/"):
     import pandas as pd
     from langchain_community.document_loaders import DataFrameLoader
-    from langchain_community.embeddings import OpenAIEmbeddings
+    from langchain_openai import OpenAIEmbeddings
     from langchain_community.vectorstores import Chroma
     from langchain_huggingface import HuggingFaceEmbeddings
     from langchain_text_splitters.sentence_transformers import SentenceTransformersTokenTextSplitter
@@ -272,7 +272,13 @@ def get_scale_data():
 def get_dep_scale_model():
     import shap
     from xgboost import XGBClassifier
-    cgi_classifier = XGBClassifier(tree_method="gpu_hist")
+    try:
+        import torch
+        _device = "cuda" if torch.cuda.is_available() else "cpu"
+    except Exception:
+        _device = "cpu"
+    tree_method = "hist"
+    cgi_classifier = XGBClassifier(tree_method=tree_method, device=_device)
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
 

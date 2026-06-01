@@ -21,8 +21,8 @@ if __name__ == "__main__":
                        page_icon="🛡️",
                        layout="wide",
                        initial_sidebar_state="auto",)
-    st.spinner("Loading Guard Model...")
-    guard = get_guard_model()
+    with st.spinner("Loading Guard Model..."):
+        guard = get_guard_model()
     st.title('🛡️ LLM Guarded Chatbot App')
     st.markdown('''
 
