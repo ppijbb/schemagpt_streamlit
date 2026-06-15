@@ -22,31 +22,60 @@ if __name__ == "__main__":
                     layout="wide",
                     initial_sidebar_state="auto",)
 
+    st.markdown("""
+<style>
+.hero-card {
+    background: linear-gradient(135deg, #f0f4ff 0%, #fce4ec 100%);
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin-bottom: 20px;
+    border-left: 5px solid #F63366;
+    box-shadow: 0 2px 16px rgba(246,51,102,0.10);
+}
+.hero-card h2 { margin: 0 0 12px 0; color: #1e1e2e; }
+.hero-card p { font-size: 1.05rem; line-height: 1.85; margin: 0; color: #444; }
+.proj-category {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #F63366;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 14px 0 4px 0;
+    display: block;
+}
+.skills-section-label {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #555;
+    margin: 10px 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+</style>
+""", unsafe_allow_html=True)
+
     st.title('👋😄 Hello!')
     if "shared" not in st.session_state:
         st.session_state["shared"] = True
 
     with st.sidebar:
         side1, side2, side3 = st.columns(3)
-        # option_menu("Main Menu", ["Home", 'Settings'], 
-        # icons=['house', 'gear'], menu_icon="cast", default_index=1)
         side1.markdown("[![github](https://img.icons8.com/?size=24&id=fmFqQmR0UdsR&format=png)](https://github.com/ppijbb)")
         side2.markdown("[![LinkedIn](https://img.icons8.com/?size=24&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
         side3.markdown("[![Gmail](https://img.icons8.com/?size=24&id=37246&format=png)](mailto:ppijbb@gmail.com)")
-    
+
     st.markdown("""
-      # 안녕하세요! 정권환입니다.
-
-      헬스케어, 디지털 바이오, 음성/오디오 데이터 분야의 경험을 넓히고 있는
-      
-      데이터 사이언티스트, AI 엔지니어 입니다.
-
-      데이터 분석, 모델 아키텍처, MLOps, LLM 서비스 등
-
-      단순히 인공지능이 들어간 서비스가 아닌 도메인과 목적에 맞게 설계하고 연구합니다.
-
-      상상만 하던 서비스를 만들어 내는 꿈을 가지고 개발하고 연구하고 있습니다.
-      """)
+<div class="hero-card">
+  <h2>안녕하세요! 정권환입니다.</h2>
+  <p>
+    헬스케어, 디지털 바이오, 음성/오디오 데이터 분야의 경험을 넓히고 있는<br>
+    <strong>데이터 사이언티스트 · AI 엔지니어</strong>입니다.<br><br>
+    데이터 분석, 모델 아키텍처, MLOps, LLM 서비스 등<br>
+    단순히 AI가 들어간 서비스가 아닌 도메인과 목적에 맞게 설계하고 연구합니다.<br>
+    상상만 하던 서비스를 만들어 내는 꿈을 가지고 개발하고 연구하고 있습니다.
+  </p>
+</div>
+""", unsafe_allow_html=True)
 
     section1, section2 = st.columns(2)
     with section1:
@@ -102,23 +131,31 @@ if __name__ == "__main__":
 
     with section2:
       st.markdown("### 👨‍🔧 PROJECTS")
+
+      st.markdown('<span class="proj-category">🏥 Healthcare &amp; BioTech AI</span>', unsafe_allow_html=True)
       st.page_link("pages/cardio.py", label="🔗 심혈관계 질환자 180명 다중 오믹스 데이터 분석")
       st.page_link("pages/dep_peptide.py", label="🔗 우울장애 218명 펩타이드 분석 및 바이오마커 후보 물질 추출")
       st.page_link("pages/dep_scales.py", label="🔗 우울장애 의사진단 데이터, 자가진단 데이터 상관관계 분석")
-      st.page_link("pages/facial.py", label="🔗 실시간 발화, 안면 감정인식 기반 감성 분석 엔진 학습 및 온디바이스 추론")
-      st.page_link("pages/llm_app.py",label="🔗 NLP 기반 우울장애 중증도 평가 LLM 챗봇 서비스")
       st.page_link("pages/sleep_challenge.py",label="🔗 분당서울대학교병원 수면 인공지능 경진대회")
       st.page_link("pages/icu_challenge.py",label="🔗 분당서울대학교병원 COVID-19 중환자 데이터톤")
-      st.page_link("pages/zsd_organoid.py",label="🔗 실시간 zero-shot 이미지 detection 서비스")
-      st.page_link("pages/dtw_vectordb.py",label="🔗 음원 MFCC vectorDB")
-      st.page_link("pages/qdrant_vdb.py",label="🔗 Advanced RAG 챗봇 서비스")
+
+      st.markdown('<span class="proj-category">🤖 LLM / RAG / GenAI</span>', unsafe_allow_html=True)
+      st.page_link("pages/llm_app.py",label="🔗 NLP 기반 우울장애 중증도 평가 LLM 챗봇 서비스")
+      st.page_link("pages/qdrant_vdb.py",label="🔗 Advanced RAG 챗봇 서비스 (Qdrant + BM25)")
       st.page_link("pages/llm_tokenizing.py",label="🔗 오픈소스 및 ChatGPT LLM 토큰 계산기")
       st.page_link("pages/chat_guard.py",label="🔗 LLM 챗봇 서비스를 위한 Prompt Guard")
-      st.page_link("pages/shop_search.py",label="🔗 [toy project] 애견 관련 기업 정보 수집 기능")
-      st.page_link("pages/ocr.py",label="🔗 [toy project] 공연 포스터 OCR 데이터 수집 기능")
-      st.page_link("pages/concert_search.py",label="🔗 [toy project] 실시간 공연 정보 수집 및 공연 정보 자동 검색 기능")
-      st.page_link("pages/rtc_call.py",label="🔗 [toy project] WebRTC 기반 다인원 음성 채팅")
-      st.page_link("pages/slack.py",label="🔗 [toy project] SlackBot 만들기")
+      st.page_link("pages/dtw_vectordb.py",label="🔗 음원 MFCC vectorDB")
+
+      st.markdown('<span class="proj-category">📡 Real-time &amp; Edge AI</span>', unsafe_allow_html=True)
+      st.page_link("pages/facial.py", label="🔗 실시간 발화, 안면 감정인식 기반 감성 분석 엔진 학습 및 온디바이스 추론")
+      st.page_link("pages/zsd_organoid.py",label="🔗 실시간 zero-shot 이미지 detection 서비스")
+      st.page_link("pages/rtc_call.py",label="🔗 WebRTC 기반 다인원 음성 채팅")
+
+      st.markdown('<span class="proj-category">🧩 Toy Projects</span>', unsafe_allow_html=True)
+      st.page_link("pages/shop_search.py",label="🔗 애견 관련 기업 정보 수집 기능")
+      st.page_link("pages/ocr.py",label="🔗 공연 포스터 OCR 데이터 수집 기능")
+      st.page_link("pages/concert_search.py",label="🔗 실시간 공연 정보 수집 및 공연 정보 자동 검색 기능")
+      st.page_link("pages/slack.py",label="🔗 SlackBot 만들기")
 
       st.markdown("### 📚 SKILLS")
       st.markdown('''
@@ -150,15 +187,23 @@ if __name__ == "__main__":
       <img src="https://img.shields.io/badge/plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=black"> 
     <br>
     Deep Learning<br>
-      <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=black"> 
-      <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=black"> 
-      <img src="https://img.shields.io/badge/keras-D00000?style=for-the-badge&logo=keras&logoColor=black"> 
-      <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=black"> 
+      <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=black">
+      <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=black">
+      <img src="https://img.shields.io/badge/keras-D00000?style=for-the-badge&logo=keras&logoColor=black">
+      <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=black">
+    <br>
+    LLM / GenAI<br>
+      <img src="https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white">
+      <img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=graphql&logoColor=white">
+      <img src="https://img.shields.io/badge/anthropic-191919?style=for-the-badge&logo=anthropic&logoColor=white">
+      <img src="https://img.shields.io/badge/openai-412991?style=for-the-badge&logo=openai&logoColor=black">
+      <img src="https://img.shields.io/badge/streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white">
+      <img src="https://img.shields.io/badge/qdrant-DC244C?style=for-the-badge&logoColor=white">
+      <img src="https://img.shields.io/badge/huggingface-FF9A00?style=for-the-badge&logo=huggingface&logoColor=white">
     <br>
     Version control <br>
       <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
       <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
-      <img src="https://img.shields.io/badge/huggingface-FF9A00?style=for-the-badge&logo=huggingface&logoColor=white">
     <br>
     Environ<br>
       <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"> 
@@ -170,8 +215,7 @@ if __name__ == "__main__":
       <img src="https://img.shields.io/badge/googlecloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"> 
     <br>
     Etc<br>
-      <img src="https://img.shields.io/badge/googlecolab-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=black"> 
-      <img src="https://img.shields.io/badge/openai-412991?style=for-the-badge&logo=openai&logoColor=black"> 
+      <img src="https://img.shields.io/badge/googlecolab-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=black">
       <img src="https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=white">
     <br>
   </div>
