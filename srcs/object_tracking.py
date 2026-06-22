@@ -159,7 +159,7 @@ def img_convert(img) -> np.array:
                             st.session_state.normalizing_range[0],
                             st.session_state.normalizing_range[1],
                             cv2.NORM_MINMAX)  # Normalizing frame
-    if st.session_state.use_denosing_color:
+    if st.session_state.use_denoising_color:
         img = cv2.fastNlMeansDenoisingColored(img, None,
                                               st.session_state.denoising_color0,
                                               st.session_state.denoising_color1,

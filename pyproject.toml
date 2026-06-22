@@ -25,7 +25,7 @@ dependencies = [
     "anthropic",
     "duckduckgo-search>=5.1.0",
     "chromadb",
-    "transformers",
+    "transformers>=4.51.0",
     "pysqlite3-binary",
     "openpyxl",
     "opencv-python>=4.8.0.76",
@@ -83,7 +83,6 @@ neo4j = ["langchain-neo4j"]
 
 [tool.uv.sources]
 chromadb = { git = "https://github.com/ppijbb/dtw_chroma.git" }
-transformers = { git = "https://github.com/huggingface/transformers.git" }
 
 [tool.uv]
 extra-index-url = []

@@ -15,8 +15,10 @@ from srcs.graph.agent_common import (
 )
 from srcs.st_cache import get_utterance_data
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 if __name__ == "__main__":
@@ -146,7 +148,7 @@ if __name__ == "__main__":
             st.session_state.messages2.append({"role": "user", "content": col2_prompt})
             col2_chat_container.chat_message("user").write(col2_prompt)
             with torch.inference_mode():
-                searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
+                searched_result = vector_db.invoke(col2_prompt)[0]
                 maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
 
             if not openai_api_key:

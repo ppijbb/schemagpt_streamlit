@@ -12,8 +12,10 @@ from srcs.graph.agent_common import (
 from srcs.st_cache import get_guard_model
 from srcs.langchain_llm import DDG_LLM
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 if __name__ == "__main__":
@@ -21,8 +23,8 @@ if __name__ == "__main__":
                        page_icon="🛡️",
                        layout="wide",
                        initial_sidebar_state="auto",)
-    st.spinner("Loading Guard Model...")
-    guard = get_guard_model()
+    with st.spinner("Loading Guard Model..."):
+        guard = get_guard_model()
     st.title('🛡️ LLM Guarded Chatbot App')
     st.markdown('''
 

@@ -80,7 +80,7 @@ def get_yolo_detector():
 def get_birefnet():
     from transformers import AutoModelForImageSegmentation
     model_id = "ZhengPeng7/BiRefNet"
-    return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
+    return AutoModelForImageSegmentation.from_pretrained(model_id, trust_remote_code=True)
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   LLM Tokenizer ------------------------------------------
@@ -271,8 +271,10 @@ def get_scale_data():
 @st.cache_resource(max_entries=1)
 def get_dep_scale_model():
     import shap
+    import torch
     from xgboost import XGBClassifier
-    cgi_classifier = XGBClassifier(tree_method="gpu_hist")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    cgi_classifier = XGBClassifier(tree_method="hist", device=device)
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
 

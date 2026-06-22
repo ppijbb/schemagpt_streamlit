@@ -12,8 +12,10 @@ from srcs.graph.agent_common import (
 from srcs.st_cache import get_audio_data
 
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 if __name__ == "__main__":
@@ -84,7 +86,7 @@ if __name__ == "__main__":
     if st_prompt := st.chat_input(placeholder="슬플땐 힙합을 춰", key=st):
         st.session_state.messages.append({"role": "user", "content": st_prompt})
         chat_container.chat_message("user").write(st_prompt)
-        searched_result = vector_db.get_relevant_documents(st_prompt)[0]
+        searched_result = vector_db.invoke(st_prompt)[0]
 
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")

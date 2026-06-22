@@ -18,8 +18,10 @@ from srcs.object_tracking import MediaPlayer, get_media_player
 from srcs.st_utils import hide_radio_value_md, colorize_multiselect_options
 
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 if 'zsd_labels' not in st.session_state:
     st.session_state.zsd_labels = ["a water bottle", "car", "bicycle", "a handsome guy", "green fruit"]
@@ -35,8 +37,8 @@ if 'bright_ratio' not in st.session_state:
     st.session_state.bright_ratio = 1.0
 if 'use_normalizing' not in st.session_state:
     st.session_state.use_normalizing = False
-if 'use_denosing_color' not in st.session_state:
-    st.session_state.use_denosing_color = False
+if 'use_denoising_color' not in st.session_state:
+    st.session_state.use_denoising_color = False
 if 'use_morphology' not in st.session_state:
     st.session_state.use_morphology = False
 if 'detected_objects' not in st.session_state:
@@ -252,7 +254,7 @@ if __name__ == "__main__":
             if st.session_state.original_image is not None:
                 st.session_state.target_image = img_convert(st.session_state.original_image)
                 st.image(image=st.session_state.target_image,
-                         use_column_width="always")
+                         use_container_width=True)
                 if st.session_state.detect_button:
                     with st.spinner('Detecting objects... it takes time....'):
                         found_objects = detect_objects_in_image(image=st.session_state.target_image,
@@ -266,7 +268,7 @@ if __name__ == "__main__":
 
                 if st.session_state.detected_image is not None:
                     st.image(image=st.session_state.detected_image,
-                             use_column_width="always")
+                             use_container_width=True)
 
     st.divider()
     st.toggle(label="AI tracking",

@@ -1,6 +1,14 @@
 [server]
 enableStaticServing = true
 headless = true
+maxUploadSize = 200
+
+[runner]
+fastReruns = true
+
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"
 
 [theme]
 primaryColor="#F63366"

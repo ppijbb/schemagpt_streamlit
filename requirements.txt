@@ -19,7 +19,7 @@ librosa>=0.10.2
 anthropic
 duckduckgo-search>=5.1.0
 chromadb @ git+https://github.com/ppijbb/dtw_chroma.git
-transformers @ git+https://github.com/huggingface/transformers.git
+transformers>=4.51.0
 pysqlite3-binary
 openpyxl
 opencv-python>=4.8.0.76

@@ -8,7 +8,10 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from langchain_community.retrievers import BM25Retriever
-from langchain_community.vectorstores import Qdrant
+try:
+    from langchain_qdrant import QdrantVectorStore as Qdrant
+except ImportError:
+    from langchain_community.vectorstores import Qdrant
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser

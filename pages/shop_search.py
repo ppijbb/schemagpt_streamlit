@@ -12,8 +12,10 @@ from langchain_community.tools.pubmed.tool import PubmedQueryRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, WikipediaAPIWrapper
 
 
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 
 open_api_url = "http://apis.data.go.kr/B553077/api/open/sdsc2"
