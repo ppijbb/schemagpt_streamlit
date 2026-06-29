@@ -3,8 +3,21 @@ from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun, Pu
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, WikipediaAPIWrapper, PubMedAPIWrapper
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
-from langgraph.prebuilt import ToolExecutor
 from langchain_core.messages import HumanMessage, AIMessage
+
+# ToolExecutor was removed in LangGraph 0.2+; provide minimal compatible implementation
+try:
+    from langgraph.prebuilt import ToolExecutor
+except ImportError:
+    class ToolExecutor:
+        def __init__(self, tools):
+            self._tools = {t.name: t for t in tools}
+        def invoke(self, action):
+            tool_name = action.get("tool") or action.get("tool_name", "")
+            tool = self._tools.get(tool_name)
+            if tool is None:
+                return f"Tool not found: {tool_name}"
+            return tool.run(action.get("input", ""))
 from typing import TypedDict, Annotated, Sequence
 import operator
 import json

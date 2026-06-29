@@ -80,7 +80,7 @@ def get_yolo_detector():
 def get_birefnet():
     from transformers import AutoModelForImageSegmentation
     model_id = "ZhengPeng7/BiRefNet"
-    return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
+    return AutoModelForImageSegmentation.from_pretrained(model_id, trust_remote_code=True)
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   LLM Tokenizer ------------------------------------------

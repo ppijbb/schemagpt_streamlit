@@ -252,7 +252,7 @@ if __name__ == "__main__":
             if st.session_state.original_image is not None:
                 st.session_state.target_image = img_convert(st.session_state.original_image)
                 st.image(image=st.session_state.target_image,
-                         use_column_width="always")
+                         use_container_width=True)
                 if st.session_state.detect_button:
                     with st.spinner('Detecting objects... it takes time....'):
                         found_objects = detect_objects_in_image(image=st.session_state.target_image,
@@ -266,7 +266,7 @@ if __name__ == "__main__":
 
                 if st.session_state.detected_image is not None:
                     st.image(image=st.session_state.detected_image,
-                             use_column_width="always")
+                             use_container_width=True)
 
     st.divider()
     st.toggle(label="AI tracking",

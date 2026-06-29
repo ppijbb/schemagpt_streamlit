@@ -92,7 +92,7 @@ if __name__ == "__main__":
         )
 
         if "qdrant_rag_memory" not in st.session_state:
-            from langchain.memory import ConversationBufferWindowMemory
+            from langchain_community.memory import ConversationBufferWindowMemory
             st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
                 return_messages=True,
                 memory_key="history",
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         if st.sidebar.button("대화 초기화", key="qdrant_rag_clear"):
             memory.clear()
             st.session_state.pop("qdrant_rag_memory", None)
-            from langchain.memory import ConversationBufferWindowMemory
+            from langchain_community.memory import ConversationBufferWindowMemory
             st.session_state["qdrant_rag_memory"] = ConversationBufferWindowMemory(
                 return_messages=True,
                 memory_key="history",

@@ -8,7 +8,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from langchain_community.retrievers import BM25Retriever
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import QdrantVectorStore
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -20,7 +20,7 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.memory import ConversationBufferMemory
+from langchain_community.memory import ConversationBufferMemory
 from langchain.retrievers import (
     ContextualCompressionRetriever,
     EnsembleRetriever,
@@ -42,11 +42,10 @@ class VectorStore:
         self._ensure_collection()       
 
     def _init_vectorstore(self):
-        return Qdrant(
+        return QdrantVectorStore(
             client=self.client,
             collection_name=self.collection_name,
-            embeddings=self.embeddings,
-            
+            embedding=self.embeddings,
         )
 
     def _init_client(self):

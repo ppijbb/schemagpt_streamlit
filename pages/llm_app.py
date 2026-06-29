@@ -146,7 +146,7 @@ if __name__ == "__main__":
             st.session_state.messages2.append({"role": "user", "content": col2_prompt})
             col2_chat_container.chat_message("user").write(col2_prompt)
             with torch.inference_mode():
-                searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
+                searched_result = vector_db.invoke(col2_prompt)[0]
                 maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]
 
             if not openai_api_key:
