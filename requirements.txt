@@ -9,12 +9,12 @@ streamlit-shap
 streamlit-mermaid
 streamlit-option-menu
 openai
-langchain>=0.3.10
-langchain-community>=0.3.10
+langchain>=0.3.10,<1.0
+langchain-community>=0.3.10,<1.0
 langgraph
-langchain-openai
-langchain-qdrant
-langchain-huggingface
+langchain-openai<1.0
+langchain-qdrant<1.0
+langchain-huggingface<1.0
 librosa>=0.10.2
 anthropic
 duckduckgo-search>=5.1.0
@@ -30,7 +30,6 @@ skorch
 numpy>=1.26.2
 tensorflow>=2.17.0
 keras
-tornado>=6.4.1
 torch
 tf-keras
 tslearn
