@@ -30,7 +30,6 @@ skorch
 numpy>=1.26.2
 tensorflow>=2.17.0
 keras
-tornado>=6.4.1
 torch
 tf-keras
 tslearn
