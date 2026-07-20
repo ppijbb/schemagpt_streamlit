@@ -303,9 +303,9 @@ def heq(args, st_layout):
                         "pad": 0
                     })
     with st_layout.container(border=True):
-        st.plotly_chart(pie, theme="streamlit", use_container_width=True)
+        st.plotly_chart(pie, theme="streamlit", width="stretch")
     with st_layout.container(border=True):
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        st.plotly_chart(fig, theme="streamlit", width="stretch")
         numeric_df = pd.DataFrame(dict(zip(feature_names[11:], 
                                            [processed_v_to_int(v) for v in processed_values[12:]]))).T
 
@@ -330,7 +330,7 @@ def heq(args, st_layout):
                 # validate="^st\.[a-z_]+$",
             )
         },
-        use_container_width=True,
+        width="stretch",
     )
 
     return result
@@ -480,10 +480,10 @@ def scale_severity(args, st_layout):
     > 정상군과 가장 차이가 심한 항목은 {diff_item + " 입니다." if diff_item else "없습니다."}
 """)
     with st_layout.container(border=True):
-        st.plotly_chart(pie, theme="streamlit", use_container_width=True,)
+        st.plotly_chart(pie, theme="streamlit", width="stretch")
     # with st_layout.container(border=True):
     #     st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=400)
     with st_layout.container(border=True):
-        st.plotly_chart(polar, theme="streamlit", use_container_width=True, height=400)
+        st.plotly_chart(polar, theme="streamlit", width="stretch", height=400)
 
     return result
