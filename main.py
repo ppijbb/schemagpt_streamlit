@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
       st.markdown("### 📚 SKILLS")
       st.markdown('''
-  <div style="font-family:'Roboto'; font-size: 16px; font-weight: 400; color: black; font-weight: bold;">
+  <div style="font-family:'Roboto'; font-size: 16px; font-weight: 400; color: inherit; font-weight: bold;">
     Language <br>
       <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
       <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=black"> 

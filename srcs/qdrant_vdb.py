@@ -8,7 +8,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from langchain_community.retrievers import BM25Retriever
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import QdrantVectorStore
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -38,15 +38,14 @@ class VectorStore:
         self.client = self._init_client()
         self.embeddings = self._get_embeddings()
         self.embedding_dimensions = self._get_embedding_dimensions()
+        self._ensure_collection()
         self.vectorstore = self._init_vectorstore()
-        self._ensure_collection()       
 
     def _init_vectorstore(self):
-        return Qdrant(
+        return QdrantVectorStore(
             client=self.client,
             collection_name=self.collection_name,
-            embeddings=self.embeddings,
-            
+            embedding=self.embeddings,
         )
 
     def _init_client(self):
@@ -122,11 +121,11 @@ class VectorStore:
         """텍스트로 유사한 문서 검색"""
         try:
             search_vector = self.embeddings.embed_query(query)
-            results = self.client.search(
+            results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=search_vector,
+                query=search_vector,
                 limit=limit
-            )
+            ).points
             return [
                 {
                     "text": result.payload["page_content"],
