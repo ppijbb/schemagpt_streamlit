@@ -6,10 +6,6 @@ import sys
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 os.environ["TOKENIZERS_PARALLELISM"] = "0"
 
-from srcs.st_utils import AppStaticFileHandler
-
-sys.modules["streamlit.web.server.app_static_file_handler"].AppStaticFileHandler = AppStaticFileHandler
-
 import streamlit as st
 
 loop = asyncio.new_event_loop()
