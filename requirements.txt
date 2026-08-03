@@ -42,6 +42,7 @@ catboost
 lightgbm
 xgboost
 shap
+matplotlib
 scikit-learn
 wikipedia
 xmltodict
@@ -53,7 +54,7 @@ ray[all]
 pytesseract
 easyocr
 paddlepaddle
-paddleocr
+paddleocr<3
 supervision
 SpeechRecognition
 inference-cpu

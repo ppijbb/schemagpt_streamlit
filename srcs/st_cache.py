@@ -272,21 +272,9 @@ def get_scale_data():
 def get_dep_scale_model():
     import shap
     from xgboost import XGBClassifier
-    cgi_classifier = XGBClassifier(tree_method="gpu_hist")
+    cgi_classifier = XGBClassifier(tree_method="hist")
     cgi_classifier.load_model("pages/models/bdi_only_xgb.dl_model")
     return cgi_classifier, shap.Explainer(cgi_classifier,)
-
-@st.cache_resource
-def add_static_js():
-    js_dir = f"{os.getcwd()}/static/css"
-    js_file_list = [dir_ for dir_ in os.listdir(js_dir) if dir_.endswith("2.css")]
-
-    js_data = ""
-
-    for js in js_file_list:
-        with open(f"{js_dir}/{js}", "r") as f:
-            js_data += f'<style>\n{f.read()}\n</style>\n'
-    return js_data
 
 # ------------------------------------------------------------------------------------------------
 
