@@ -111,6 +111,10 @@ if 'sio' not in st.session_state:
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="slack bot",
+                       page_icon="💬",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
     app.start()
     st.title('Slack Bot test ground')
     st.markdown('''            
