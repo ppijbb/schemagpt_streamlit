@@ -3,8 +3,6 @@ import streamlit.components.v1 as components
 
 from streamlit_pdf_viewer import pdf_viewer
 
-from srcs.st_cache import get_or_create_eventloop
-
 
 if __name__ == "__main__":
     st.set_page_config(page_title="icu challenge",

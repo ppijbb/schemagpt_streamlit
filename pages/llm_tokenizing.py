@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_pdf_viewer import pdf_viewer
 
-from srcs.st_cache import get_llm_tokenizer, get_or_create_eventloop, get_tokenizer_model_ids
+from srcs.st_cache import get_llm_tokenizer, get_tokenizer_model_ids
 
 
 if __name__ == "__main__":

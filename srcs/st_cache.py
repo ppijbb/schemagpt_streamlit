@@ -2,8 +2,6 @@
 공통 캐시/리소스. 무거운 라이브러리는 사용하는 함수 내부에서만 import (lazy).
 Streamlit Cloud 등에서 get_heq_data/get_scale_data만 쓰는 페이지가 transformers 로드로 실패하지 않도록 함.
 """
-import asyncio
-import json
 import os
 import pickle
 
@@ -21,14 +19,6 @@ def _transformers_pipeline():
         from transformers.pipelines import pipeline as _pipeline
         return _pipeline
 
-
-def get_or_create_eventloop():
-    try:
-        return asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        return loop
 
 # --------------------------------------  Local LLM  ------------------------------------------
 # Initialize LLM
