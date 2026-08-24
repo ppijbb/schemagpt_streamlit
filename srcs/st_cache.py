@@ -124,14 +124,6 @@ def get_prompt_guards():
             model="meta-llama/Prompt-Guard-86M",
             device='cpu',
             label_classes=label_classes)),
-        # ('prompt guard2', LMTextClassifier(
-        #     model="katanemo/Arch-Guard",
-        #     device='cpu',
-        #     label_classes=label_classes)),
-        # ('prompt guard3', LMTextClassifier(
-        #     model="Niansuh/Prompt-Guard-86M",
-        #     device='cpu',
-        #     label_classes=label_classes))
         ]
 
 @st.cache_resource(max_entries=1)

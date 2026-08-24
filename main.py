@@ -24,8 +24,6 @@ if __name__ == "__main__":
 
     with st.sidebar:
         side1, side2, side3 = st.columns(3)
-        # option_menu("Main Menu", ["Home", 'Settings'], 
-        # icons=['house', 'gear'], menu_icon="cast", default_index=1)
         side1.markdown("[![github](https://img.icons8.com/?size=24&id=fmFqQmR0UdsR&format=png)](https://github.com/ppijbb)")
         side2.markdown("[![LinkedIn](https://img.icons8.com/?size=24&id=13930&format=png)](https://www.linkedin.com/in/권환-정-ba37b122b)")
         side3.markdown("[![Gmail](https://img.icons8.com/?size=24&id=37246&format=png)](mailto:ppijbb@gmail.com)")

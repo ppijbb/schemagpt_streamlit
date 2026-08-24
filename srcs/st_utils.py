@@ -40,14 +40,6 @@ def colorize_multiselect_options() -> None:
 
 def draw_mermaid(code: str) -> None:
     st.html(
-#         f"""<pre class="mermaid">
-# {code}
-# </pre>
-# <script type="module">
-#    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-#    mermaid.initialize({{ startOnLoad: true }});
-# </script>
-#         """,
         f"""
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -70,5 +62,4 @@ def draw_mermaid(code: str) -> None:
                 console.error('Mermaid error:', err);
             }};
         </script>""",
-        # scrolling=True,        
     )
