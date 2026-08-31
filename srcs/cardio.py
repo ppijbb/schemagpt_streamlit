@@ -406,22 +406,6 @@ def scale_severity(args, st_layout):
     pie = make_subplots(rows=1, cols=2,
                         specs=[[{"type": "indicator", "t": 0.1}, {"type": "sunburst", "t": 0.1}]],
                         subplot_titles=("위험도", "총 점",))
-    # fig = go.Figure(
-    #     go.Sunburst(
-    #         name="결과",
-    #         labels=label + generals + nutritions + patterns,
-    #         parents=[""] +
-    #                 label + ["일반"] * len(generals[1:]) +
-    #                 label + ["영양"] * len(nutritions[1:]) +
-    #                 label + ["패턴"] * len(patterns[1:]),
-    #         values=[score,] +
-    #                [sum(gen_score)] + gen_score +
-    #                [sum(nut_score)] + nut_score +
-    #                [sum(pat_score)] + pat_score,
-    #         branchvalues='total',
-    #         insidetextorientation='radial'
-    #     ),
-    # )
     user_score = {k.split("_")[1] : v for k, v in args.items() if k != "user"}
     critical_scores = np.array(list(user_score.values()))==3
     over_mean_scores = np.array(list(user_score.values())) > np.array(list(result["other_mean"].values()))
@@ -481,8 +465,6 @@ def scale_severity(args, st_layout):
 """)
     with st_layout.container(border=True):
         st.plotly_chart(pie, theme="streamlit", width="stretch")
-    # with st_layout.container(border=True):
-    #     st.plotly_chart(fig, theme="streamlit", use_container_width=True, height=400)
     with st_layout.container(border=True):
         st.plotly_chart(polar, theme="streamlit", width="stretch", height=400)
 

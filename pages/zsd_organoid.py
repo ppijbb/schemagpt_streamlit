@@ -135,12 +135,6 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
         ''', unsafe_allow_html=True)
 
-    # with st.sidebar:
-    #     st.page_link("pages/cardio.py",)
-    #     st.page_link("pages/dep_peptide.py",)
-    #     st.page_link("pages/facial.py",)
-    #     st.page_link("pages/zsd_organoid.py", )
-
     new_label = st.text_input(
         label="라벨 추가하기",
         placeholder="write label here with english",
