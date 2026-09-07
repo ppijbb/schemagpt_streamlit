@@ -60,17 +60,6 @@ def get_zsc_detector():
     checkpoint = "google/owlvit-base-patch32"
     return pipeline(model=checkpoint, task="zero-shot-object-detection")
 
-@st.cache_resource(max_entries=1)
-def get_yolo_detector():
-    pipeline = _transformers_pipeline()
-    checkpoint = "hustvl/yolos-small"
-    return pipeline(model=checkpoint, task="object-detection")
-
-@st.cache_resource(max_entries=1)
-def get_birefnet():
-    from transformers import AutoModelForImageSegmentation
-    model_id = "ZhengPeng7/BiRefNet"
-    return AutoModelForImageSegmentation(model_id, trust_remote_code=True)
 # ------------------------------------------------------------------------------------------------
 
 # --------------------------------------   LLM Tokenizer ------------------------------------------

@@ -1,10 +1,7 @@
 import asyncio
-import requests
-import json
 import numpy as np
 import pandas as pd
 import streamlit as st
-import pydeck as pdk
 
 import time
 import datetime
@@ -65,52 +62,45 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
         ''', unsafe_allow_html=True)
     
-    options = Options()
-    options.add_argument("--headless")  # Run Chrome in headless mode
-    options.add_argument("--incognito")  # Enable incognito mode
-    options.add_argument('--disable-gpu') # Disable the GPU acceleration
-    options.add_argument('--log-level=3') # Disable the log
-    driver = webdriver.Chrome(options=options)
+    if st.button("일정 가져오기 (Scrape)"):
+        options = Options()
+        options.add_argument("--headless")  # Run Chrome in headless mode
+        options.add_argument("--incognito")  # Enable incognito mode
+        options.add_argument('--disable-gpu') # Disable the GPU acceleration
+        options.add_argument('--log-level=3') # Disable the log
+        driver = webdriver.Chrome(options=options)
 
-    # Selenium web scraping
-    timer = st.progress(0, "wait for loading")
-    for i in range(100):
-        time.sleep(0.03)
-        timer.progress(i+1, "wait for loading")
-    
-    # Open the webpage
-    driver.get(f"https://blip.kr/schedule/{get_month()}")
-    element = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, "footer-mobile-container")))
-    driver.execute_script("return arguments[0].scrollIntoView(true);", element)
-    # Get the HTML content
-    search_box = driver.find_elements(By.CLASS_NAME, "monthly-schedule-page-canvan-item")
+        # Selenium web scraping
+        timer = st.progress(0, "wait for loading")
+        for i in range(100):
+            time.sleep(0.03)
+            timer.progress(i+1, "wait for loading")
 
-    timer = st.progress(0, "process element")
-    for i, result in enumerate(search_box):
-        time.sleep(st.secrets["SCRAP_SEC"])
-        result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
-        time.sleep(st.secrets["SCRAP_SEC"])
-        element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
-        for content in element:
+        # Open the webpage
+        driver.get(f"https://blip.kr/schedule/{get_month()}")
+        element = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CLASS_NAME, "footer-mobile-container")))
+        driver.execute_script("return arguments[0].scrollIntoView(true);", element)
+        # Get the HTML content
+        search_box = driver.find_elements(By.CLASS_NAME, "monthly-schedule-page-canvan-item")
+
+        timer = st.progress(0, "process element")
+        for i, result in enumerate(search_box):
             time.sleep(st.secrets["SCRAP_SEC"])
-            schedule_title = content.find_element(By.CLASS_NAME, 'schedule-card-title')
+            result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
             time.sleep(st.secrets["SCRAP_SEC"])
-            schedule_date = content.find_element(By.CLASS_NAME, 'schedule-card-date')
-            time.sleep(st.secrets["SCRAP_SEC"])
-            schedule_artist = content.find_element(By.CLASS_NAME, 'schedule-card-artist') 
-            try:
-                st.markdown(f"{schedule_artist.text} {schedule_date.text} {schedule_title.text}")
-            except:
-                pass
-        timer.progress(i+1, "process element")
+            element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
+            for content in element:
+                time.sleep(st.secrets["SCRAP_SEC"])
+                schedule_title = content.find_element(By.CLASS_NAME, 'schedule-card-title')
+                time.sleep(st.secrets["SCRAP_SEC"])
+                schedule_date = content.find_element(By.CLASS_NAME, 'schedule-card-date')
+                time.sleep(st.secrets["SCRAP_SEC"])
+                schedule_artist = content.find_element(By.CLASS_NAME, 'schedule-card-artist')
+                try:
+                    st.markdown(f"{schedule_artist.text} {schedule_date.text} {schedule_title.text}")
+                except:
+                    pass
+            timer.progress(i+1, "process element")
 
-    # Close the browser
-    driver.quit()
-
-    # Parse the HTML content
-    # Use your preferred HTML parsing library here
-    # For example, you can use BeautifulSoup
-
-    # Extract the desired information from the parsed HTML
-    # For example, you can find elements by tag name, class, or id
-    # and extract their text or attributes
+        # Close the browser
+        driver.quit()

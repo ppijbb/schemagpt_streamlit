@@ -10,12 +10,9 @@ from datetime import datetime as dt
 from PIL import ImageFont, ImageDraw, Image
 import speech_recognition as sr
 import tensorflow as tf
-import keras
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
-from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image as _IMG
 from streamlit_webrtc.models import VideoProcessorBase, AudioProcessorBase
-import speech_recognition as sr
 from srcs.st_cache import get_facial_processors
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"

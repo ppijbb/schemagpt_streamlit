@@ -53,22 +53,3 @@ Observation: No good DuckDuckGo Search Result was found
 Final Answer: 언제부터 그러셨던 걸까요? 이야기하면서 같이 찾아볼까요
 </example>
 """
-
-
-prefix_prompt = """Answer the following dialog as a psychotherapist. You have access to the following tools:"""
-
-format_instructions ="""주어진 포맷을 이용하세요:
-Question: the input question you must answer
-Thought: you should always think about what to do
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action(always english only)
-Observation: the result of the action
-... (this Thought/Action/Action Input/Observation can repeat N times)
-Thought: I now know the final answer
-Final Answer: the final answer to the original input question
-"""
-
-suffix_prompt = """Begin!
-Question: {input}
-Thought: {agent_scratchpad}
-"""

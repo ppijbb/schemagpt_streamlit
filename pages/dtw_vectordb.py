@@ -53,10 +53,6 @@ if __name__ == "__main__":
         st.session_state["shared"] = True
 
     with st.sidebar:
-        # st.page_link("pages/cardio.py",)
-        # st.page_link("pages/dep_peptide.py",)
-        # st.page_link("pages/facial.py",)
-
         try:
             openai_api_key = st.secrets["OPENAI_API_KEY"]
         except Exception as e:

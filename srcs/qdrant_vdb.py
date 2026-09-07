@@ -10,7 +10,7 @@ from qdrant_client.http import models
 from langchain_community.retrievers import BM25Retriever
 from langchain_qdrant import QdrantVectorStore
 from langchain_core.documents import Document
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import (
@@ -162,16 +162,6 @@ class VectorStore:
 
 
 # Adaptive RAG components
-def generate_queries(question: str) -> List[str]:
-    llm = get_llm()
-    prompt = ChatPromptTemplate.from_messages([
-            # Start of Selection
-            ("system", "제공된 질문에 대해 관련 컨텍스트를 검색하기 위해 3가지 다른 버전의 질문을 생성하세요. 다양하게 만드세요."),
-            ("user", "{question}")
-    ])
-    chain = prompt | llm | LineListOutputParser()
-    return chain.invoke({"question": question})
-
 def get_adaptive_retriever(vectorstore):
     # Base vector retriever
     vector_retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5})

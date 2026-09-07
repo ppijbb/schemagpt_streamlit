@@ -58,9 +58,8 @@ def show(key:str, track=None):
     if webrtc_ctx.state.signalling:
         webrtc_ctx.audio_processor.code = None
     
-    if webrtc_ctx.input_video_track:
-        #TODO: add mix track 
-        mix_track.add_input_track(webrtc_ctx.input_video_track)
+    if webrtc_ctx.input_video_track and track is not None:
+        track.add_input_track(webrtc_ctx.input_video_track)
 
     with server_state_lock["webrtc_contexts"]:
         webrtc_contexts: List[WebRtcStreamerContext] = server_state["webrtc_contexts"]
@@ -131,20 +130,6 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=black"> 
         ''', unsafe_allow_html=True)
     st.markdown("마이크와 웹캠을 이용합니다.")
-    # with st.sidebar:
-    #     st.page_link("pages/cardio.py",)
-    #     st.page_link("pages/dep_peptide.py",)
-    #     st.page_link("pages/facial.py",)
-    # hide_menu_style = """
-    #         <style>
-    #         .css-1avcm0n {visibility: hidden;}
-    #         .css-18ni7ap {visibility: hidden;}
-    #         .block-container {padding: 0rem 1rem 10rem;}
-    #         .block-container div {justify-content: center;gap: 0rem;}
-    #         video {}
-    #         </style>
-    #         """
-    # st.markdown(hide_menu_style, unsafe_allow_html=True)
     with server_state_lock["rooms"]:
         if "rooms" not in server_state:
             server_state["rooms"] = []

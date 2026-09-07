@@ -1,11 +1,8 @@
 import av
 import string
 import asyncio
-from io import BytesIO
 
-from PIL import Image, ImageDraw
-import supervision as svg
-# from inference.models import YOLOWorld
+from PIL import Image
 
 import streamlit as st
 
@@ -14,7 +11,7 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from pages.rtc.config import RTC_CONFIGURATION
 from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, detect_objects_in_image, img_convert
-from srcs.object_tracking import MediaPlayer, get_media_player
+from srcs.object_tracking import MediaPlayer
 from srcs.st_utils import hide_radio_value_md, colorize_multiselect_options
 
 
@@ -97,11 +94,6 @@ def onchange_file():
 def onchange_cam():
     st.session_state.image_source = "cam"
     onchange_image()
-
-
-def get_web_media():
-    url = "https://github.com/intel-iot-devkit/sample-videos/raw/master/bottle-detection.mp4"
-    return get_media_player(url=url)
 
 
 if __name__ == "__main__":

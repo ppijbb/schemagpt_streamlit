@@ -1,6 +1,5 @@
 import asyncio
 import requests
-import json
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -145,18 +144,17 @@ if __name__ == "__main__":
                             format="%.6f",)
 
     with search_section:
-        tools = [DuckDuckGoSearchRun(
-                    api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
-                                                           region="kr-kr",
-                                                           max_results=5,
-                                                           source="text")),
-                 WikipediaQueryRun(
-                     api_wrapper=WikipediaAPIWrapper()),
-                 PubmedQueryRun(),
-                #  IonicTool().tool()
-                 ] + load_tools(["arxiv"],)
-        
-        if query := st.chat_input(placeholder="검색",):        
+        if query := st.chat_input(placeholder="검색",):
+            tools = [DuckDuckGoSearchRun(
+                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
+                                                               region="kr-kr",
+                                                               max_results=5,
+                                                               source="text")),
+                     WikipediaQueryRun(
+                         api_wrapper=WikipediaAPIWrapper()),
+                     PubmedQueryRun(),
+                     ] + load_tools(["arxiv"],)
+
             payload.update({
                 "cx": st.session_state.lon,
                 "cy": st.session_state.lat

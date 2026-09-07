@@ -1,14 +1,9 @@
 import os
-import sys
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from srcs.cardio import heq, scale_severity
 from srcs.st_utils import hide_radio_value_md
-import ray
-
-# ray.init()
 
 if "test" not in st.session_state:
     st.session_state.test = ['user',

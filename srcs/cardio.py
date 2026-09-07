@@ -1,5 +1,4 @@
 import os
-import sys
 import math
 import numpy as np
 import pandas as pd
@@ -8,7 +7,6 @@ import shap
 from srcs.st_cache import get_heq_data, get_scale_data
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import ray
 
 heq_data = get_heq_data()
 scale_data = get_scale_data()

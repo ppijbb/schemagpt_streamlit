@@ -1,14 +1,8 @@
 import os
 import asyncio
-import requests
-import json
 import numpy as np
-import pandas as pd
 import streamlit as st
-import pytesseract
-import easyocr
 import torch
-import cv2
 from PIL import Image
 
 from srcs.st_cache import get_ocr

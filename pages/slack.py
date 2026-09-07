@@ -3,51 +3,13 @@ import socketio
 import asyncio
 import logging
 import requests
-from threading import Lock
-import os
-from slack_bolt import App
 from slack_bolt.app.async_app import AsyncApp
-from slack_bolt.oauth.oauth_settings import OAuthSettings
-from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
-from slack_sdk.oauth.installation_store import FileInstallationStore
-from slack_sdk.oauth.state_store import FileOAuthStateStore
-from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
 
-# oauth_settings = AsyncOAuthSettings(
-    # client_id=st.secrets["SLACK_CLIENT_ID"],
-    # client_secret=st.secrets["SLACK_CLIENT_SECRET"],
-    # scopes=[
-    #     "channels:read", "channels:history", "channels:join", "channels:manage", 
-    #     "channels:write.invites", "channels:write.topic", 
-    #     "chat:write", "chat:write.customize", "chat:write.public",
-    #     "conversations.connect:manage", "conversations.connect:read",
-    #     "emoji:read", 
-    #     "commands",
-    #     "files:read", "files:write",
-    #     "calls:read", "calls:write",
-    #     "canvases:read", "canvases:write", 
-    #     "groups:read", "groups:history", "groups:write",
-    #     "groups:write.invites", "groups:write.topic",
-    #     "im:history", "im:read", "im:write", "im:write.topic",
-    #     "links:write", "links.embed:write",
-    #     "incoming-webhook",
-    #     "reaction:write",
-    #     "app_mentions:read", 
-    #     "bookmarks:read", "bookmarks:write",
-    #     "workflow.steps:execute",
-    #     ],
-    # user_scopes=[],
-    # installation_store=FileInstallationStore(base_dir="./data/installations"),
-    # state_store=FileOAuthStateStore(expiration_seconds=100, base_dir="./data/states")
-# )
-
 app = AsyncApp(
-    # signing_secret=st.secrets["SLACK_SIGNING_SECRET"],
     token=st.secrets["SLACK_BOT_TOKEN"],
     oauth_settings=None
-    # oauth_settings=oauth_settings
 )
 SLACK_BOT_ENDPOINT = f"https://slack.com/api/chat.postMessage?token={st.secrets['SLACK_BOT_TOKEN']}&channel=%s&text=%s"
 SLACK_EVENT_ENDPOINT = "https://slack.com/api/events.listen"
@@ -105,8 +67,6 @@ async def message_hello(message, say):
 
 if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
-    # handler = SocketModeHandler(app, st.secrets["SLACK_APP_TOKEN"])
-    # handler.start()
     asyncio.run(sock())
 
 

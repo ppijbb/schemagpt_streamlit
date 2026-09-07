@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_pdf_viewer import pdf_viewer
 
 
 if __name__ == "__main__":
@@ -34,5 +33,3 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=black">
         <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
         ''', unsafe_allow_html=True)
-    
-    # pdf_viewer("pages/image/dep_peptide/DepressReport.pdf", width=450, height=300)

@@ -1,6 +1,5 @@
 import asyncio
 import requests
-import json
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -131,14 +130,9 @@ if __name__ == "__main__":
         <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=black">
         <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
         ''', unsafe_allow_html=True)
-    # with st.sidebar:
-    #     st.page_link("pages/cardio.py",)
-    #     st.page_link("pages/dep_peptide.py",)
-    #     st.page_link("pages/facial.py",)
-    
+
     map_section, search_section = st.columns(2)
     with map_section:
-        # map_con = st.expander(label="지도보기")
         st.pydeck_chart(pdk.Deck(
             map_style='mapbox://styles/mapbox/outdoors-v11',
             initial_view_state=pdk.ViewState(
@@ -180,22 +174,20 @@ if __name__ == "__main__":
         y = st.number_input(label='y',
                             key="lat",
                             step=0.000001,
-                            format="%.6f",)        
-    #    with map_con:
-     
+                            format="%.6f",)
+
     with search_section:
-        tools = [DuckDuckGoSearchRun(
-                    api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
-                                                           region="kr-kr",
-                                                           max_results=5,
-                                                           source="text")),
-                 WikipediaQueryRun(
-                     api_wrapper=WikipediaAPIWrapper()),
-                 PubmedQueryRun(),
-                #  IonicTool().tool()
-                 ] + load_tools(["arxiv"],)
-        
-        if query := st.chat_input(placeholder="검색",):        
+        if query := st.chat_input(placeholder="검색",):
+            tools = [DuckDuckGoSearchRun(
+                        api_wrapper=DuckDuckGoSearchAPIWrapper(time="y",
+                                                               region="kr-kr",
+                                                               max_results=5,
+                                                               source="text")),
+                     WikipediaQueryRun(
+                         api_wrapper=WikipediaAPIWrapper()),
+                     PubmedQueryRun(),
+                     ] + load_tools(["arxiv"],)
+
             payload.update({
                 "cx": st.session_state.lon,
                 "cy": st.session_state.lat
