@@ -13,9 +13,23 @@ from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, WikipediaAPIWrapper
 
+from srcs.st_utils import missing_secrets
+
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
+
+REQUIRED_SECRETS = ["SERVICE_KEY", "CONCERT_SECRET_KEY", "MAP_SERVICE_ID", "MAP_SECRET_KEY",
+                    "MONHWA_API_KEY", "MONHWA_EXC_API_KEY"]
+_missing_secrets = missing_secrets(*REQUIRED_SECRETS)
+if _missing_secrets:
+    st.set_page_config(page_title="concert search",
+                       page_icon="🕶",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    st.title('🤹‍♀️ Concert info Searcher 🙌')
+    st.info(f"이 데모는 API 키 설정이 필요합니다 (누락: {', '.join(_missing_secrets)}).")
+    st.stop()
 
 
 open_api_url = "http://kopis.or.kr/openApi/restful"

@@ -10,6 +10,8 @@ from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
 from langchain_community.tools.pubmed.tool import PubmedQueryRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper, WikipediaAPIWrapper
 
+from srcs.st_utils import missing_secrets
+
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
@@ -57,19 +59,7 @@ def add_pin_in_map(lat: float, lon: float, size: float, color: float):
 headers = {
     "Content-Type": "application/json",
 }
-# 반경 내 상권 정보 조회 API
-payload = {
-    "serviceKey": st.secrets["SERVICE_KEY"],
-    "pageNo": 1,
-    "numOfRows": 20,
-    "radius": 500,
-    "cx": st.session_state.lon,
-    "cy": st.session_state.lat,
-    "indsLclsCd": "G2",
-    "indsMclsCd": "G220",
-    "indsSclsCd": "G22001",
-    "type": "json"
-}
+REQUIRED_SECRETS = ["SERVICE_KEY", "MAP_SERVICE_ID", "MAP_SECRET_KEY"]
 
 
 if __name__ == "__main__":
@@ -78,6 +68,25 @@ if __name__ == "__main__":
                        layout="wide",
                        initial_sidebar_state="auto",)
     st.title('🐶 Dog Coffee Searcher 🦮')
+
+    missing = missing_secrets(*REQUIRED_SECRETS)
+    if missing:
+        st.info(f"이 데모는 API 키 설정이 필요합니다 (누락: {', '.join(missing)}).")
+        st.stop()
+
+    # 반경 내 상권 정보 조회 API
+    payload = {
+        "serviceKey": st.secrets["SERVICE_KEY"],
+        "pageNo": 1,
+        "numOfRows": 20,
+        "radius": 500,
+        "cx": st.session_state.lon,
+        "cy": st.session_state.lat,
+        "indsLclsCd": "G2",
+        "indsMclsCd": "G220",
+        "indsSclsCd": "G22001",
+        "type": "json"
+    }
     st.markdown('''            
         ## 프로젝트 소개
         

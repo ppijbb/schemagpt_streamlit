@@ -6,6 +6,19 @@ import requests
 from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
+from srcs.st_utils import missing_secrets
+
+
+REQUIRED_SECRETS = ["SLACK_BOT_TOKEN", "SLACK_APP_TOKEN", "SLACK_CLIENT_ID"]
+missing = missing_secrets(*REQUIRED_SECRETS)
+if missing:
+    st.set_page_config(page_title="slack bot",
+                       page_icon="💬",
+                       layout="wide",
+                       initial_sidebar_state="auto",)
+    st.title('Slack Bot test ground')
+    st.info(f"이 데모는 Slack 앱 설정이 필요합니다 (누락: {', '.join(missing)}).")
+    st.stop()
 
 app = AsyncApp(
     token=st.secrets["SLACK_BOT_TOKEN"],

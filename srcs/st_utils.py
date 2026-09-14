@@ -17,6 +17,15 @@ from __future__ import annotations
 import streamlit as st
 
 
+def missing_secrets(*keys: str) -> list[str]:
+    """Return the subset of `keys` not available in st.secrets, without
+    raising when no secrets.toml exists at all."""
+    try:
+        return [key for key in keys if key not in st.secrets]
+    except Exception:
+        return list(keys)
+
+
 def hide_radio_value_md():
     st.markdown(
         body="""

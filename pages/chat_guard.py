@@ -22,7 +22,11 @@ if __name__ == "__main__":
                        layout="wide",
                        initial_sidebar_state="auto",)
     st.spinner("Loading Guard Model...")
-    guard = get_guard_model()
+    try:
+        guard = get_guard_model()
+    except Exception as e:
+        guard = None
+        st.warning(f"가드 모델을 불러오지 못해 프롬프트 위협도 평가 없이 진행합니다. ({e})")
     st.title('🛡️ LLM Guarded Chatbot App')
     st.markdown('''
 
@@ -76,7 +80,7 @@ if __name__ == "__main__":
 
     if prompt := chat_section.chat_input(placeholder="프롬프트 침해 시도하기", key=chat_section):
         chat_histories.chat_message("user").markdown(prompt)
-        prompt_threat = guard.predict([prompt])[0]
+        prompt_threat = guard.predict([prompt])[0] if guard is not None else "N/A"
 
         llm = DDG_LLM()
         tools = build_search_tools(include_arxiv=True, ddg_max_results=10)
