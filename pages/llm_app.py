@@ -24,7 +24,11 @@ if __name__ == "__main__":
                        page_icon="🤖",
                        layout="wide",
                        initial_sidebar_state="auto",)
-    vector_db = get_utterance_data()
+    try:
+        vector_db = get_utterance_data()
+    except Exception as e:
+        vector_db = None
+        st.warning(f"발화 벡터 데이터베이스를 불러오지 못해 스키마 분석 없이 진행합니다. ({e})")
     st.title('🤖 LLM based Chatbot App')
     st.markdown('''
 
@@ -145,6 +149,10 @@ if __name__ == "__main__":
         if col2_prompt := col2.chat_input(placeholder="지치고 힘들어요", key=col2):
             st.session_state.messages2.append({"role": "user", "content": col2_prompt})
             col2_chat_container.chat_message("user").write(col2_prompt)
+            if vector_db is None:
+                st.info("스키마 분석용 벡터 데이터베이스를 사용할 수 없습니다.")
+                st.stop()
+
             with torch.inference_mode():
                 searched_result = vector_db.get_relevant_documents(col2_prompt)[0]
                 maladaptive_schema = schema_therapy.MAL_IDS[searched_result.metadata["maladaptive"]]

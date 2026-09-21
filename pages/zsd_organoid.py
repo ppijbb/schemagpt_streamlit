@@ -241,13 +241,16 @@ if __name__ == "__main__":
                          width="stretch")
                 if st.session_state.detect_button:
                     with st.spinner('Detecting objects... it takes time....'):
-                        found_objects = detect_objects_in_image(image=st.session_state.target_image,
-                                                                labels=selected_labels, )
-                        st.session_state.detected_objects = found_objects["predictions"]
-                        if bool(found_objects):
-                            st.session_state.detected_image = found_objects["image"]
-                        else:
-                            st.session_state.detected_image = st.session_state.target_image
+                        try:
+                            found_objects = detect_objects_in_image(image=st.session_state.target_image,
+                                                                    labels=selected_labels, )
+                            st.session_state.detected_objects = found_objects["predictions"]
+                            if bool(found_objects):
+                                st.session_state.detected_image = found_objects["image"]
+                            else:
+                                st.session_state.detected_image = st.session_state.target_image
+                        except Exception as e:
+                            st.warning(f"객체 탐지 모델을 불러오지 못했습니다. ({e})")
                     st.session_state.detect_button = False
 
                 if st.session_state.detected_image is not None:
