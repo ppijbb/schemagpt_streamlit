@@ -90,4 +90,9 @@ if __name__ == "__main__":
                        page_icon="🔡",
                        layout="wide",
                        initial_sidebar_state="auto",)
-    view(reader=get_ocr())
+    try:
+        ocr_reader = get_ocr()
+    except Exception as e:
+        st.warning(f"OCR 모델을 불러오지 못했습니다. ({e})")
+        st.stop()
+    view(reader=ocr_reader)

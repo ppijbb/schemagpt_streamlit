@@ -15,8 +15,6 @@ from streamlit_webrtc.models import VideoProcessorBase, CallbackAttachableProces
 
 from srcs.st_cache import get_zsc_detector
 
-detector = get_zsc_detector()
-
 
 class MediaPlayer(MediaPlayer):
     def __init__(
@@ -180,7 +178,7 @@ def img_convert(img) -> np.array:
 @torch.inference_mode()
 def detect_objects_in_image(image, labels, ):
     image = Image.fromarray(image)
-    predictions = detector(image,
+    predictions = get_zsc_detector()(image,
                            candidate_labels=labels,)
     draw = ImageDraw.Draw(image)
     for prediction in predictions:
