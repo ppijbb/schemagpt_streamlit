@@ -27,7 +27,6 @@ from langchain.retrievers import (
     MultiQueryRetriever,
 )
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from langchain.retrievers.multi_query import LineListOutputParser
 
 from srcs.st_cache import get_llm
 

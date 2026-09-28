@@ -36,6 +36,9 @@ if 'map' not in st.session_state:
         }
     )
 
+SCRAP_SEC = st.secrets.get("SCRAP_SEC", 0.5)
+
+
 def get_month(date=(datetime.datetime.now() + datetime.timedelta(hours=9)).strftime("%Y%m")):
     year = int(date[:4])
     month = int(date[4:])
@@ -44,7 +47,7 @@ def get_month(date=(datetime.datetime.now() + datetime.timedelta(hours=9)).strft
 
 if __name__ == "__main__":
     st.set_page_config(page_title="schedule scrapper",
-                       page_icon="🏪",
+                       page_icon="📅",
                        layout="wide",
                        initial_sidebar_state="auto",)
     st.title('🐶 Idol Schedule Scrapper ')
@@ -85,16 +88,16 @@ if __name__ == "__main__":
 
         timer = st.progress(0, "process element")
         for i, result in enumerate(search_box):
-            time.sleep(st.secrets["SCRAP_SEC"])
+            time.sleep(SCRAP_SEC)
             result = result.find_element(By.CLASS_NAME, 'schedule-card-list-list')
-            time.sleep(st.secrets["SCRAP_SEC"])
+            time.sleep(SCRAP_SEC)
             element = result.find_elements(By.CLASS_NAME, 'schedule-card-container')
             for content in element:
-                time.sleep(st.secrets["SCRAP_SEC"])
+                time.sleep(SCRAP_SEC)
                 schedule_title = content.find_element(By.CLASS_NAME, 'schedule-card-title')
-                time.sleep(st.secrets["SCRAP_SEC"])
+                time.sleep(SCRAP_SEC)
                 schedule_date = content.find_element(By.CLASS_NAME, 'schedule-card-date')
-                time.sleep(st.secrets["SCRAP_SEC"])
+                time.sleep(SCRAP_SEC)
                 schedule_artist = content.find_element(By.CLASS_NAME, 'schedule-card-artist')
                 try:
                     st.markdown(f"{schedule_artist.text} {schedule_date.text} {schedule_title.text}")

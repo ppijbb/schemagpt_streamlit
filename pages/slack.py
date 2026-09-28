@@ -3,6 +3,7 @@ import socketio
 import asyncio
 import logging
 import requests
+import threading
 from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
@@ -80,7 +81,7 @@ async def message_hello(message, say):
 
 if 'sio' not in st.session_state:
     st.session_state['sio'] = socketio.Client()
-    asyncio.run(sock())
+    threading.Thread(target=lambda: asyncio.run(sock()), daemon=True).start()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,3 @@
-import os
-
 import streamlit as st
 
 from srcs.cardio import heq, scale_severity

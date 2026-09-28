@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 import pydeck as pdk
 import datetime as dt
-import xml
+import xml.etree.ElementTree as ET
 import uuid
 
 from langchain_community.agent_toolkits.load_tools import load_tools
@@ -280,7 +280,7 @@ if __name__ == "__main__":
                 response = requests.get(url=f"{open_api_url}/pblprfr?", 
                                         headers=headers, 
                                         params=concert_payload)
-                elements = xml.etree.ElementTree.fromstring(response.text)
+                elements = ET.fromstring(response.text)
                 # st.markdown(response.text)
                 for e in elements:
                     items = {i.tag: i.text for i in e}
@@ -288,14 +288,14 @@ if __name__ == "__main__":
                     details_response = requests.get(url=f"{open_api_url}/pblprfr/{mt20}?", 
                                                     headers=headers, 
                                                     params=detail_payload)
-                    detail_elements = xml.etree.ElementTree.fromstring(details_response.text)
+                    detail_elements = ET.fromstring(details_response.text)
                     for e in detail_elements:
                         items.update({f"detail_{i.tag}": i.text for i in e})
                     mt10 = items["detail_mt10id"]
                     details_response = requests.get(url=f"{open_api_url}/prfplc/{mt10}?", 
                                                     headers=headers, 
                                                     params=detail_payload)
-                    detail_elements = xml.etree.ElementTree.fromstring(details_response.text)
+                    detail_elements = ET.fromstring(details_response.text)
                     for e in detail_elements:
                         items.update({f"place_{i.tag}": i.text for i in e})
                     if not isinstance(items, dict):

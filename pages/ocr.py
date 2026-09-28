@@ -18,10 +18,7 @@ if "image_list" not in st.session_state:
 def ocr_img_to_bgr_array(image: Image.Image):
     if image.mode == "RGB":
         return np.array(image)[..., ::-1]
-    elif image.mode == "BRG":
-        return np.array(image)
-    else:
-        ocr_img_to_bgr_array(image.convert("RGB"))
+    return ocr_img_to_bgr_array(image.convert("RGB"))
 
 
 def view(reader):
