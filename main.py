@@ -86,6 +86,7 @@ if __name__ == "__main__":
       st.page_link("pages/shop_search.py",label="🔗 [toy project] 애견 관련 기업 정보 수집 기능")
       st.page_link("pages/ocr.py",label="🔗 [toy project] 공연 포스터 OCR 데이터 수집 기능")
       st.page_link("pages/concert_search.py",label="🔗 [toy project] 실시간 공연 정보 수집 및 공연 정보 자동 검색 기능")
+      st.page_link("pages/schedule_scraper.py",label="🔗 [toy project] 아이돌 스케줄 웹 스크래핑")
       st.page_link("pages/rtc_call.py",label="🔗 [toy project] WebRTC 기반 다인원 음성 채팅")
       st.page_link("pages/slack.py",label="🔗 [toy project] SlackBot 만들기")
 

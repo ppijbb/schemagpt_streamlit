@@ -32,8 +32,8 @@ if 'bright_ratio' not in st.session_state:
     st.session_state.bright_ratio = 1.0
 if 'use_normalizing' not in st.session_state:
     st.session_state.use_normalizing = False
-if 'use_denosing_color' not in st.session_state:
-    st.session_state.use_denosing_color = False
+if 'use_denoising_color' not in st.session_state:
+    st.session_state.use_denoising_color = False
 if 'use_morphology' not in st.session_state:
     st.session_state.use_morphology = False
 if 'detected_objects' not in st.session_state:

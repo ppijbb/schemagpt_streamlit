@@ -107,7 +107,7 @@ class LMTextClassifier(BaseEstimator, ClassifierMixin):
             각 샘플에 대한 클래스별 확률 (numpy 배열).
         """
         result = []
-        for label_dict in self.model(X, return_all_scores=True):
+        for label_dict in self.model(X, top_k=None):
             result += [[data['score'] for data in label_dict]]
         return np.array(result)
 
