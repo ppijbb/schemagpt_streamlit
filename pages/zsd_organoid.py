@@ -9,7 +9,6 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
 from pages.rtc.config import RTC_CONFIGURATION
-from pages.rtc.public_stun import public_stun_server_list
 from srcs.object_tracking import VideoProcessor, detect_objects_in_image, img_convert
 from srcs.object_tracking import MediaPlayer
 from srcs.st_utils import hide_radio_value_md, colorize_multiselect_options
@@ -217,7 +216,7 @@ if __name__ == "__main__":
         st.toggle(label="denoising color",
                   key="use_denoising_color")
         for i, c in enumerate(st.columns(4)):
-            c.number_input(label=f"denoising color",
+            c.number_input(label="denoising color",
                            key=f"denoising_color{i}",
                            step=1,
                            on_change=colorize_multiselect_options,
@@ -225,7 +224,7 @@ if __name__ == "__main__":
         st.toggle(label="morphology color",
                   key="use_morphology")
         for i, c in enumerate(st.columns(2)):
-            c.number_input(label=f"morphology kernel",
+            c.number_input(label="morphology kernel",
                            key=f"morphology_kernel{i}",
                            step=1,
                            on_change=colorize_multiselect_options,

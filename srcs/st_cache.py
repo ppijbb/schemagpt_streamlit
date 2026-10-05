@@ -106,7 +106,7 @@ def get_llm_tokenizer(model_id: str):
 # --------------------------------------  Prompt Guard  ------------------------------------------
 @st.cache_resource(max_entries=1)
 def get_prompt_guards():
-    from .skorch_ensemble import LMTextClassifier, CustomVotingClassifier
+    from .skorch_ensemble import LMTextClassifier
     label_classes = ["BENIGN", "INJECTION", "JAILBREAK"]
     return [
         ('prompt guard1', LMTextClassifier(

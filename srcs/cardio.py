@@ -1,9 +1,7 @@
-import os
 import math
 import numpy as np
 import pandas as pd
 import streamlit as st
-import shap
 from srcs.st_cache import get_heq_data, get_scale_data
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -69,7 +67,7 @@ def make_gauge(user_level, risk_lv,):
             mode="gauge+number", # "gauge+number+delta"
             value=3-np.argmax(user_level)+1,
             domain={'x': [0.15, 0.85], 'y': [0.15, 0.85]},
-            title={'text': f"분석 결과", 'font': {'size': 24}},
+            title={'text': "분석 결과", 'font': {'size': 24}},
             # delta={'reference': 4, 'increasing': {'color': "RebeccaPurple"}},
             number={"suffix": f"단계: {risk_lv}", "valueformat": ".0", 'font': {'size': 30, 'color': 'black'}},
             gauge={
@@ -393,7 +391,7 @@ def scale_severity(args, st_layout):
         "risk_lv": risk_lv,
         "other_mean": dict(zip([k.split("_")[1] for k in args.keys() if k != "user"], D_mean))
     }
-    label = [f"총점",]
+    label = ["총점",]
     generals = ["일반", "자신의 건강", "규칙적 운동", "보조제 복용",]
     nutritions = ["영양", "Vit E", "Vit B2", "동물성 단백질", "Protein",]
     patterns = ["패턴", "피로", "무기력", "음주 횟수", "음주량", "신경질", "중강도 신체활동", "불안", "시선 어려움", "대면 어려움"]

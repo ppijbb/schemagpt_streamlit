@@ -11,7 +11,7 @@ from PIL import ImageFont, ImageDraw, Image
 from aiortc.contrib.media import MediaPlayer, PlayerStreamTrack, REAL_TIME_FORMATS
 
 import streamlit as st
-from streamlit_webrtc.models import VideoProcessorBase, CallbackAttachableProcessor, VideoProcessorT
+from streamlit_webrtc.models import VideoProcessorBase
 
 from srcs.st_cache import get_zsc_detector
 

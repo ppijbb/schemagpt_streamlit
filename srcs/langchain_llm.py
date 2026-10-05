@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Iterator, Mapping
+from typing import Dict, Any, List, Optional, Iterator
 from duckduckgo_search import DDGS
 from langchain_core.language_models.llms import LLM
 from langchain_core.outputs import GenerationChunk
