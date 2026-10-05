@@ -5,7 +5,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, create_mix_track, WebRtcMode, WebRtcStreamerContext
 from streamlit_server_state import server_state, server_state_lock
 
-from srcs.rtc_call import VideoProcessor, AudioProcessor, process_face
+from srcs.rtc_call import AudioProcessor, process_face
 from pages.rtc.config import RTC_CONFIGURATION
 
 
